@@ -1,0 +1,126 @@
+# WayToGo 旅伴手札
+
+供小團體共同規劃旅程的繁體中文 Web / PWA。使用 Google 登入建立旅程，旅伴可用邀請連結、邀請碼或 QR Code 加入。首頁提供三本可直接翻閱的唯讀示範手札。
+
+本版依據 [需求規格 v1.0](docs/spec.md) 的 P0 里程碑開發。
+
+![旅程總覽桌面畫面](docs/workspace.webp)
+
+## 在本機啟動
+
+需要 Docker Engine 與 Docker Compose v2，以及產生初始設定用的 Python 3。於專案根目錄執行：
+
+```sh
+python deploy/init_env.py
+docker compose up -d --build --wait
+```
+
+初始化程式會產生隨機資料庫密碼，只建立新的 `.env`。如未安裝 Python，也可複製 `.env.example` 為 `.env`，自行填入至少 32 個 URL 安全字元的隨機 `POSTGRES_PASSWORD`。Compose 會自動執行 Alembic 遷移並等待資料庫就緒。
+
+開啟 [旅程總覽](http://localhost:3000)、[OpenAPI 文件](http://localhost:3000/docs) 或 [健康檢查](http://localhost:3000/health)。`docker compose logs api web` 可查看啟動問題，`docker compose down` 可停止服務並保留資料。
+
+### 本機測試帳號
+
+在 `PUBLIC_ORIGIN=http://localhost:3000` 的測試環境，可用下列指令產生一組固定帳密。請保存指令顯示的密碼。`.env` 保存密碼雜湊；重啟服務後仍可使用同一個帳號及其旅程。
+
+```sh
+python deploy/create_test_login.py
+docker compose up -d --build --wait
+```
+
+開啟登入視窗後，使用本機測試帳號及產生的密碼登入，即可建立旅程並邀請旅伴。
+
+### Google 登入
+
+在 Google Cloud 建立「網頁應用程式」OAuth 用戶端。將 `http://localhost:3000/api/v1/auth/google/callback` 登記為授權重新導向 URI。在 `.env` 填入 `GOOGLE_CLIENT_ID` 和 `GOOGLE_CLIENT_SECRET`，執行 `docker compose up -d api`。正式環境使用相同 callback 路徑搭配實際 HTTPS 網域。來自同一部署的網站、邀請、Cookie 與 WebSocket 使用同一個 `PUBLIC_ORIGIN`。[Google OIDC 文件](https://developers.google.com/identity/openid-connect/openid-connect)
+
+登入使用授權碼、PKCE、state、nonce 與經驗證的 ID token。伺服器僅保存 Session Token 的雜湊。缺少 OIDC 設定時，登入端點會回傳可辨識的 503 錯誤，展示手札與既有邀請仍可使用。
+
+### 實際體驗多人協作
+
+1. 以 Google 登入後按「建立旅程」。只需填寫名稱，也可保留未定日期。
+2. 到「旅伴」產生限時邀請。以另一個瀏覽器開啟連結，輸入暱稱加入。
+3. 新增候選景點、加入每日行程、拖曳跨日排序，或從移動表單用鍵盤操作。兩個瀏覽器會即時更新。
+4. 在「投票」建立景點或日期票選。結束後可查看每人選票、重投或將結果手動加入行程。在「討論」留言或回覆。
+
+管理者也可執行下列指令，建立獨立的台南示範旅程及一組 24 小時有效的訪客邀請。每次執行都建立新資料。可加上 `--owner-id <已登入的 Google 使用者 UUID>` 或 `--hours 2`。省略擁有者時，範例由無登入憑證的展示帳號持有，邀請只授予成員身分。
+
+```sh
+docker compose exec api python seed_demo.py
+```
+
+## 已實作的需求
+
+| 功能 | 操作與資料規則 |
+| --- | --- |
+| 身分與成員 | Google OIDC、訪客 Cookie Session、限時邀請與撤銷、移除、退出、轉移所有權。訪客清除 Cookie 後無法透過暱稱認領。 |
+| 旅程 | 建立、設定、目的地、日期、主要幣別、狀態、封面、封存、刪除與 30 日復原窗口。 |
+| 景點與地圖 | 搜尋具座標的維基百科地點或手動輸入，記錄分類、意願、標籤、營業時間、照片網址、預估花費與異動。Leaflet 標記、Google Maps 搜尋與導航。 |
+| 每日行程 | Day 1 起的無日期規劃、日期對應、六種項目、跨日排序、時段或停留時間，以及可保留的重疊提醒。移除候選景點會保留已排入的引用。 |
+| 協作 | 交易提交後廣播、在線名單、編輯提示、90 秒可續期鎖與版本檢查。重新連線後載入最新資料。原作者與目前編輯者分開記錄。 |
+| 共同決策 | 單選、多選、日期與景點投票、補選項與提醒、截止時間、秘密選票、公開結算、歷史輪次、手動採用，以及即時討論串。 |
+
+第二、三階段的日期可用性、任務、分帳、預訂、私人附件、推播、PDF 匯出及離線旅程閱讀尚待開發。PWA 已提供安裝資訊及公開圖像快取。投票重新開啟、回收區及新 Google 身分的訪客升級已隨 MVP 實作。已有資料的兩個帳號合併仍屬後續功能。
+
+## 架構與設定
+
+`瀏覽器 → nginx → Next.js / FastAPI → PostgreSQL`
+
+- `frontend/` 包含 Next.js、React、TypeScript、Tailwind、Radix/shadcn 風格元件與 Leaflet。
+- `backend/app/` 是模組化單體。REST API 位於 `/api/v1`，即時端點為 `/ws/trips/{id}`。後端負責授權、版本、編輯鎖與交易。單一 Uvicorn worker 管理在線連線。
+- `backend/migrations/` 保存可重現的 Alembic 遷移。物件與成員關聯使用外鍵、唯一限制及索引。
+- `deploy/` 包含部署初始化、反向代理及備份程式。主機只公開 nginx，資料庫與 API 留在 Compose 內部網路。
+
+地點搜尋僅在使用者送出時連線，包含快取、限速及逾時。可用 `WIKI_API_URL` 更換相容的 MediaWiki 服務，或留空停用。地圖圖磚由瀏覽器依目前視窗取得，顯示 OSM 出處。可在建置前端時用 `NEXT_PUBLIC_TILE_URL` 指定相容且符合授權的 OSM 圖磚來源。可持續讀取資料庫中的地址與行程。[OSM 圖磚政策](https://operations.osmfoundation.org/policies/tiles/)
+
+## 部署與備份
+
+公開部署時，將 `PUBLIC_ORIGIN` 設定為實際 HTTPS 網址，由前置反向代理終止 TLS，並允許 WebSocket Upgrade。預設僅綁定 `127.0.0.1:3000`。調整埠號時一併調整 `HTTP_PORT`、`PUBLIC_ORIGIN` 與 OAuth callback。伺服器在 HTTPS 部署下設定 Secure、HttpOnly、SameSite=Lax Cookie。
+
+PostgreSQL 使用持久化 Volume。備份服務啟動時及每隔 24 小時產生自訂格式的 `pg_dump`，成功後才清理超過七日的舊備份。備份失敗或剩餘容量低於 512 MiB 時會寫入容器日誌。將 `BACKUP_DIR` 指向另一個裝置或掛載位置，並定期在新的資料庫驗證還原。預設的同機備份無法涵蓋整台主機遺失的情況。
+
+在新的空白資料庫驗證指定備份，以下以 POSIX shell 為例：
+
+```sh
+docker compose exec -T db createdb -U waytogo restore_check
+docker compose exec -T db pg_restore --exit-on-error -U waytogo -d restore_check < backups/waytogo-YYYYMMDDTHHMMSSZ.dump
+docker compose exec -T db psql -U waytogo -d restore_check -c 'select count(*) from trips'
+```
+
+## 開發與驗證
+
+使用 Python 3.12、Node.js 24 與專案指定的 pnpm 版本。非容器開發可分別執行以下指令。後端請先設定 `DATABASE_URL` 與 `PUBLIC_ORIGIN=http://localhost:3000`。開發及測試可用 `sqlite:///./dev.db`，部署使用 PostgreSQL。
+
+```sh
+cd backend
+python -m pip install -r requirements-dev.txt
+alembic upgrade head
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --no-access-log
+```
+
+```sh
+cd frontend
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+開發伺服器預設將 API 與 WebSocket 轉送到本機 8000 埠，可用 `API_UPSTREAM` 調整。請使用與 `PUBLIC_ORIGIN` 一致的網址開啟前端。
+
+| 測試 | 指令 |
+| --- | --- |
+| 後端授權、遷移、協作 | 在 backend 執行 `python -m pytest -q`、`alembic check` 及 `ruff check .`。可設定 `TEST_DATABASE_URL` 指向專用 PostgreSQL 測試資料庫，每個案例有獨立 schema。 |
+| 前端 | 在 frontend 執行 `pnpm typecheck`、`pnpm lint`、`pnpm format:check`、`pnpm test` 與 `pnpm build`。 |
+| 瀏覽器 | 啟動服務後執行 `pnpm exec playwright install chromium` 與 `pnpm e2e`。將展示邀請碼設為 `E2E_INVITE` 即可執行真實雙瀏覽器協作情境。 |
+| 自動化 | GitHub Actions 對 push 與 PR 執行 PostgreSQL 測試、Docker Compose 建置、瀏覽器驗收與資料庫還原演練。 |
+
+協作開發以功能分支提交 PR，通過 CI 並由另一位成員審查後再合併。前端只向授權 API 讀寫資料，對外提供的 OpenAPI JSON 可在 `/openapi.json` 取得。
+
+
+## 本機驗收紀錄
+
+- 17 個後端測試分別在 PostgreSQL 及 SQLite 通過，涵蓋邀請過期、訪客限制、所有權轉移、編輯租約、舊版本拒絕、秘密選票、投票輪次，以及五個 WebSocket 客戶端的同步與撤權。
+- 前端正式建置、型別、Lint、格式和 3 個 Vitest 測試通過。Playwright 以桌面及手機尺寸實際檢查，包含兩個獨立瀏覽器身分交換留言、建立活動及跨日移動。
+- 本機五位成員的 60 次讀取 P95 為 64 ms。12 次留言提交廣播給五個客戶端，從發出寫入到重新取得資料的 60 個觀測值 P95 為 73 ms。環境為同機 PostgreSQL、HTTP 與 WebSocket，時間不含畫面繪製。
+- Alembic 遷移與模型一致，實際資料可透過 `pg_dump` 還原到新的資料庫。Docker Compose v2.39.4 已驗證設定語法。本機已於 Docker Compose 部署並驗證固定測試帳號登入。Google OIDC 的自動化測試使用模擬的 Google 回應，真實帳號登入須使用部署者的憑證。
+
+展示封面使用內建 ImageGen 製作。圖像提示指定復古絹印旅遊海報風格，以山谷小徑、京都古塔、多洛米蒂湖畔和台南街景組成四格畫稿。網站使用的四張 WebP 存於 [frontend/public/art](frontend/public/art/)。

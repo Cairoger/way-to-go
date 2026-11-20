@@ -1,0 +1,17 @@
+.env
+.env.*.tmp
+.venv/
+.local/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.db
+*.sqlite*
+node_modules/
+.next/
+*.tsbuildinfo
+playwright-report/
+test-results/
+backups/
+frontend/next-env.d.ts

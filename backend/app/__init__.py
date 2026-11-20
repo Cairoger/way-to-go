@@ -1,0 +1,1 @@
+"""WayToGo collaborative travel planner."""

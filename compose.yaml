@@ -1,0 +1,70 @@
+name: waytogo
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: waytogo
+      POSTGRES_DB: waytogo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a random database password in .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U waytogo -d waytogo"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  api:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      DATABASE_URL: postgresql+psycopg://waytogo:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/waytogo
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:3000}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      LOCAL_TEST_USERNAME: ${LOCAL_TEST_USERNAME:-}
+      LOCAL_TEST_PASSWORD_HASH: ${LOCAL_TEST_PASSWORD_HASH:-}
+      WIKI_API_URL: ${WIKI_API_URL-https://zh.wikipedia.org/w/api.php}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+  web:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-3000}:80"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      api: {condition: service_healthy}
+      frontend: {condition: service_started}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO /dev/null http://127.0.0.1/ && wget -qO /dev/null http://127.0.0.1/health"]
+      interval: 10s
+      timeout: 4s
+      retries: 15
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    depends_on:
+      api: {condition: service_healthy}
+    environment:
+      PGHOST: db
+      PGUSER: waytogo
+      PGDATABASE: waytogo
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - ${BACKUP_DIR:-./backups}:/backup
+      - ./deploy/backup.sh:/scripts/backup.sh:ro
+    entrypoint: ["sh","/scripts/backup.sh"]
+volumes:
+  db-data:
+
