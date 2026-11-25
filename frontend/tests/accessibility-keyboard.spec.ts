@@ -46,6 +46,8 @@ test('鍵盤可跳至主要內容、操作登入對話框，關閉後回到原�
     await page.keyboard.press('Space');
     await expect(days.getByRole('button', { name: 'Day 2', pressed: true })).toBeFocused();
     await expect(first).toHaveAttribute('aria-pressed', 'false');
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
   }
 });

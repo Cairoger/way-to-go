@@ -297,7 +297,7 @@ export default function Workspace() {
   }
   return (
     <div className="shell">
-      <a className="skip-link" href="#main">
+      <a className="skip-link" href="#main" tabIndex={0}>
         跳到主要內容
       </a>
       {sidebar && (

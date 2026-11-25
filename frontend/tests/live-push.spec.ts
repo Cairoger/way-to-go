@@ -123,10 +123,17 @@ test('已安裝瀏覽器在隔離的一般設定檔訂閱並接收背景提及',
       ).catch(() => ({ stdout: 'unavailable' }));
       report.windowsBanner = probe.stdout.trim();
       if (report.windowsBanner === 'clicked-isolated-toast') {
+        const destination = () => user.pages().find((p) => p.url().endsWith('#comment-' + id));
+        await expect.poll(() => Boolean(destination())).toBe(true);
+        await expect(destination()!.locator('#comment-' + id)).toBeFocused();
         await expect
-          .poll(() => user.pages().some((p) => p.url().endsWith('#comment-' + id)))
+          .poll(async () => {
+            const response = await (await user.request.get('/api/v1/notifications')).json();
+            return response.items.find((item: { id: string }) => item.id === notice.id)?.read;
+          })
           .toBe(true);
         report.osClickOpenedMatchingComment = true;
+        report.osClickMarkedRead = true;
       }
     }
   } finally {

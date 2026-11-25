@@ -2,7 +2,7 @@
 
 供小團體共同規劃旅程的繁體中文 Web / PWA。使用 Google 登入建立旅程，旅伴可用邀請連結、邀請碼或 QR Code 加入。首頁提供三本可直接翻閱的唯讀示範手札。
 
-可共同編排行程、投票、分帳、管理訂位及私人附件，也可將選定旅程儲存到裝置離線閱讀。[需求規格](docs/spec.md) · [本版 17 項驗收紀錄與重跑方式](docs/review-fixes.md) · [8 項資料模型對照](docs/data-model.md)
+可共同編排行程、投票、分帳、管理訂位及私人附件，也可將選定旅程儲存到裝置離線閱讀。[需求規格](docs/spec.md) · [第二輪修正與複驗](docs/round2-review.md) · [第一輪 17 項驗收與重跑方式](docs/review-fixes.md) · [8 項資料模型對照](docs/data-model.md)
 
 ![旅程總覽桌面畫面](docs/workspace.webp)
 

@@ -26,7 +26,8 @@ export function Modal({
         <Dialog.Content
           {...(description ? {} : { 'aria-describedby': undefined })}
           onOpenAutoFocus={() => {
-            opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+            opener.current =
+              document.activeElement instanceof HTMLElement ? document.activeElement : null;
           }}
           onCloseAutoFocus={(event) => {
             if (opener.current?.isConnected && document.activeElement === document.body) {

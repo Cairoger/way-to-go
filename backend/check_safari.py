@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 def run(origin, username, password, invite_url, stop_site):
     with webdriver.Safari() as browser:
+        browser.set_window_size(1280, 900)
         wait = WebDriverWait(browser, 25)
 
         def css(selector):
@@ -20,7 +21,10 @@ def run(origin, username, password, invite_url, stop_site):
             wait.until(ec.element_to_be_clickable((By.XPATH, xpath))).click()
 
         def visible(selector, value):
-            wait.until(ec.text_to_be_present_in_element((By.CSS_SELECTOR, selector), value))
+            wait.until(
+                ec.text_to_be_present_in_element((By.CSS_SELECTOR, selector), value),
+                message=f"Expected {value!r} in {selector}",
+            )
 
         print("Safari", browser.capabilities["browserVersion"], "macOS", platform.mac_ver()[0])
         browser.get(origin)
@@ -28,13 +32,16 @@ def run(origin, username, password, invite_url, stop_site):
         css("input[name=username]").send_keys(username)
         css("input[name=password]").send_keys(password)
         click("使用測試帳號登入")
+        visible("[role=dialog] h2", "建立旅程")
+        css("[role=dialog] button[aria-label='關閉']").click()
         visible("button.profile", username)
         browser.refresh()
         visible("button.profile", username)
         print("PASS: signed-in account persisted after reload")
 
         browser.get(invite_url)
-        visible("button.profile", username)
+        css("[role=dialog] input[name=code]")
+        wait.until(ec.invisibility_of_element_located((By.CSS_SELECTOR, "input[name=nickname]")))
         click("加入旅程")
         visible("main", "台南巷弄小旅行")
         click("行前清單")
