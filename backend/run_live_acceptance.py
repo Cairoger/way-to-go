@@ -134,7 +134,7 @@ def server(stack, args, cwd, env, log, health):
         try:
             with urllib.request.urlopen(health, timeout=3) as response:
                 if response.status == 200:
-                    return
+                    return process
         except urllib.error.HTTPError as err:
             if err.code >= 500:
                 break
@@ -148,7 +148,9 @@ def server(stack, args, cwd, env, log, health):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--browser", choices=["chromium", "firefox", "webkit"], default="chromium")
+    parser.add_argument(
+        "--browser", choices=["chromium", "firefox", "webkit", "safari"], default="chromium"
+    )
     parser.add_argument(
         "--production", action="store_true", help="Build and serve the production PWA"
     )
@@ -157,6 +159,8 @@ def main():
     )
     parser.add_argument("tests", nargs="*", help="Playwright test file names or patterns")
     args = parser.parse_args()
+    if args.browser == "safari" and (not args.production or args.tests or args.push):
+        parser.error("Safari uses --production and its native WebDriver suite.")
     node = shutil.which("node")
     if not node:
         raise RuntimeError("找不到 Node.js。")
@@ -237,7 +241,7 @@ def main():
         next_cli = [node, str(FRONTEND / "node_modules/next/dist/bin/next")]
         if args.production:
             subprocess.run([*next_cli, "build", "--webpack"], cwd=web, env=web_env, check=True)
-        server(
+        frontend_process = server(
             stack,
             [
                 *next_cli,
@@ -252,6 +256,11 @@ def main():
             root / "web.log",
             origin + "/",
         )
+        if args.browser == "safari":
+            from check_safari import run
+
+            run(origin, login, password, seeded_url, lambda: stop(frontend_process))
+            return 0
         result = subprocess.run(
             [
                 node,

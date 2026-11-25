@@ -43,6 +43,7 @@ export type Booking = {
   version: number;
 };
 const statuses = { planned: '規劃中', booked: '已預訂', cancelled: '已取消' };
+const flightServiceNotice = '即時航班查詢（付費功能開發中）。目前可手動輸入航班與起降時間。';
 function offset() {
   const minutes = -new Date().getTimezoneOffset();
   return (
@@ -294,6 +295,7 @@ function BookingEditor({
       onClose={close}
     >
       <form className="stack" onSubmit={submit}>
+        {kind === 'flight' && <p className="muted">{flightServiceNotice}</p>}
         {publicOnly && (
           <p className="muted">預訂建立者已退出旅程，你可以維護這筆預訂的公開資料。</p>
         )}
@@ -492,6 +494,7 @@ export default function Bookings({
           住宿
         </button>
       </div>
+      {kind === 'flight' && <p className="muted">{flightServiceNotice}</p>}
       {!visible.length && (
         <div className="empty">
           {kind === 'flight' ? <Plane /> : <BedDouble />}

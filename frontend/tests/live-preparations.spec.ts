@@ -91,8 +91,10 @@ test('真實登入、邀請、私人與共用任務、訂位授權及提及通�
     await expect(guest.getByText('訂位代號 BOOK-TEST-ONLY')).toBeVisible();
 
     for (const who of [owner, guest]) await action(who, '航班').click();
+    await expect(owner.getByText(/即時航班查詢.*付費功能開發中/)).toBeVisible();
     await action(owner, '新增航班').click();
     const flight = owner.getByRole('dialog', { name: '新增航班' });
+    await expect(flight.getByText(/即時航班查詢.*付費功能開發中/)).toBeVisible();
     await flight.getByLabel('航班預訂名稱').fill('轉機往返');
     await flight.getByRole('button', { name: '新增航段' }).click();
     for (const [index, number, from, to, departure, arrival] of [
@@ -116,6 +118,11 @@ test('真實登入、邀請、私人與共用任務、訂位授權及提及通�
     await expect(guest.getByText('WT01 · TPE 至 HND')).toBeVisible();
     await expect(guest.getByText('WT02 · HND 至 CTS')).toBeVisible();
     await expect(guest.getByText(guestName + ' / 3A')).toBeVisible();
+    const saved = await guest.request.get(tripPath + '/bookings');
+    expect(saved.ok()).toBeTruthy();
+    expect(
+      (await saved.json()).find((row: { kind: string }) => row.kind === 'flight').segments,
+    ).toMatchObject([{ number: 'WT01' }, { number: 'WT02' }]);
 
     await action(owner, '討論').click();
     await owner.getByLabel('新增留言').fill('住宿確認了 ');
