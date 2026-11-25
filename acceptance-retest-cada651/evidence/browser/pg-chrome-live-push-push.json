@@ -1,0 +1,9 @@
+{
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+  "secure": true,
+  "permission": "granted",
+  "subscribed": false,
+  "browserError": "瀏覽器推播服務連線逾時，請稍後重試。 重新整理",
+  "sentAt": "2026-11-25T14:46:01.787Z",
+  "inboxMatched": true
+}

@@ -1,0 +1,3 @@
+postgres (PostgreSQL) 16.2
+
+exit=0

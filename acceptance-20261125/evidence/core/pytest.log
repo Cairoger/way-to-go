@@ -1,0 +1,118 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- D:\WayToGo\.venv\Scripts\python.exe
+rootdir: D:\WayToGo\backend
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collecting ... collected 25 items
+
+backend\tests\test_core.py::test_guest_invite_lifecycle PASSED           [  4%]
+backend\tests\test_core.py::test_trip_versions_archives_and_idempotency PASSED [  8%]
+backend\tests\test_core.py::test_member_removal_transfers_poll_control_and_transfer_owner PASSED [ 12%]
+backend\tests\test_core.py::test_server_session_revocation_and_expiry PASSED [ 16%]
+backend\tests\test_core.py::test_google_oidc_cookie_rotation_and_state_binding PASSED [ 20%]
+backend\tests\test_core.py::test_missing_oidc_settings_and_request_origin PASSED [ 24%]
+backend\tests\test_core.py::test_private_demo_membership_and_seeded_itinerary PASSED [ 28%]
+backend\tests\test_core.py::test_five_connected_clients_receive_committed_edits_and_revocation FAILED [ 32%]
+backend\tests\test_guest_merge.py::test_merge_keeps_owner_authorization_finances_and_private_travel_data PASSED [ 36%]
+backend\tests\test_guest_merge.py::test_open_ballot_collisions_dates_and_closed_results PASSED [ 40%]
+backend\tests\test_trip_copy.py::test_copy_planning_snapshot_to_own_trip_only PASSED [ 44%]
+backend\tests\test_trip_copy.py::test_copy_linked_travel_arrangements_without_private_booking_or_assignees PASSED [ 48%]
+backend\tests\test_planning.py::test_place_retained_after_candidate_removal PASSED [ 52%]
+backend\tests\test_planning.py::test_move_overlap_and_passive_order PASSED [ 56%]
+backend\tests\test_planning.py::test_lease_contention_renewal_timeout_and_stale_version PASSED [ 60%]
+backend\tests\test_planning.py::test_search_outage_preserves_saved_content PASSED [ 64%]
+backend\tests\test_planning_extensions.py::test_time_suggestions_and_local_zones PASSED [ 68%]
+backend\tests\test_planning_extensions.py::test_restore_changed_place_and_deleted_item PASSED [ 72%]
+backend\tests\test_planning_extensions.py::test_weather_success_and_provider_failure PASSED [ 76%]
+backend\tests\test_local_login.py::test_local_auth_is_private_stable_and_can_own_trips PASSED [ 80%]
+backend\tests\test_local_login.py::test_simultaneous_first_signins_share_one_subject PASSED [ 84%]
+backend\tests\test_local_login.py::test_local_login_disabled_outside_http_loopback[https://localhost] PASSED [ 88%]
+backend\tests\test_local_login.py::test_local_login_disabled_outside_http_loopback[https://travel.example] PASSED [ 92%]
+backend\tests\test_local_login.py::test_local_login_disabled_outside_http_loopback[http://testserver] PASSED [ 96%]
+backend\tests\test_local_login.py::test_incomplete_local_configuration_fails_closed PASSED [100%]
+
+================================== FAILURES ===================================
+_____ test_five_connected_clients_receive_committed_edits_and_revocation ______
+
+owner = <starlette.testclient.TestClient object at 0x000001D2F82754F0>
+guest = <starlette.testclient.TestClient object at 0x000001D2F8120170>
+trip = {'id': '40c961ae-eb85-4488-aff9-c01d03db835b', 'owner_id': 'd550ab83-a783-4576-acb2-78cdccdb3d47', 'title': '�x�n���B', 'description': '', ...}
+invitation = {'id': '480c165a-2cd2-4e85-a08a-9e6c0046a9c9', 'expires_at': '2026-12-02T12:20:17.862896+00:00', 'revoked_at': None, 'code': '[synthetic invite omitted]', ...}
+
+    def test_five_connected_clients_receive_committed_edits_and_revocation(
+        owner, guest, trip, invitation
+    ):
+        path = "/api/v1/trips/" + trip["id"]
+        ws = "/ws/trips/" + trip["id"]
+        tokens = [owner.cookies.get(COOKIE), guest.cookies.get(COOKIE)]
+        for i in range(3):
+            with TestClient(app, headers={"Origin": "http://testserver"}) as browser:
+                assert browser.post(
+                    "/api/v1/auth/guest", json={"code": invitation["code"], "nickname": f"�Ȧ� {i}"}
+                ).is_success
+                tokens.append(browser.cookies.get(COOKIE))
+        headers = [{"cookie": COOKIE + "=" + raw, "origin": "http://testserver"} for raw in tokens]
+>       with ExitStack() as stack:
+             ^^^^^^^^^^^
+
+backend\tests\test_core.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\contextlib.py:610: in __exit__
+    raise exc_details[1]
+C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\testclient.py:124: in __exit__
+    return self.exit_stack.__exit__(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\contextlib.py:610: in __exit__
+    raise exc_details[1]
+C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\contextlib.py:595: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\contextlib.py:478: in _exit_wrapper
+    callback(*args, **kwds)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = None, timeout = None
+
+    def result(self, timeout=None):
+        """Return the result of the call that the future represents.
+    
+        Args:
+            timeout: The number of seconds to wait for the result if the future
+                isn't done. If None, then there is no limit on the wait time.
+    
+        Returns:
+            The result of the call that the future represents.
+    
+        Raises:
+            CancelledError: If the future was cancelled.
+            TimeoutError: If the future didn't finish executing before the given
+                timeout.
+            Exception: If the call raised then that exception will be raised.
+        """
+        try:
+            with self._condition:
+                if self._state in [CANCELLED, CANCELLED_AND_NOTIFIED]:
+                    raise CancelledError()
+                elif self._state == FINISHED:
+                    return self.__get_result()
+    
+                self._condition.wait(timeout)
+    
+                if self._state in [CANCELLED, CANCELLED_AND_NOTIFIED]:
+>                   raise CancelledError()
+E                   concurrent.futures._base.CancelledError
+
+C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\concurrent\futures\_base.py:454: CancelledError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  D:\WayToGo\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED backend\tests\test_core.py::test_five_connected_clients_receive_committed_edits_and_revocation - concurrent.futures._base.CancelledError
+================== 1 failed, 24 passed, 1 warning in 12.34s ===================
+

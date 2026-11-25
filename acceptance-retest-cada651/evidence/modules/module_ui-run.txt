@@ -1,0 +1,12 @@
+cwd=D:\WayToGo
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\acceptance-retest-cada651\evidence\modules\module_ui.cjs D:\WayToGo\.local\acceptance-retest-cada651\pg-ui.json
+WEATHER-02 UI without dated location: 尚無可用天氣預報
+VOTE-08 zero-result label; review message appeared in voting member browser after a different user added option
+NOTIFY-03 mailto link contains local origin, trip name and invitation code; no mail sent
+BOOK-06 external booking href and Google Maps destination matched persisted data
+NOTIFY-02 啟用這台裝置的推播 { secure: true, push: true, worker: true }
+WEATHER-01 UI (weather HTTP replay only): 台北測站 · 毛毛雨 · 15.8–19.7 °C · 降雨 31%
+OFFLINE-02 attempted save while offline; alert 連線逾時或網路中斷，請稍後再試。 ; after reconnect and reload draft absent in API
+Browser 158.0.8127.36
+
+exit=0 elapsed=8.31s

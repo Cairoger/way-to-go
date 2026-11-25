@@ -1,0 +1,5 @@
+Command: C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\.local\audit-ui-20261125\web\node_modules\prettier\bin\prettier.cjs --check app components lib tests *.ts *.mts *.mjs *.js
+Checking formatting...
+All matched files use Prettier code style!
+
+Exit: 0

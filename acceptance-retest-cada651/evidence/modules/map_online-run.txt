@@ -1,0 +1,5 @@
+cwd=D:\WayToGo
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\acceptance-retest-cada651\evidence\modules\map_online.cjs D:\WayToGo\.local\acceptance-retest-cada651\pg-ui.json
+{"responses":{},"view":{"pins":1,"visibleTiles":0,"attribution":" Leaflet | © OpenStreetMap contributors"}}
+
+exit=2 elapsed=13.70s

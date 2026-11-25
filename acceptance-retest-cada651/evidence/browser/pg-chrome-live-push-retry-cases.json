@@ -1,0 +1,26 @@
+{
+  "stats": {
+    "startTime": "2026-11-25T14:55:41.845Z",
+    "duration": 25568.952999999998,
+    "expected": 1,
+    "skipped": 1,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "spec": "live-push.spec.ts",
+      "title": "已安裝瀏覽器在隔離的一般設定檔訂閱並接收背景提及",
+      "result": "skipped",
+      "duration_ms": 23230,
+      "reason": "[{'type': 'skip', 'description': 'Browser push service declined this temporary profile: 瀏覽器推播服務連線逾時，請稍後重試。 重新整理', 'location': {'file': 'D:\\\\WayToGo\\\\.local\\\\acceptance-retest-cada651\\\\source\\\\frontend\\\\tests\\\\live-push.spec.ts', 'line': 90, 'column': 10}}]"
+    },
+    {
+      "spec": "live-push.spec.ts",
+      "title": "模擬瀏覽器收到推播後以授權通知定位留言",
+      "result": "passed",
+      "duration_ms": 1239,
+      "reason": "[]"
+    }
+  ]
+}

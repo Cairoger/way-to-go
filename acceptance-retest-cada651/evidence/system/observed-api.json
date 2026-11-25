@@ -1,0 +1,351 @@
+{
+  "DELETE /api/v1/comments/{comment_id}": {
+    "403": 1,
+    "200": 1
+  },
+  "DELETE /api/v1/files/{file_id}": {
+    "403": 1,
+    "200": 2
+  },
+  "DELETE /api/v1/itinerary-items/{item_id}": {
+    "200": 1
+  },
+  "DELETE /api/v1/notifications/device": {
+    "204": 1
+  },
+  "DELETE /api/v1/places/{place_id}": {
+    "403": 1,
+    "423": 1,
+    "409": 1,
+    "200": 2
+  },
+  "DELETE /api/v1/trips/{trip_id}": {
+    "200": 1
+  },
+  "DELETE /api/v1/trips/{trip_id}/availability/{entry_id}": {
+    "409": 1,
+    "204": 1
+  },
+  "DELETE /api/v1/trips/{trip_id}/bookings/{booking_id}": {
+    "409": 1,
+    "403": 1
+  },
+  "DELETE /api/v1/trips/{trip_id}/candidates/{candidate_id}": {
+    "200": 2
+  },
+  "DELETE /api/v1/trips/{trip_id}/expenses/{expense_id}": {
+    "200": 1
+  },
+  "DELETE /api/v1/trips/{trip_id}/invitations/{invite_id}": {
+    "204": 2
+  },
+  "DELETE /api/v1/trips/{trip_id}/members/{member_id}": {
+    "204": 8,
+    "409": 1
+  },
+  "GET /api/v1/auth/google/callback": {
+    "401": 3,
+    "303": 4
+  },
+  "GET /api/v1/auth/local-test": {
+    "200": 6
+  },
+  "GET /api/v1/auth/me": {
+    "200": 45,
+    "401": 5
+  },
+  "GET /api/v1/days/{day_id}/weather": {
+    "200": 3
+  },
+  "GET /api/v1/files/{file_id}/download": {
+    "200": 9,
+    "403": 4,
+    "401": 1,
+    "404": 1
+  },
+  "GET /api/v1/files/{file_id}/preview": {
+    "200": 7,
+    "403": 3
+  },
+  "GET /api/v1/notifications": {
+    "200": 10
+  },
+  "GET /api/v1/places/{place_id}/history": {
+    "200": 2
+  },
+  "GET /api/v1/trips/{trip_id}": {
+    "404": 1,
+    "200": 3,
+    "403": 3,
+    "401": 2
+  },
+  "GET /api/v1/trips/{trip_id}/availability": {
+    "200": 3,
+    "403": 1
+  },
+  "GET /api/v1/trips/{trip_id}/bookings": {
+    "200": 7,
+    "403": 1
+  },
+  "GET /api/v1/trips/{trip_id}/comments": {
+    "200": 6
+  },
+  "GET /api/v1/trips/{trip_id}/days": {
+    "200": 32
+  },
+  "GET /api/v1/trips/{trip_id}/files": {
+    "200": 13,
+    "403": 2
+  },
+  "GET /api/v1/trips/{trip_id}/files/limits": {
+    "200": 1
+  },
+  "GET /api/v1/trips/{trip_id}/finance": {
+    "200": 11,
+    "403": 1
+  },
+  "GET /api/v1/trips/{trip_id}/invitations": {
+    "200": 1
+  },
+  "GET /api/v1/trips/{trip_id}/members": {
+    "200": 4,
+    "401": 1
+  },
+  "GET /api/v1/trips/{trip_id}/place-search": {
+    "503": 1
+  },
+  "GET /api/v1/trips/{trip_id}/places": {
+    "200": 11
+  },
+  "GET /api/v1/trips/{trip_id}/planner-history": {
+    "200": 2
+  },
+  "GET /api/v1/trips/{trip_id}/polls": {
+    "403": 1,
+    "200": 8
+  },
+  "GET /api/v1/trips/{trip_id}/tasks": {
+    "200": 14
+  },
+  "PATCH /api/v1/auth/me": {
+    "200": 1,
+    "422": 2
+  },
+  "PATCH /api/v1/comments/{comment_id}": {
+    "403": 1,
+    "200": 4,
+    "409": 1
+  },
+  "PATCH /api/v1/files/{file_id}": {
+    "403": 1,
+    "200": 2,
+    "409": 1
+  },
+  "PATCH /api/v1/itinerary-items/{item_id}": {
+    "200": 2
+  },
+  "PATCH /api/v1/places/{place_id}": {
+    "423": 1,
+    "200": 2,
+    "409": 1
+  },
+  "PATCH /api/v1/polls/{poll_id}": {
+    "409": 2
+  },
+  "PATCH /api/v1/trips/{trip_id}": {
+    "200": 11,
+    "403": 2,
+    "409": 2,
+    "422": 1
+  },
+  "PATCH /api/v1/trips/{trip_id}/availability/{entry_id}": {
+    "403": 1,
+    "200": 1,
+    "409": 1
+  },
+  "PATCH /api/v1/trips/{trip_id}/expenses/{expense_id}": {
+    "403": 1,
+    "422": 1,
+    "200": 2,
+    "409": 1
+  },
+  "POST /api/v1/auth/google": {
+    "200": 5,
+    "503": 1
+  },
+  "POST /api/v1/auth/guest": {
+    "200": 51,
+    "403": 2
+  },
+  "POST /api/v1/auth/local-test": {
+    "401": 2,
+    "200": 5,
+    "404": 5
+  },
+  "POST /api/v1/auth/logout": {
+    "204": 2,
+    "403": 1
+  },
+  "POST /api/v1/days/{day_id}/items": {
+    "201": 16,
+    "422": 3,
+    "404": 1
+  },
+  "POST /api/v1/edit-leases": {
+    "403": 1,
+    "200": 16,
+    "423": 1
+  },
+  "POST /api/v1/edit-leases/{lease_id}/renew": {
+    "200": 1
+  },
+  "POST /api/v1/files/{file_id}/restore": {
+    "200": 1
+  },
+  "POST /api/v1/invitations/accept": {
+    "200": 2
+  },
+  "POST /api/v1/itinerary-items/{item_id}/move": {
+    "403": 1,
+    "200": 3,
+    "422": 1
+  },
+  "POST /api/v1/notifications/{notice_id}/read": {
+    "404": 1,
+    "204": 1
+  },
+  "POST /api/v1/planner-history/{kind}/{resource_id}/restore": {
+    "200": 3,
+    "403": 1,
+    "409": 1
+  },
+  "POST /api/v1/polls/{poll_id}/adopt": {
+    "404": 1,
+    "200": 2
+  },
+  "POST /api/v1/polls/{poll_id}/close": {
+    "200": 5,
+    "403": 1
+  },
+  "POST /api/v1/polls/{poll_id}/options": {
+    "200": 2
+  },
+  "POST /api/v1/polls/{poll_id}/reopen": {
+    "200": 4
+  },
+  "POST /api/v1/trips": {
+    "201": 57,
+    "403": 1,
+    "409": 1
+  },
+  "POST /api/v1/trips/{trip_id}/archive": {
+    "200": 1
+  },
+  "POST /api/v1/trips/{trip_id}/availability": {
+    "201": 9,
+    "409": 1,
+    "422": 1
+  },
+  "POST /api/v1/trips/{trip_id}/bookings": {
+    "201": 7,
+    "422": 3
+  },
+  "POST /api/v1/trips/{trip_id}/budgets": {
+    "403": 1,
+    "201": 3
+  },
+  "POST /api/v1/trips/{trip_id}/candidates": {
+    "409": 1
+  },
+  "POST /api/v1/trips/{trip_id}/comments": {
+    "201": 17,
+    "422": 5,
+    "409": 1,
+    "403": 1
+  },
+  "POST /api/v1/trips/{trip_id}/copy": {
+    "201": 5,
+    "403": 1,
+    "422": 1,
+    "409": 2
+  },
+  "POST /api/v1/trips/{trip_id}/days": {
+    "201": 3
+  },
+  "POST /api/v1/trips/{trip_id}/expenses": {
+    "201": 7,
+    "409": 1,
+    "422": 4
+  },
+  "POST /api/v1/trips/{trip_id}/files": {
+    "201": 15,
+    "415": 4,
+    "413": 30,
+    "429": 1,
+    "403": 1
+  },
+  "POST /api/v1/trips/{trip_id}/finance/rates": {
+    "200": 1
+  },
+  "POST /api/v1/trips/{trip_id}/invitations": {
+    "201": 48,
+    "409": 1,
+    "410": 1
+  },
+  "POST /api/v1/trips/{trip_id}/places": {
+    "201": 9
+  },
+  "POST /api/v1/trips/{trip_id}/polls": {
+    "201": 7
+  },
+  "POST /api/v1/trips/{trip_id}/restore": {
+    "200": 1
+  },
+  "POST /api/v1/trips/{trip_id}/settlements": {
+    "201": 4,
+    "409": 1,
+    "422": 1
+  },
+  "POST /api/v1/trips/{trip_id}/tasks": {
+    "201": 11,
+    "422": 6
+  },
+  "POST /api/v1/trips/{trip_id}/transfer": {
+    "403": 1,
+    "200": 3
+  },
+  "PUT /api/v1/notifications/device": {
+    "204": 3,
+    "409": 1,
+    "422": 1
+  },
+  "PUT /api/v1/notifications/preferences": {
+    "200": 2,
+    "409": 1
+  },
+  "PUT /api/v1/polls/{poll_id}/ballot": {
+    "422": 6,
+    "200": 10,
+    "409": 4
+  },
+  "PUT /api/v1/trips/{trip_id}/bookings/{booking_id}": {
+    "200": 2,
+    "403": 1
+  },
+  "PUT /api/v1/trips/{trip_id}/bookings/{booking_id}/public": {
+    "403": 3,
+    "422": 4,
+    "200": 2,
+    "409": 1
+  },
+  "PUT /api/v1/trips/{trip_id}/tasks/{task_id}": {
+    "200": 2
+  },
+  "PUT /api/v1/trips/{trip_id}/tasks/{task_id}/progress": {
+    "200": 14,
+    "409": 7,
+    "404": 1,
+    "422": 1,
+    "403": 1
+  }
+}

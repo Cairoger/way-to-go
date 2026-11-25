@@ -1,0 +1,29 @@
+MARIONETTE {"browserName": "firefox", "browserVersion": "161.0", "platformName": "windows", "moz:headless": true}
+CREATE_WITH_TITLE PASS
+SESSION_RELOAD PASS
+CREATE_ITINERARY_RELOAD PASS
+Fresh Firefox tab, previous tab closed, saved via UI, controller= False TCP unreachable
+offline_readonly= True activity= True excerpt= WayToGo 旅伴手札
+離線唯讀
+Firefox 正式版 1795618995
+
+日期待定
+
+儲存於 2026/11/25 下午11:03:18
+第 1 天 · Asia/Taipei
+正式版實際活動
+
+建議 09:00 · Asia/Taipei
+
+展館集合
+
+10:30 · Asia/Taipei
+
+府城展館 · 遊學路十號
+
+候選景點
+
+府城展館 · 遊學路十號
+
+已儲存的旅程 · 重新連線
+{'controller_before_close': False, 'offline': True, 'saved_activity': True, 'address_seen': True, 'local_time_seen': True, 'edit_buttons': 0, 'origin_tcp_reachable': False}

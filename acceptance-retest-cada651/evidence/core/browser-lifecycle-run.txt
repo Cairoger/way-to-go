@@ -1,0 +1,20 @@
+cwd=D:\WayToGo
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\acceptance-retest-cada651\evidence\core\browser-lifecycle.cjs D:\WayToGo\.local\acceptance-retest-cada651\pg-ui.json
+ZONES_UI 09:00
+自訂活動 · America/New_York · 60 分鐘
+紐約出發
+附件
+裝置時間 · 7/1 21:00 [GMT+8]
+expect(locator).toBeVisible() failed
+
+Locator: getByRole('button', { name: '開啟時區與封存 1795617844110', exact: true })
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" getByRole('button', { name: '開啟時區與封存 1795617844110', exact: true }) with timeout 5000ms
+  - waiting for getByRole('button', { name: '開啟時區與封存 1795617844110', exact: true })
+
+
+exit=1 elapsed=8.42s

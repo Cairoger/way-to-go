@@ -1,0 +1,32 @@
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x0000ad48 (most recent call first):
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\threading.py", line 359 in wait
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\util\queue.py", line 202 in get
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 157 in _do_get
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 727 in checkout
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1341 in _checkout
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 463 in connect
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3335 in raw_connection
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 149 in __init__
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3311 in connect
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1191 in _connection_for_bind
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137 in _go
+  File "<string>", line 2 in _connection_for_bind
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2113 in _connection_for_bind
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2261 in _execute_internal
+  File "D:\WayToGo\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2373 in execute
+  File "D:\WayToGo\backend\app\core.py", line 102 in valid_session
+  File "D:\WayToGo\backend\app\realtime.py", line 56 in identify
+  File "D:\WayToGo\backend\app\realtime.py", line 87 in send_updates
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\events.py", line 88 in _run
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\base_events.py", line 1999 in _run_once
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\base_events.py", line 645 in run_forever
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\windows_events.py", line 322 in run_forever
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\base_events.py", line 678 in run_until_complete
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\runners.py", line 118 in run
+  File "C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\runners.py", line 195 in run
+  File "D:\WayToGo\.venv\Lib\site-packages\uvicorn\server.py", line 86 in run
+  File "D:\WayToGo\.venv\Lib\site-packages\uvicorn\main.py", line 632 in run
+  File "D:\WayToGo\acceptance-20261125\evidence\browser\resume_api.py", line 16 in <module>

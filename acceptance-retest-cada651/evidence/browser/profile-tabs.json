@@ -1,0 +1,29 @@
+{
+  "both_forms_read_same_initial_name": true,
+  "writes": [
+    {
+      "open_tab": 1,
+      "status": 200,
+      "request_fields": [
+        "nickname"
+      ],
+      "if_match_sent": false,
+      "returned_nickname": "第一頁儲存",
+      "member_in_other_context_read_new_value": true
+    },
+    {
+      "open_tab": 2,
+      "status": 200,
+      "request_fields": [
+        "nickname"
+      ],
+      "if_match_sent": false,
+      "returned_nickname": "第二頁舊表單儲存",
+      "member_in_other_context_read_new_value": true
+    }
+  ],
+  "latest_nickname": "第二頁舊表單儲存",
+  "server_supplied_etag": null,
+  "explicit_nonmatching_if_match_http": 200,
+  "after_conditional_write": "明確不匹配的條件"
+}

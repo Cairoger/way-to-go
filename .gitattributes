@@ -4,3 +4,7 @@ frontend/** text=auto eol=lf
 Dockerfile text eol=lf
 *.webp binary
 *.png binary
+
+# Preserve the bytes covered by the acceptance evidence SHA-256 manifests.
+acceptance-20261125/** -text
+acceptance-retest-cada651/** -text

@@ -1,0 +1,7 @@
+{
+  "version": "161.0",
+  "url": "https://archive.mozilla.org/pub/firefox/releases/161.0/win64/en-US/Firefox%20Setup%20161.0.exe",
+  "sha512": "39d71027ff2625a58cf88a7ae03ebf41e37612914637960dd3f1b2609a41465cfc46b1f0e2b23f0e420510a00a0f423e9ecde96060d359a075d5c7e7e574fc4d",
+  "bytes": 96488024,
+  "official_checksums": "https://archive.mozilla.org/pub/firefox/releases/161.0/SHA512SUMS"
+}

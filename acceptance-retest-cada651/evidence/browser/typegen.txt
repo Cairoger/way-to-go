@@ -1,0 +1,6 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source\frontend
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\.local\acceptance-retest-cada651\source\frontend\node_modules\next\dist\bin\next typegen
+Generating route types...
+✓ Types generated successfully
+
+exit=0 elapsed=0.39s

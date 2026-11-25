@@ -1,0 +1,73 @@
+
+Running 10 tests using 1 worker
+
+(node:72088) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [webkit] › tests\coordination.spec.ts:115:1 › 旅伴標記單日並套用至旅程日期 (1.5s)
+  ok  2 [webkit] › tests\coordination.spec.ts:128:1 › 評分、排序及提及旅伴的輸入與呈現 (2.1s)
+  ok  3 [webkit] › tests\live-finance.spec.ts:3:1 › 兩位旅伴記錄外幣支出、收到超額提醒並分兩次結清 (5.4s)
+  x   4 [webkit] › tests\live-preparations.spec.ts:7:1 › 真實登入、邀請、私人與共用任務、訂位授權及提及通知 (2.5m)
+(node:85676) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  5 [webkit] › tests\local-login.spec.ts:35:1 › 本機登入停用時保留 Google 與邀請入口 (742ms)
+  x   6 [webkit] › tests\local-login.spec.ts:47:1 › 從建立旅程登入本機帳號後接續原操作 (6.0s)
+(node:87868) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [webkit] › tests\local-login.spec.ts:72:1 › 從側欄登入顯示自己的工作空間與帳號 (980ms)
+  ok  8 [webkit] › tests\workspace.spec.ts:2:1 › 在桌面探索旅程、篩選、切換清單與分日查看 (728ms)
+  ok  9 [webkit] › tests\workspace.spec.ts:13:1 › 手機選單、加入表單及登入入口 (2.9s)
+  ok 10 [webkit] › tests\workspace.spec.ts:26:1 › 兩個瀏覽器身分透過邀請加入並同步留言 (4.8s)
+
+
+  1) [webkit] › tests\live-preparations.spec.ts:7:1 › 真實登入、邀請、私人與共用任務、訂位授權及提及通知 ────────────────────
+
+    Test timeout of 150000ms exceeded.
+
+    Error: browserContext.close: Test ended.
+    Browser logs:
+
+    <launching> D:\WayToGo\.local\audit-ui-20261125\pw-browsers\webkit-2388\Playwright.exe --inspector-pipe --disable-accelerated-compositing --headless --no-startup-window
+    <launched> pid=82192
+    [pid=82192] <gracefully close start>
+
+      134 |     );
+      135 |   } finally {
+    > 136 |     await guestContext.close();
+          |     ^
+      137 |   }
+      138 | });
+      139 |
+        at D:\WayToGo\.local\audit-ui-20261125\web\tests\live-preparations.spec.ts:136:5
+
+    Error Context: ..\webkit-results\live-preparations-真實登入、邀請、私人與共用任務、訂位授權及提及通知-webkit\error-context.md
+
+  2) [webkit] › tests\local-login.spec.ts:47:1 › 從建立旅程登入本機帳號後接續原操作 ─────────────────────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: /我的旅程/ })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: /我的旅程/ }) with timeout 5000ms
+      - waiting for getByRole('heading', { name: /我的旅程/ })
+
+
+      65 |   await page.getByRole('button', { name: '關閉', exact: true }).click();
+      66 |   await page.reload();
+    > 67 |   await expect(page.getByRole('heading', { name: /我的旅程/ })).toBeVisible();
+         |                                                             ^
+      68 |   await page.getByRole('button', { name: '建立旅程', exact: true }).click();
+      69 |   await expect(page.getByRole('dialog', { name: '建立旅程' })).toBeVisible();
+      70 | });
+        at D:\WayToGo\.local\audit-ui-20261125\web\tests\local-login.spec.ts:67:61
+
+    Error Context: ..\webkit-results\local-login-從建立旅程登入本機帳號後接續原操作-webkit\error-context.md
+
+  2 failed
+    [webkit] › tests\live-preparations.spec.ts:7:1 › 真實登入、邀請、私人與共用任務、訂位授權及提及通知 ─────────────────────
+    [webkit] › tests\local-login.spec.ts:47:1 › 從建立旅程登入本機帳號後接續原操作 ──────────────────────────────────
+  8 passed (3.0m)
+Exit: 1

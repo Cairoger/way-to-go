@@ -1,0 +1,10 @@
+cwd=D:\WayToGo
+command=D:\WayToGo\.venv\Scripts\python.exe D:\WayToGo\acceptance-retest-cada651\evidence\core\firefox-release.py
+MARIONETTE {"browserName": "firefox", "browserVersion": "161.0", "platformName": "windows", "moz:headless": true}
+CREATE_WITH_TITLE PASS
+SESSION_RELOAD PASS
+CREATE_ITINERARY_RELOAD PASS
+INVITE_HREF_AND_QR PASS
+SCREENSHOT firefox-release.png
+
+exit=0 elapsed=7.64s

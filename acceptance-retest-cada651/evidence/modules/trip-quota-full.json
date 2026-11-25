@@ -1,0 +1,135 @@
+{
+  "limits": {
+    "file_max_bytes": 10485760,
+    "trip_max_bytes": 524288000,
+    "batch_max": 10
+  },
+  "batches": [
+    {
+      "prior_committed_bytes": 0,
+      "files": 5,
+      "request_bytes": 52428800,
+      "attempted_total_bytes": 52428800,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 52428800
+    },
+    {
+      "prior_committed_bytes": 52428800,
+      "files": 5,
+      "request_bytes": 52428800,
+      "attempted_total_bytes": 104857600,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 104857600
+    },
+    {
+      "prior_committed_bytes": 104857600,
+      "files": 5,
+      "request_bytes": 52428800,
+      "attempted_total_bytes": 157286400,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 157286400
+    },
+    {
+      "prior_committed_bytes": 157286400,
+      "files": 5,
+      "request_bytes": 52428800,
+      "attempted_total_bytes": 209715200,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 209715200
+    },
+    {
+      "prior_committed_bytes": 209715200,
+      "files": 5,
+      "request_bytes": 52428800,
+      "attempted_total_bytes": 262144000,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 262144000
+    },
+    {
+      "prior_committed_bytes": 262144000,
+      "files": 5,
+      "request_bytes": 52428800,
+      "attempted_total_bytes": 314572800,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 314572800
+    },
+    {
+      "prior_committed_bytes": 314572800,
+      "files": 5,
+      "request_bytes": 52428800,
+      "attempted_total_bytes": 367001600,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 367001600
+    },
+    {
+      "prior_committed_bytes": 367001600,
+      "files": 5,
+      "request_bytes": 52428800,
+      "attempted_total_bytes": 419430400,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 419430400
+    },
+    {
+      "prior_committed_bytes": 419430400,
+      "files": 5,
+      "request_bytes": 52428800,
+      "attempted_total_bytes": 471859200,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 471859200
+    },
+    {
+      "prior_committed_bytes": 471859200,
+      "files": 4,
+      "request_bytes": 41943040,
+      "attempted_total_bytes": 513802240,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 513802240
+    },
+    {
+      "prior_committed_bytes": 513802240,
+      "files": 1,
+      "request_bytes": 10484760,
+      "attempted_total_bytes": 524287000,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 524287000
+    },
+    {
+      "prior_committed_bytes": 524287000,
+      "files": 1,
+      "request_bytes": 1001,
+      "attempted_total_bytes": 524288001,
+      "status": 413,
+      "error_code": "TRIP_FILE_QUOTA",
+      "total_accepted_bytes": 524287000
+    },
+    {
+      "prior_committed_bytes": 524287000,
+      "files": 1,
+      "request_bytes": 1000,
+      "attempted_total_bytes": 524288000,
+      "status": 201,
+      "error_code": null,
+      "total_accepted_bytes": 524288000
+    },
+    {
+      "prior_committed_bytes": 524288000,
+      "files": 1,
+      "request_bytes": 1000,
+      "attempted_total_bytes": 524289000,
+      "status": 413,
+      "error_code": "TRIP_FILE_QUOTA",
+      "total_accepted_bytes": 524288000
+    }
+  ]
+}

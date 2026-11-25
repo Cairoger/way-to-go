@@ -1,0 +1,305 @@
+{
+  "a11y": {
+    "home": {
+      "tool": "4.14.1",
+      "passes": 21,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "html": "<div class=\"nav-heading\">工作空間</div>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "html": "<div class=\"nav-heading\">",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "html": "<span>工作空間</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "tags": [
+            "cat.semantics",
+            "wcag21a",
+            "wcag253",
+            "EN-301-549",
+            "EN-9.2.5.3",
+            "RGAAv4",
+            "RGAA-6.1.5"
+          ],
+          "nodes": [
+            {
+              "target": [
+                "button[aria-label=\"開啟京都秋日散策\"]"
+              ],
+              "html": "<button class=\"card-open\" aria-label=\"開啟京都秋日散策\">",
+              "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                "button[aria-label=\"開啟多洛米蒂山間漫遊\"]"
+              ],
+              "html": "<button class=\"card-open\" aria-label=\"開啟多洛米蒂山間漫遊\">",
+              "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                "button[aria-label=\"開啟台南巷弄小旅行\"]"
+              ],
+              "html": "<button class=\"card-open\" aria-label=\"開啟台南巷弄小旅行\">",
+              "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ]
+    },
+    "planner": {
+      "tool": "4.14.1",
+      "passes": 25,
+      "incomplete": 2,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "html": "<div class=\"nav-heading\">工作空間</div>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "html": "<div class=\"nav-heading\">",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "html": "<span>工作空間</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".wp-active > small"
+              ],
+              "html": "<small>2027-02-01</small>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #667069, background color: #e4eee7, font size: 8.2pt (10.88px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "form": {
+    "nativeRequired": "請填寫這個欄位。",
+    "locale": "zh-TW",
+    "invalidCredentials": "帳號或密碼錯誤。"
+  },
+  "weather": "尚無可用天氣預報",
+  "map": {
+    "tileRequestsAborted": 30,
+    "pins": [
+      {
+        "text": "景",
+        "color": "rgb(34, 130, 100)"
+      },
+      {
+        "text": "餐",
+        "color": "rgb(182, 85, 36)"
+      },
+      {
+        "text": "住",
+        "color": "rgb(134, 87, 154)"
+      }
+    ],
+    "line": {
+      "dash": "6 8",
+      "path": "M428 291L545 102"
+    },
+    "notice": "底圖暫時無法載入。可使用下方景點地址及導航連結。",
+    "places": [
+      "港邊步道港邊步道測試路一號定位",
+      "車站咖啡車站咖啡測試路一號定位",
+      "古城旅館古城旅館測試路一號定位"
+    ],
+    "links": [
+      {
+        "text": "在 Google Maps 搜尋港邊步道",
+        "url": "https://www.google.com/maps/search/?api=1&query=22.62%2C120.29",
+        "target": "_blank"
+      },
+      {
+        "text": "導航至港邊步道",
+        "url": "https://www.google.com/maps/dir/?api=1&destination=22.62%2C120.29",
+        "target": "_blank"
+      },
+      {
+        "text": "在 Google Maps 搜尋車站咖啡",
+        "url": "https://www.google.com/maps/search/?api=1&query=22.635%2C120.3",
+        "target": "_blank"
+      },
+      {
+        "text": "導航至車站咖啡",
+        "url": "https://www.google.com/maps/dir/?api=1&destination=22.635%2C120.3",
+        "target": "_blank"
+      },
+      {
+        "text": "在 Google Maps 搜尋古城旅館",
+        "url": "https://www.google.com/maps/search/?api=1&query=22.63%2C120.28",
+        "target": "_blank"
+      },
+      {
+        "text": "導航至古城旅館",
+        "url": "https://www.google.com/maps/dir/?api=1&destination=22.63%2C120.28",
+        "target": "_blank"
+      }
+    ],
+    "attribution": " Leaflet | © OpenStreetMap contributors",
+    "popupRequests": [
+      "https://www.google.com/maps/search/?api=1&query=22.62%2C120.29",
+      "https://www.google.com/maps/dir/?api=1&destination=22.62%2C120.29"
+    ]
+  },
+  "rwd": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "clientWidth": 320
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "clientWidth": 390
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "clientWidth": 768
+    },
+    {
+      "width": 1280,
+      "scrollWidth": 1280,
+      "clientWidth": 1280
+    }
+  ],
+  "pdf": {
+    "details": {
+      "bytes": 31026,
+      "signature": "%PDF",
+      "printed": "列印或儲存 PDF\nDay 1 · 2027-02-01\n\nAsia/Taipei\n\n09:00　港邊步道\n景點 · Asia/Taipei · 45 分鐘 · 港邊步道測試路一號\n14:00　車站咖啡\n餐飲 · Asia/Taipei · 45 分鐘 · 車站咖啡測試路一號",
+      "includesDay1": true,
+      "includesDay2": false,
+      "includesAddress": true,
+      "includesPrivateNote": false
+    },
+    "brief": {
+      "bytes": 24086,
+      "signature": "%PDF",
+      "printed": "列印或儲存 PDF\nDay 1 · 2027-02-01\n\nAsia/Taipei\n\n09:00　港邊步道\n14:00　車站咖啡",
+      "includesDay1": true,
+      "includesDay2": false,
+      "includesAddress": false,
+      "includesPrivateNote": false
+    }
+  },
+  "offline": {
+    "ready": [
+      "waytogo-art-v1"
+    ],
+    "sw": {
+      "controlling": true,
+      "keys": [
+        {
+          "key": "waytogo-art-v1",
+          "urls": [
+            "/compass.svg",
+            "/icon-192.png",
+            "/icon-512.png",
+            "/art/valley.webp",
+            "/art/kyoto.webp",
+            "/art/alps.webp",
+            "/art/tainan.webp"
+          ]
+        }
+      ]
+    },
+    "error": "Error: page.goto: net::ERR_INTERNET_DISCONNECTED at http://127.0.0.1:18731/?trip=b3e76e4b-a131-42c4-90b2-5a4ce7cb6fa7",
+    "showsItinerary": 0,
+    "online": false,
+    "afterReconnecting": true
+  }
+}

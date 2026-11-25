@@ -1,0 +1,30 @@
+{
+  "PNG": {
+    "upload": 201,
+    "preview": 200,
+    "download": 200,
+    "byte_for_byte_equal": true,
+    "bytes": 79
+  },
+  "JPEG": {
+    "upload": 201,
+    "preview": 200,
+    "download": 200,
+    "byte_for_byte_equal": true,
+    "bytes": 633
+  },
+  "GIF": {
+    "upload": 201,
+    "preview": 200,
+    "download": 200,
+    "byte_for_byte_equal": true,
+    "bytes": 59
+  },
+  "WEBP": {
+    "upload": 201,
+    "preview": 200,
+    "download": 200,
+    "byte_for_byte_equal": true,
+    "bytes": 66
+  }
+}

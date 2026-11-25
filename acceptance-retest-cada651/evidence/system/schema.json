@@ -1,0 +1,1970 @@
+{
+  "alembic_version": {
+    "columns": {
+      "version_num": "VARCHAR(32)"
+    },
+    "pk": [
+      "version_num"
+    ],
+    "foreign": [],
+    "unique": [],
+    "checks": [],
+    "indexes": []
+  },
+  "oauth_attempts": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "state_hash": "VARCHAR(64)",
+      "binding_hash": "VARCHAR(64)",
+      "verifier": "VARCHAR(100)",
+      "nonce": "VARCHAR(100)",
+      "return_to": "VARCHAR(512)",
+      "expires_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [],
+    "unique": [
+      [
+        "state_hash"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "expires_at"
+      ],
+      [
+        "state_hash"
+      ]
+    ]
+  },
+  "auth_identities": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "provider": "VARCHAR(24)",
+      "provider_subject": "VARCHAR(255)"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "provider",
+        "provider_subject"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "provider",
+        "provider_subject"
+      ],
+      [
+        "user_id"
+      ]
+    ]
+  },
+  "creation_keys": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "operation": "VARCHAR(32)",
+      "key": "VARCHAR(128)",
+      "request_hash": "VARCHAR(64)",
+      "resource_id": "VARCHAR(36)"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "user_id",
+        "operation",
+        "key"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "user_id",
+        "operation",
+        "key"
+      ]
+    ]
+  },
+  "sessions": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "token_hash": "VARCHAR(64)",
+      "expires_at": "TIMESTAMP",
+      "revoked_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "token_hash"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "expires_at"
+      ],
+      [
+        "user_id"
+      ],
+      [
+        "token_hash"
+      ]
+    ]
+  },
+  "trips": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "owner_id": "VARCHAR(36)",
+      "title": "VARCHAR(160)",
+      "description": "TEXT",
+      "destinations": "JSON",
+      "cover": "TEXT",
+      "currency": "VARCHAR(3)",
+      "start_date": "DATE",
+      "end_date": "DATE",
+      "status": "VARCHAR(20)",
+      "archived": "BOOLEAN",
+      "deleted_at": "TIMESTAMP",
+      "created_at": "TIMESTAMP",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "owner_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [
+      "end_date IS NULL OR start_date IS NULL OR end_date >= start_date",
+      "status::text = ANY (ARRAY['planning'::character varying, 'confirmed'::character varying, 'traveling'::character varying, 'completed'::character varying]::text[])",
+      "version >= 1"
+    ],
+    "indexes": [
+      [
+        "owner_id"
+      ]
+    ]
+  },
+  "audit_logs": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "actor_id": "VARCHAR(36)",
+      "entity_type": "VARCHAR(48)",
+      "entity_id": "VARCHAR(36)",
+      "action": "VARCHAR(64)",
+      "changes": "JSON",
+      "created_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "actor_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "comments": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "author_id": "VARCHAR(36)",
+      "parent_id": "VARCHAR(36)",
+      "content": "TEXT",
+      "deleted": "BOOLEAN",
+      "created_at": "TIMESTAMP",
+      "updated_at": "TIMESTAMP",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "author_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "parent_id"
+        ],
+        "comments",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "edit_leases": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "resource_type": "VARCHAR(16)",
+      "resource_id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "session_id": "VARCHAR(36)",
+      "expires_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "session_id"
+        ],
+        "sessions",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "resource_type",
+        "resource_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "resource_type",
+        "resource_id"
+      ],
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "invitations": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "token_hash": "VARCHAR(64)",
+      "expires_at": "TIMESTAMP",
+      "revoked_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "token_hash"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "token_hash"
+      ],
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "polls": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "created_by": "VARCHAR(36)",
+      "editable_by": "VARCHAR(36)",
+      "created_at": "TIMESTAMP",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "created_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "editable_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "trip_days": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "day_number": "INTEGER",
+      "title": "VARCHAR(150)",
+      "timezone": "VARCHAR(64)"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "trip_id",
+        "day_number"
+      ]
+    ],
+    "checks": [
+      "day_number >= 1"
+    ],
+    "indexes": [
+      [
+        "trip_id"
+      ],
+      [
+        "trip_id",
+        "day_number"
+      ]
+    ]
+  },
+  "trip_members": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "role": "VARCHAR(10)",
+      "joined_at": "TIMESTAMP",
+      "left_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "trip_id",
+        "user_id"
+      ]
+    ],
+    "checks": [
+      "role::text = ANY (ARRAY['owner'::character varying, 'member'::character varying]::text[])"
+    ],
+    "indexes": [
+      [
+        "trip_id"
+      ],
+      [
+        "user_id",
+        "left_at"
+      ],
+      [
+        "trip_id",
+        "user_id"
+      ]
+    ]
+  },
+  "trip_candidates": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "place_id": "VARCHAR(36)",
+      "status": "VARCHAR",
+      "removed_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "place_id"
+        ],
+        "places",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "place_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "trip_id"
+      ],
+      [
+        "place_id"
+      ]
+    ]
+  },
+  "ballots": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "round_id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "submitted_at": "TIMESTAMP",
+      "version": "INTEGER",
+      "options_version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "round_id"
+        ],
+        "poll_rounds",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "round_id",
+        "user_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "round_id",
+        "user_id"
+      ]
+    ]
+  },
+  "poll_options": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "round_id": "VARCHAR(36)",
+      "option_text": "VARCHAR(180)",
+      "place_id": "VARCHAR(36)",
+      "created_by": "VARCHAR(36)",
+      "ordinal": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "created_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "place_id"
+        ],
+        "places",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "round_id"
+        ],
+        "poll_rounds",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "round_id",
+        "option_text"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "round_id",
+        "option_text"
+      ]
+    ]
+  },
+  "poll_adoptions": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "option_id": "VARCHAR(36)",
+      "day_id": "VARCHAR(36)",
+      "item_id": "VARCHAR(36)"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "day_id"
+        ],
+        "trip_days",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "item_id"
+        ],
+        "itinerary_items",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "option_id"
+        ],
+        "poll_options",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "option_id",
+        "day_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "option_id",
+        "day_id"
+      ]
+    ]
+  },
+  "users": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "account_type": "VARCHAR(12)",
+      "nickname": "VARCHAR(80)",
+      "email": "VARCHAR(320)"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [],
+    "unique": [],
+    "checks": [
+      "account_type::text = ANY (ARRAY['google'::character varying, 'guest'::character varying, 'local_test'::character varying]::text[])"
+    ],
+    "indexes": []
+  },
+  "budgets": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "scope": "VARCHAR(12)",
+      "target": "VARCHAR(80)",
+      "amount_minor": "BIGINT",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "trip_id",
+        "scope",
+        "target"
+      ]
+    ],
+    "checks": [
+      "amount_minor > 0",
+      "scope::text = ANY (ARRAY['trip'::character varying, 'personal'::character varying, 'category'::character varying]::text[])"
+    ],
+    "indexes": [
+      [
+        "trip_id",
+        "scope",
+        "target"
+      ],
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "exchange_rate_snapshots": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "source_currency": "VARCHAR(3)",
+      "base_currency": "VARCHAR(3)",
+      "rate": "VARCHAR(40)",
+      "provider": "VARCHAR(16)",
+      "rate_date": "DATE",
+      "captured_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "finance_ledgers": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "currency": "VARCHAR(3)",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "trip_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "settlements": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "created_by": "VARCHAR(36)",
+      "from_user_id": "VARCHAR(36)",
+      "to_user_id": "VARCHAR(36)",
+      "amount_minor": "BIGINT",
+      "created_at": "TIMESTAMP",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "created_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "from_user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "to_user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [
+      "amount_minor > 0 AND from_user_id::text <> to_user_id::text"
+    ],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "expenses": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "created_by": "VARCHAR(36)",
+      "title": "VARCHAR(160)",
+      "category": "VARCHAR(80)",
+      "kind": "VARCHAR(10)",
+      "split_mode": "VARCHAR(10)",
+      "currency": "VARCHAR(3)",
+      "amount_minor": "BIGINT",
+      "base_minor": "BIGINT",
+      "rate_id": "VARCHAR(36)",
+      "incurred_on": "DATE",
+      "created_at": "TIMESTAMP",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "created_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "rate_id"
+        ],
+        "exchange_rate_snapshots",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [
+      "amount_minor > 0 AND base_minor >= 0",
+      "kind::text = ANY (ARRAY['actual'::character varying, 'estimate'::character varying]::text[])",
+      "split_mode::text = ANY (ARRAY['equal'::character varying, 'custom'::character varying, 'ratio'::character varying]::text[])"
+    ],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "expense_payers": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "expense_id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "amount_minor": "BIGINT",
+      "base_minor": "BIGINT"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "expense_id"
+        ],
+        "expenses",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "expense_id",
+        "user_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "expense_id",
+        "user_id"
+      ],
+      [
+        "expense_id"
+      ]
+    ]
+  },
+  "expense_splits": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "expense_id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "amount_minor": "BIGINT",
+      "base_minor": "BIGINT",
+      "weight": "VARCHAR(32)"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "expense_id"
+        ],
+        "expenses",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "expense_id",
+        "user_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "expense_id",
+        "user_id"
+      ],
+      [
+        "expense_id"
+      ]
+    ]
+  },
+  "poll_rounds": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "poll_id": "VARCHAR(36)",
+      "number": "INTEGER",
+      "title": "VARCHAR(180)",
+      "kind": "VARCHAR(12)",
+      "mode": "VARCHAR(12)",
+      "deadline": "TIMESTAMP",
+      "closed_at": "TIMESTAMP",
+      "options_version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "poll_id"
+        ],
+        "polls",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "poll_id",
+        "number"
+      ]
+    ],
+    "checks": [
+      "mode::text = ANY (ARRAY['single'::character varying, 'multiple'::character varying, 'rating'::character varying, 'ranked'::character varying]::text[])",
+      "kind::text = ANY (ARRAY['place'::character varying, 'date'::character varying]::text[])"
+    ],
+    "indexes": [
+      [
+        "poll_id",
+        "number"
+      ]
+    ]
+  },
+  "ballot_choices": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "ballot_id": "VARCHAR(36)",
+      "option_id": "VARCHAR(36)",
+      "value": "INTEGER",
+      "rank": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "ballot_id"
+        ],
+        "ballots",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "option_id"
+        ],
+        "poll_options",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "ballot_id",
+        "option_id"
+      ]
+    ],
+    "checks": [
+      "rank >= 1 AND rank <= 60",
+      "value >= 1 AND value <= 5"
+    ],
+    "indexes": [
+      [
+        "ballot_id",
+        "option_id"
+      ]
+    ]
+  },
+  "availability_entries": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "start_date": "DATE",
+      "end_date": "DATE",
+      "status": "VARCHAR(8)",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [
+      "end_date >= start_date",
+      "status::text = ANY (ARRAY['yes'::character varying, 'maybe'::character varying, 'no'::character varying]::text[])",
+      "version >= 1"
+    ],
+    "indexes": [
+      [
+        "trip_id",
+        "user_id",
+        "start_date",
+        "end_date"
+      ]
+    ]
+  },
+  "itinerary_items": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "day_id": "VARCHAR(36)",
+      "place_id": "VARCHAR(36)",
+      "created_by": "VARCHAR(36)",
+      "editable_by": "VARCHAR(36)",
+      "title": "VARCHAR(150)",
+      "item_type": "VARCHAR",
+      "position": "INTEGER",
+      "start_time": "VARCHAR(5)",
+      "end_time": "VARCHAR(5)",
+      "duration": "INTEGER",
+      "notes": "VARCHAR",
+      "version": "INTEGER",
+      "timezone": "VARCHAR(64)",
+      "deleted_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "created_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "day_id"
+        ],
+        "trip_days",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "editable_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "place_id"
+        ],
+        "places",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [
+      "\"position\" >= 0",
+      "version > 0"
+    ],
+    "indexes": [
+      [
+        "day_id"
+      ],
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "entity_revisions": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "actor_id": "VARCHAR(36)",
+      "kind": "VARCHAR(12)",
+      "resource_id": "VARCHAR(36)",
+      "version": "INTEGER",
+      "snapshot": "JSON",
+      "created_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "actor_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "kind",
+        "resource_id",
+        "version"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "kind",
+        "resource_id",
+        "version"
+      ],
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "notification_preferences": {
+    "columns": {
+      "user_id": "VARCHAR(36)",
+      "mentions": "BOOLEAN",
+      "push": "BOOLEAN",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "user_id"
+    ],
+    "foreign": [
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [],
+    "indexes": []
+  },
+  "push_subscriptions": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "session_id": "VARCHAR(36)",
+      "endpoint_hash": "VARCHAR(64)",
+      "endpoint": "TEXT"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "session_id"
+        ],
+        "sessions",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "endpoint_hash"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "session_id"
+      ],
+      [
+        "endpoint_hash"
+      ]
+    ]
+  },
+  "notifications": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "comment_id": "VARCHAR(36)",
+      "actor_id": "VARCHAR(36)",
+      "read_at": "TIMESTAMP",
+      "created_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "actor_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "comment_id"
+        ],
+        "comments",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "user_id",
+        "comment_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "trip_id"
+      ],
+      [
+        "user_id"
+      ],
+      [
+        "user_id",
+        "comment_id"
+      ]
+    ]
+  },
+  "bookings": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "created_by": "VARCHAR(36)",
+      "kind": "VARCHAR(8)",
+      "title": "VARCHAR(160)",
+      "status": "VARCHAR(12)",
+      "currency": "VARCHAR(3)",
+      "price": "NUMERIC(16, 4)",
+      "reference": "VARCHAR(100)",
+      "website": "TEXT",
+      "segments": "JSON",
+      "stay": "JSON",
+      "item_id": "VARCHAR(36)",
+      "created_at": "TIMESTAMP",
+      "version": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "created_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "item_id"
+        ],
+        "itinerary_items",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [
+      "kind::text = ANY (ARRAY['flight'::character varying, 'stay'::character varying]::text[])",
+      "price IS NULL OR price >= 0::numeric",
+      "status::text = ANY (ARRAY['planned'::character varying, 'booked'::character varying, 'cancelled'::character varying]::text[])",
+      "version >= 1"
+    ],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "task_assignees": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "task_id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)",
+      "state": "VARCHAR(8)"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "task_id"
+        ],
+        "tasks",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "task_id",
+        "user_id"
+      ]
+    ],
+    "checks": [
+      "state::text = ANY (ARRAY['todo'::character varying, 'doing'::character varying, 'done'::character varying]::text[])"
+    ],
+    "indexes": [
+      [
+        "task_id"
+      ],
+      [
+        "task_id",
+        "user_id"
+      ]
+    ]
+  },
+  "account_merges": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "guest_id": "VARCHAR(36)",
+      "account_id": "VARCHAR(36)",
+      "created_at": "TIMESTAMP",
+      "history": "JSON"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "account_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "guest_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "guest_id"
+      ]
+    ],
+    "checks": [
+      "guest_id::text <> account_id::text"
+    ],
+    "indexes": [
+      [
+        "guest_id"
+      ],
+      [
+        "account_id"
+      ]
+    ]
+  },
+  "files": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "owner_id": "VARCHAR(36)",
+      "filename": "VARCHAR(180)",
+      "mime": "VARCHAR(127)",
+      "category": "VARCHAR(64)",
+      "size": "INTEGER",
+      "private": "BOOLEAN",
+      "data": "BYTEA",
+      "preview_text": "VARCHAR",
+      "version": "INTEGER",
+      "created_at": "TIMESTAMP",
+      "removed_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "owner_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [
+      "size > 0 AND version >= 1"
+    ],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "file_permissions": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "file_id": "VARCHAR(36)",
+      "user_id": "VARCHAR(36)"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "file_id"
+        ],
+        "files",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "user_id"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "file_id",
+        "user_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "file_id",
+        "user_id"
+      ],
+      [
+        "file_id"
+      ]
+    ]
+  },
+  "file_links": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "file_id": "VARCHAR(36)",
+      "kind": "VARCHAR(16)",
+      "target_id": "VARCHAR(36)"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "file_id"
+        ],
+        "files",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "file_id",
+        "kind",
+        "target_id"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "file_id",
+        "kind",
+        "target_id"
+      ],
+      [
+        "file_id"
+      ],
+      [
+        "target_id"
+      ]
+    ]
+  },
+  "tasks": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "created_by": "VARCHAR(36)",
+      "scope": "VARCHAR(10)",
+      "priority": "VARCHAR(10)",
+      "title": "VARCHAR(160)",
+      "description": "TEXT",
+      "due_date": "DATE",
+      "place_id": "VARCHAR(36)",
+      "item_id": "VARCHAR(36)",
+      "version": "INTEGER",
+      "created_at": "TIMESTAMP",
+      "recurrence": "VARCHAR(12)",
+      "period": "INTEGER"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "created_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "item_id"
+        ],
+        "itinerary_items",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "place_id"
+        ],
+        "places",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [
+      "priority::text = ANY (ARRAY['low'::character varying, 'normal'::character varying, 'high'::character varying]::text[])",
+      "scope::text = ANY (ARRAY['shared'::character varying, 'personal'::character varying]::text[])",
+      "version >= 1"
+    ],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  },
+  "task_occurrences": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "task_id": "VARCHAR(36)",
+      "period": "INTEGER",
+      "due_date": "DATE",
+      "progress": "JSON",
+      "completed_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "task_id"
+        ],
+        "tasks",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [
+      [
+        "task_id",
+        "period"
+      ]
+    ],
+    "checks": [],
+    "indexes": [
+      [
+        "task_id"
+      ],
+      [
+        "task_id",
+        "period"
+      ]
+    ]
+  },
+  "places": {
+    "columns": {
+      "id": "VARCHAR(36)",
+      "trip_id": "VARCHAR(36)",
+      "created_by": "VARCHAR(36)",
+      "editable_by": "VARCHAR(36)",
+      "name": "VARCHAR(150)",
+      "address": "VARCHAR",
+      "latitude": "DOUBLE PRECISION",
+      "longitude": "DOUBLE PRECISION",
+      "country": "VARCHAR",
+      "city": "VARCHAR",
+      "category": "VARCHAR",
+      "tags": "JSON",
+      "duration": "INTEGER",
+      "cost": "NUMERIC(14, 2)",
+      "opening_hours": "VARCHAR",
+      "website": "VARCHAR",
+      "photo_url": "VARCHAR",
+      "notes": "VARCHAR",
+      "version": "INTEGER",
+      "created_at": "TIMESTAMP",
+      "updated_at": "TIMESTAMP",
+      "deleted_at": "TIMESTAMP"
+    },
+    "pk": [
+      "id"
+    ],
+    "foreign": [
+      [
+        [
+          "created_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "editable_by"
+        ],
+        "users",
+        [
+          "id"
+        ]
+      ],
+      [
+        [
+          "trip_id"
+        ],
+        "trips",
+        [
+          "id"
+        ]
+      ]
+    ],
+    "unique": [],
+    "checks": [
+      "(latitude IS NULL) = (longitude IS NULL)",
+      "latitude >= '-90'::integer::double precision AND latitude <= 90::double precision AND longitude >= '-180'::integer::double precision AND longitude <= 180::double precision",
+      "version > 0"
+    ],
+    "indexes": [
+      [
+        "trip_id"
+      ]
+    ]
+  }
+}

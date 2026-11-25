@@ -1,0 +1,6 @@
+Clean Chrome profile, registered product sw.js, ephemeral VAPID key; {
+  permission: 'granted',
+  subscribed: false,
+  error: 'AbortError',
+  message: 'Registration failed - permission denied'
+}

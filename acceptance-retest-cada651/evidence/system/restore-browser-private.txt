@@ -1,0 +1,4 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source
+command=D:\WayToGo\.local\docker-compose-v2.exe --project-directory D:\WayToGo\.local\acceptance-retest-cada651\source -f D:\WayToGo\.local\acceptance-retest-cada651\source\compose.yaml -p wtgrerunbe5550cd53 exec -T db psql -XqAt -U waytogo -d restore_e3a43116dd -v ON_ERROR_STOP=1
+
+exit=0 elapsed=0.38s

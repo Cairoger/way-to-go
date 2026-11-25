@@ -1,0 +1,4 @@
+cwd=D:\WayToGo
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\acceptance-retest-cada651\evidence\browser\pdf-private.cjs D:\WayToGo\.local\acceptance-retest-cada651\pg-ui.json
+
+exit=0 elapsed=4.97s

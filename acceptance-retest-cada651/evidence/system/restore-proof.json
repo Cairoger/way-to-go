@@ -1,0 +1,9 @@
+{
+  "tables": 42,
+  "same_after_restore": true,
+  "same_after_container_recreation": true,
+  "diverged": [],
+  "dump_size": 199771,
+  "dump_sha256": "2337e81fc08078a936131c3d598b7057c2c56c2f4dd447232f4e516d7f1454a7",
+  "content_acl_probe": "restored private browser-uploaded PNG, size, bytes, hash, visibility and booking link checked by deploy/verify-restore-browser.sql"
+}

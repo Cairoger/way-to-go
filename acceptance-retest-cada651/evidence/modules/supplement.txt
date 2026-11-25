@@ -1,0 +1,58 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source\backend
+command=D:\WayToGo\.venv\Scripts\python.exe -m pytest -p no:cacheprovider -p conftest -vv -s --tb=short D:\WayToGo\acceptance-retest-cada651\evidence\modules\test_module_probes.py D:\WayToGo\acceptance-retest-cada651\evidence\modules\test_cross_checks.py D:\WayToGo\acceptance-retest-cada651\evidence\modules\test_own_comments.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- D:\WayToGo\.venv\Scripts\python.exe
+rootdir: D:\WayToGo
+plugins: anyio-4.16.0
+collecting ... collected 12 items
+
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_four_kind_mode_combinations_and_options date single member-created; owner-voted; cross-author option 200
+date multiple member-created; owner-voted; cross-author option 200
+place single member-created; owner-voted; cross-author option 200
+place multiple member-created; owner-voted; cross-author option 200
+member added option on owner-created poll 200
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_poll_creator_lifecycle_and_no_deadline edit, close, delete 200 200 200 open after 60 simulated days
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_availability_is_independent PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_task_all_fields_links_and_repeat recurrence, attachment fields 201 201
+FAILED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_booking_complete_fields_and_links flight attributes persisted, two stays linked to itinerary; website changed 200
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_split_multiple_payers_and_subset persisted payers 2 participants 1
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_file_contract_and_comment_images FAILED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_audit_origins audit rows (no identity values) [('trip', 'create'), ('invitation', 'create'), ('membership', 'join'), ('comment', 'comment.created'), ('task', 'create')]
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_cross_checks.py::test_closing_poll_preserves_existing_items_until_manual_adoption before manual adoption: original row only; after: two distinct IDs; after reopen: prior result preserved, new round mode editable
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_cross_checks.py::test_iana_dst_gap_round_trip nonexistent local wall time rejected
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_own_comments.py::test_delete_own_comment_preserves_reply[Owner] Owner created own parent=201, peer reply=201, DELETE by author=200, both GET=200; tombstone=true, parent content empty, version 1->2, original author retained, peer reply preserved with same parent ID
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\modules\test_own_comments.py::test_delete_own_comment_preserves_reply[Member] Member created own parent=201, peer reply=201, DELETE by author=200, both GET=200; tombstone=true, parent content empty, version 1->2, original author retained, peer reply preserved with same parent ID
+PASSED
+
+================================== FAILURES ===================================
+____________________ test_task_all_fields_links_and_repeat ____________________
+D:\WayToGo\acceptance-retest-cada651\evidence\modules\test_module_probes.py:71: in test_task_all_fields_links_and_repeat
+    assert repeat.status_code == attach.status_code == 422
+E   assert 201 == 422
+E    +  where 201 = <Response [201 Created]>.status_code
+____________________ test_file_contract_and_comment_images ____________________
+D:\WayToGo\acceptance-retest-cada651\evidence\modules\test_module_probes.py:112: in test_file_contract_and_comment_images
+    assert not declared
+E   AssertionError: assert not ['/api/v1/trips/{trip_id}/files', '/api/v1/trips/{trip_id}/files/limits', '/api/v1/files/{file_id}/download', '/api/v1/files/{file_id}/preview', '/api/v1/files/{file_id}', '/api/v1/files/{file_id}/restore']
+============================== warnings summary ===============================
+..\..\..\..\.venv\Lib\site-packages\fastapi\testclient.py:1
+  D:\WayToGo\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_task_all_fields_links_and_repeat - assert 201 == 422
+ +  where 201 = <Response [201 Created]>.status_code
+FAILED ..\..\..\..\acceptance-retest-cada651\evidence\modules\test_module_probes.py::test_file_contract_and_comment_images - AssertionError: assert not ['/api/v1/trips/{trip_id}/files', '/api/v1/trips/{trip_id}/files/limits', '/api/v1/files/{file_id}/download', '/api/v1/files/{file_id}/preview', '/api/v1/files/{file_id}', '/api/v1/files/{file_id}/restore']
+=================== 2 failed, 10 passed, 1 warning in 6.26s ===================
+
+exit=1 elapsed=9.32s

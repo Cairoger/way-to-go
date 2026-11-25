@@ -1,0 +1,26 @@
+MARIONETTE {"browserName": "firefox", "browserVersion": "161.0", "platformName": "windows", "moz:headless": true}
+CREATE_WITH_TITLE PASS
+SESSION_RELOAD PASS
+CREATE_ITINERARY_RELOAD PASS
+Fresh Firefox tab, previous tab closed, saved via UI, controller= False TCP unreachable
+offline_readonly= True activity= True excerpt= WayToGo 旅伴手札
+離線唯讀
+Firefox 正式版 1795618520
+
+日期待定
+
+儲存於 2026/11/25 下午10:55:23
+第 1 天 · Asia/Taipei
+正式版實際活動
+
+建議 09:00 · Asia/Taipei
+
+已儲存的旅程 · 重新連線
+Traceback (most recent call last):
+  File "D:\WayToGo\acceptance-retest-cada651\evidence\core\firefox-offline.py", line 183, in <module>
+    if __name__=="__main__": run()
+                             ^^^^^
+  File "D:\WayToGo\acceptance-retest-cada651\evidence\core\firefox-offline.py", line 170, in run
+    assert controlled and "離線唯讀" in body and "正式版實際活動" in body
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

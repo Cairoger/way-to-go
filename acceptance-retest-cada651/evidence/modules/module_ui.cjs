@@ -1,0 +1,88 @@
+// Run against the disposable backend/frontend started for this audit; never send mail.
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const {chromium} = require(path.resolve('frontend/node_modules/@playwright/test'));
+const settings = JSON.parse(fs.readFileSync(process.argv[2],'utf8').replace(/^\uFEFF/,''));
+if (new URL(settings.origin).hostname !== '127.0.0.1') throw new Error('Isolated loopback origin required');
+const headers = {'X-Requested-With':'WayToGo','Origin':settings.origin};
+const button = (page, name) => page.getByRole('button',{name,exact:true});
+async function request(context, method, url, data) {
+  const response=await context.request.fetch('/api/v1'+url,{method,headers,data});
+  assert.ok(response.ok(), method+' '+url+' '+response.status());
+  return response.status()===204 ? null : await response.json();
+}
+(async () => {
+  const browser=await chromium.launch({executablePath: process.env.CHROME_EXECUTABLE || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless:true});
+  try{
+    const owner=await browser.newContext({baseURL:settings.origin,locale:'zh-TW'});
+    const guest=await browser.newContext({baseURL:settings.origin,locale:'zh-TW'});
+    await request(owner,'POST','/auth/local-test',{username:settings.username,password:settings.password});
+    const trip=await request(owner,'POST','/trips',{title:'模組驗收 '+Date.now()});
+    const root='/trips/'+trip.id;
+    const invite=await request(owner,'POST',root+'/invitations',{});
+    await request(guest,'POST','/auth/guest',{code:invite.code,nickname:'合作旅伴'});
+    const [op,gp]=await Promise.all([owner.newPage(),guest.newPage()]);
+    for(const p of [op,gp]) p.setDefaultTimeout(12000);
+    await Promise.all([op.goto('/?trip='+trip.id),gp.goto('/?trip='+trip.id)]);
+    await op.getByText('尚無可用天氣預報',{exact:true}).waitFor();
+    console.log('WEATHER-02 UI without dated location: 尚無可用天氣預報');
+    const base={kind:'place',mode:'single',options:[{text:'車站'},{text:'博物館'}]};
+    const empty=await request(owner,'POST',root+'/polls',{...base,title:'零票展示'});
+    await request(owner,'POST','/polls/'+empty.id+'/close',{version:empty.version});
+    const poll=await request(owner,'POST',root+'/polls',{...base,title:'重新檢查選票'});
+    await button(gp,'投票').click();
+    await gp.getByText('無結果，本輪未收到選票。',{exact:true}).waitFor();
+    const card=gp.locator('article').filter({has:gp.getByRole('heading',{name:'重新檢查選票'})});
+    await card.getByRole('radio').first().check();
+    await card.locator('form').first().getByRole('button').last().click();
+    await gp.getByText('已儲存你的選票',{exact:true}).waitFor();
+    await request(owner,'POST','/polls/'+poll.id+'/options',{version:poll.version,text:'新增港口'});
+    await card.getByText('旅伴新增了選項，請重新檢視並儲存你的選票。',{exact:true}).waitFor();
+    await gp.screenshot({path:path.join(__dirname,'poll-review.png')});
+    console.log('VOTE-08 zero-result label; review message appeared in voting member browser after a different user added option');
+    await button(op,'旅伴').click();
+    await button(op,'產生邀請').click();
+    const mail=await op.getByRole('link',{name:'用 Email 邀請'}).getAttribute('href');
+    const body=new URL(mail).searchParams.get('body');
+    assert.ok(mail.startsWith('mailto:')&&body.includes('邀請碼：')&&body.includes(settings.origin));
+    console.log('NOTIFY-03 mailto link contains local origin, trip name and invitation code; no mail sent');
+    await request(owner,'POST',root+'/bookings',{kind:'stay',title:'測試旅館',website:'https://example.org/booking',stay:{check_in:'2027-06-03',check_out:'2027-06-05',room:'雙人房',address:'台北車站'}});
+    await button(op,'交通與住宿').click();
+    await button(op,'住宿').click();
+    const external=await op.getByRole('link',{name:'外部預訂資訊'}).getAttribute('href');
+    const navigation=await op.getByRole('link',{name:'台北車站'}).getAttribute('href');
+    assert.equal(external,'https://example.org/booking');
+    assert.equal(new URL(navigation).searchParams.get('destination'),'台北車站');
+    console.log('BOOK-06 external booking href and Google Maps destination matched persisted data');
+    await op.getByRole('button',{name:/通知中心/}).click();
+    const reasons=await op.getByRole('dialog').innerText();
+    console.log('NOTIFY-02',reasons.match(/此瀏覽器目前無法接收推播。|此站台尚未設定瀏覽器推播。|啟用這台裝置的推播/)?.[0],await op.evaluate(()=>({secure:window.isSecureContext,push:'PushManager' in window,worker:'serviceWorker' in navigator})));
+    const date='2026-11-25';
+    const days=await request(owner,'GET',root+'/days');
+    const place=await request(owner,'POST',root+'/places',{name:'台北測站',latitude:25.03,longitude:121.56});
+    await request(owner,'PATCH',root,{version:trip.version,start_date:date});
+    await request(owner,'POST','/days/'+days[0].id+'/items',{place_id:place.id,title:'到台北測站'});
+    // Replay only the provider-backed response recorded in providers-network.txt, to verify React rendering.
+    await op.route('**/api/v1/days/*/weather',r=>r.fulfill({json:{available:true,place:'台北測站',code:51,min:15.8,max:19.7,rain:31}}));
+    await op.goto('/?trip='+trip.id);
+    await op.getByText(/台北測站 · 毛毛雨 · 15.8–19.7 °C · 降雨 31%/).waitFor();
+    console.log('WEATHER-01 UI (weather HTTP replay only): 台北測站 · 毛毛雨 · 15.8–19.7 °C · 降雨 31%');
+    await op.screenshot({path:path.join(__dirname,'weather.png')});
+    await owner.setOffline(true);
+    const offlineTitle='無網路時的活動';
+    await button(op,'新增活動').click();
+    const form=op.getByRole('dialog',{name:'新增活動'});
+    await form.getByLabel('活動名稱').fill(offlineTitle);
+    await button(form,'儲存活動').click();
+    await form.getByRole('alert').waitFor();
+    const message=await form.getByRole('alert').innerText();
+    await owner.setOffline(false);
+    await op.reload();
+    await op.getByRole('heading',{name:'到台北測站'}).waitFor();
+    const savedDays=await request(owner,'GET',root+'/days');
+    assert.ok(savedDays.every(day=>day.items.every(item=>item.title!==offlineTitle)));
+    console.log('OFFLINE-02 attempted save while offline; alert',message,'; after reconnect and reload draft absent in API');
+    console.log('Browser',browser.version());
+  } finally { await browser.close(); }
+})().catch(e=>{console.error(e.message);process.exitCode=1});

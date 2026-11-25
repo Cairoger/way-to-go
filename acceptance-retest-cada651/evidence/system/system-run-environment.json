@@ -1,0 +1,19 @@
+{
+  "platform": "Windows-11-10.0.22631-SP0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "packages": {
+    "fastapi": "0.165.0",
+    "sqlalchemy": "2.0.58",
+    "psycopg": "3.3.9",
+    "alembic": "1.20.1",
+    "pytest": "9.2.0",
+    "websockets": "17.4",
+    "starlette": "1.10.0",
+    "anyio": "4.16.0",
+    "httpx": "0.28.1"
+  },
+  "spec_sha256": "40d4681ff59734558d220dce5ce54eb9f7366ff46aa4978f51609ac0d0242376",
+  "cwd": "D:\\WayToGo",
+  "tracked_modified": 0,
+  "untracked_source": 0
+}

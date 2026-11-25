@@ -1,0 +1,18 @@
+{
+  "count": 436,
+  "failedP0": [
+    "FR-PLACE-07",
+    "FR-COMMENT-03"
+  ],
+  "matches": 7,
+  "pics": [
+    1100,
+    974,
+    390
+  ],
+  "viewport": {
+    "width": 390,
+    "scroll": 390
+  },
+  "errors": []
+}

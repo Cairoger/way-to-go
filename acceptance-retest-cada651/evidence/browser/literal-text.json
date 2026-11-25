@@ -1,0 +1,22 @@
+{
+  "itinerary": {
+    "literalFound": true,
+    "emDescendants": 0
+  },
+  "comment": {
+    "literalFound": true,
+    "emDescendants": 0
+  },
+  "leaflet_popup": {
+    "literalFound": true,
+    "emDescendants": 0
+  },
+  "print_view": {
+    "literalFound": true,
+    "emDescendants": 0
+  },
+  "saved_offline": {
+    "literalFound": true,
+    "emDescendants": 0
+  }
+}

@@ -1,0 +1,5 @@
+Command: C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\.local\audit-ui-20261125\web\node_modules\next\dist\bin\next typegen
+Generating route types...
+✓ Types generated successfully
+
+Exit: 0

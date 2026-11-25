@@ -1,0 +1,11 @@
+ Network backupqa23096592a436_default  Creating
+ Network backupqa23096592a436_default  Created
+Backup ready: 20261125T145330Z
+WARNING: less than 512 MiB available in /backup
+Requested interval: 86400
+scheduled stop: 42
+Expired removed; recent retained; files:
+waytogo-20261125T145330Z.dump
+waytogo-recent.dump
+
+exit=0

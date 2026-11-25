@@ -1,0 +1,37 @@
+{
+  "/": {
+    "status": 200,
+    "bytes": 24398,
+    "type": "text/html; charset=utf-8"
+  },
+  "/docs": {
+    "status": 200,
+    "bytes": 1023,
+    "type": "text/html; charset=utf-8"
+  },
+  "/openapi.json": {
+    "status": 200,
+    "bytes": 86136,
+    "type": "application/json"
+  },
+  "/health": {
+    "status": 200,
+    "bytes": 15,
+    "type": "application/json"
+  },
+  "/manifest.webmanifest": {
+    "status": 200,
+    "bytes": 334,
+    "type": "application/manifest+json"
+  },
+  "/offline.html": {
+    "status": 200,
+    "bytes": 728,
+    "type": "text/html; charset=UTF-8"
+  },
+  "/sw.js": {
+    "status": 200,
+    "bytes": 2758,
+    "type": "application/javascript; charset=UTF-8"
+  }
+}

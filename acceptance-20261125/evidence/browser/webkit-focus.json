@@ -1,0 +1,27 @@
+{
+  "reloadRealLogin": true,
+  "before": {
+    "badge": "通知中心",
+    "visibility": {
+      "visibility": "visible",
+      "hasFocus": true
+    }
+  },
+  "afterSubmit": {
+    "badge": "通知中心，1 則未讀",
+    "visibility": {
+      "visibility": "visible",
+      "hasFocus": true
+    },
+    "storedUnread": 1
+  },
+  "afterFocus": {
+    "badge": "通知中心，1 則未讀",
+    "visibility": {
+      "visibility": "visible",
+      "hasFocus": true
+    }
+  },
+  "stage": "see mention",
+  "deadline": "70 s diagnostic deadline at see mention"
+}

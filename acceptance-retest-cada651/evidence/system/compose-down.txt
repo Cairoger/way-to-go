@@ -1,0 +1,32 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source
+command=D:\WayToGo\.local\docker-compose-v2.exe --project-directory D:\WayToGo\.local\acceptance-retest-cada651\source -f D:\WayToGo\.local\acceptance-retest-cada651\source\compose.yaml -p wtgrerunbe5550cd53 down --volumes --rmi local
+ Container wtgrerunbe5550cd53-backup-1  Stopping
+ Container wtgrerunbe5550cd53-web-1  Stopping
+ Container wtgrerunbe5550cd53-web-1  Stopped
+ Container wtgrerunbe5550cd53-web-1  Removing
+ Container wtgrerunbe5550cd53-web-1  Removed
+ Container wtgrerunbe5550cd53-frontend-1  Stopping
+ Container wtgrerunbe5550cd53-frontend-1  Stopped
+ Container wtgrerunbe5550cd53-frontend-1  Removing
+ Container wtgrerunbe5550cd53-frontend-1  Removed
+ Container wtgrerunbe5550cd53-backup-1  Stopped
+ Container wtgrerunbe5550cd53-backup-1  Removing
+ Container wtgrerunbe5550cd53-backup-1  Removed
+ Container wtgrerunbe5550cd53-api-1  Stopping
+ Container wtgrerunbe5550cd53-api-1  Stopped
+ Container wtgrerunbe5550cd53-api-1  Removing
+ Container wtgrerunbe5550cd53-api-1  Removed
+ Container wtgrerunbe5550cd53-db-1  Stopping
+ Container wtgrerunbe5550cd53-db-1  Stopped
+ Container wtgrerunbe5550cd53-db-1  Removing
+ Container wtgrerunbe5550cd53-db-1  Removed
+ Image wtgrerunbe5550cd53-api:latest  Removing
+ Image wtgrerunbe5550cd53-frontend:latest  Removing
+ Volume wtgrerunbe5550cd53_db-data  Removing
+ Network wtgrerunbe5550cd53_default  Removing
+ Volume wtgrerunbe5550cd53_db-data  Removed
+ Image wtgrerunbe5550cd53-frontend:latest  Removed
+ Image wtgrerunbe5550cd53-api:latest  Removed
+ Network wtgrerunbe5550cd53_default  Removed
+
+exit=0 elapsed=5.07s

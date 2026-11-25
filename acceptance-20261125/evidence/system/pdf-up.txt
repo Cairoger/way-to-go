@@ -1,0 +1,163 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.15kB 0.0s done
+#1 DONE 0.0s
+
+#2 [frontend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 763B done
+#2 DONE 0.0s
+
+#3 [api internal] load build definition from Dockerfile
+#3 transferring dockerfile: 486B done
+#3 DONE 0.0s
+
+#4 [api internal] load metadata for docker.io/library/python:3.12-slim
+#4 ...
+
+#5 [frontend internal] load metadata for docker.io/library/node:24-alpine
+#5 DONE 0.8s
+
+#6 [frontend internal] load .dockerignore
+#6 transferring context: 130B done
+#6 DONE 0.0s
+
+#7 [frontend build 1/7] FROM docker.io/library/node:24-alpine@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5
+#7 resolve docker.io/library/node:24-alpine@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5 0.0s done
+#7 DONE 0.0s
+
+#8 [frontend internal] load build context
+#8 transferring context: 1.05MB 0.1s done
+#8 DONE 0.1s
+
+#9 [frontend build 2/7] WORKDIR /app
+#9 CACHED
+
+#10 [frontend build 6/7] COPY . .
+#10 CACHED
+
+#11 [frontend build 3/7] RUN npm install -g pnpm@11.25.0
+#11 CACHED
+
+#12 [frontend build 4/7] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#12 CACHED
+
+#13 [frontend build 5/7] RUN pnpm install --frozen-lockfile
+#13 CACHED
+
+#14 [frontend build 7/7] RUN pnpm build
+#14 CACHED
+
+#15 [frontend runtime 3/5] COPY --from=build --chown=node:node /app/.next/standalone ./
+#15 CACHED
+
+#16 [frontend runtime 4/5] COPY --from=build --chown=node:node /app/.next/static ./.next/static
+#16 CACHED
+
+#17 [frontend runtime 5/5] COPY --from=build --chown=node:node /app/public ./public
+#17 CACHED
+
+#18 [frontend] exporting to image
+#18 exporting layers done
+#18 exporting manifest sha256:d0002a0267b2b412ac91ead116bbd8d544fa68b6eb4816b206116c34c0566700 0.0s done
+#18 exporting config sha256:7c9c0ab580662e7144d4dc4223518054a8916972772114840fea25accb36a891 0.0s done
+#18 exporting attestation manifest sha256:0c4a47875c558b718664e435dc43344075a19900f912527f0dfd99b3d87cb325 0.0s done
+#18 exporting manifest list sha256:f04c53a86c03f0f809d35fa79491c6968b233937904b7c7db0615f8f0f554ae1 0.0s done
+#18 naming to docker.io/library/wtgui09f105dc6b3ed747-frontend:latest
+#18 naming to docker.io/library/wtgui09f105dc6b3ed747-frontend:latest done
+#18 unpacking to docker.io/library/wtgui09f105dc6b3ed747-frontend:latest
+#18 unpacking to docker.io/library/wtgui09f105dc6b3ed747-frontend:latest 0.6s done
+#18 DONE 0.6s
+
+#19 [frontend] resolving provenance for metadata file
+#19 DONE 0.0s
+
+#4 [api internal] load metadata for docker.io/library/python:3.12-slim
+#4 DONE 1.8s
+
+#20 [api internal] load .dockerignore
+#20 transferring context: 121B 0.0s done
+#20 DONE 0.0s
+
+#21 [api internal] load build context
+#21 transferring context: 258.71kB 0.1s done
+#21 DONE 0.1s
+
+#22 [api 1/7] FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b
+#22 resolve docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b 0.0s done
+#22 DONE 0.0s
+
+#23 [api 5/7] COPY app ./app
+#23 CACHED
+
+#24 [api 6/7] COPY migrations ./migrations
+#24 CACHED
+
+#25 [api 3/7] COPY requirements.txt .
+#25 CACHED
+
+#26 [api 4/7] RUN pip install --no-cache-dir -r requirements.txt && useradd --create-home appuser
+#26 CACHED
+
+#27 [api 2/7] WORKDIR /app
+#27 CACHED
+
+#28 [api 7/7] COPY alembic.ini seed_demo.py ./
+#28 CACHED
+
+#29 [api] exporting to image
+#29 exporting layers done
+#29 exporting manifest sha256:0b7cb8ec259b3b228e40f13b3821d5d67a52770aa29dd74d25aa4d9d84736299 0.0s done
+#29 exporting config sha256:874f601a57b30054cec71560e198c19037ba98be66a1b6bf552f8b8129a1837f 0.0s done
+#29 exporting attestation manifest sha256:57bdf7a818ed39d24a21049aeb0bf2227ae5ab95af9401a19efec2d6eb075fd6
+#29 exporting attestation manifest sha256:57bdf7a818ed39d24a21049aeb0bf2227ae5ab95af9401a19efec2d6eb075fd6 0.0s done
+#29 exporting manifest list sha256:c83a05267ae09c258c4ee38ccbbd1af064465ae5c654b890801a65ade2c60583 0.0s done
+#29 naming to docker.io/library/wtgui09f105dc6b3ed747-api:latest done
+#29 unpacking to docker.io/library/wtgui09f105dc6b3ed747-api:latest
+#29 unpacking to docker.io/library/wtgui09f105dc6b3ed747-api:latest 2.0s done
+#29 DONE 2.1s
+
+#30 [api] resolving provenance for metadata file
+#30 DONE 0.0s
+ wtgui09f105dc6b3ed747-api  Built
+ wtgui09f105dc6b3ed747-frontend  Built
+ Network wtgui09f105dc6b3ed747_default  Creating
+ Network wtgui09f105dc6b3ed747_default  Created
+ Volume wtgui09f105dc6b3ed747_db-data  Creating
+ Volume wtgui09f105dc6b3ed747_db-data  Created
+ Container wtgui09f105dc6b3ed747-frontend-1  Creating
+ Container wtgui09f105dc6b3ed747-db-1  Creating
+ Container wtgui09f105dc6b3ed747-frontend-1  Created
+ Container wtgui09f105dc6b3ed747-db-1  Created
+ Container wtgui09f105dc6b3ed747-api-1  Creating
+ Container wtgui09f105dc6b3ed747-api-1  Created
+ Container wtgui09f105dc6b3ed747-backup-1  Creating
+ Container wtgui09f105dc6b3ed747-web-1  Creating
+ Container wtgui09f105dc6b3ed747-web-1  Created
+ Container wtgui09f105dc6b3ed747-backup-1  Created
+ Container wtgui09f105dc6b3ed747-db-1  Starting
+ Container wtgui09f105dc6b3ed747-frontend-1  Starting
+ Container wtgui09f105dc6b3ed747-db-1  Started
+ Container wtgui09f105dc6b3ed747-db-1  Waiting
+ Container wtgui09f105dc6b3ed747-frontend-1  Started
+ Container wtgui09f105dc6b3ed747-db-1  Healthy
+ Container wtgui09f105dc6b3ed747-api-1  Starting
+ Container wtgui09f105dc6b3ed747-api-1  Started
+ Container wtgui09f105dc6b3ed747-api-1  Waiting
+ Container wtgui09f105dc6b3ed747-api-1  Waiting
+ Container wtgui09f105dc6b3ed747-api-1  Healthy
+ Container wtgui09f105dc6b3ed747-backup-1  Starting
+ Container wtgui09f105dc6b3ed747-api-1  Healthy
+ Container wtgui09f105dc6b3ed747-web-1  Starting
+ Container wtgui09f105dc6b3ed747-web-1  Started
+ Container wtgui09f105dc6b3ed747-backup-1  Started
+ Container wtgui09f105dc6b3ed747-db-1  Waiting
+ Container wtgui09f105dc6b3ed747-api-1  Waiting
+ Container wtgui09f105dc6b3ed747-frontend-1  Waiting
+ Container wtgui09f105dc6b3ed747-web-1  Waiting
+ Container wtgui09f105dc6b3ed747-backup-1  Waiting
+ Container wtgui09f105dc6b3ed747-db-1  Healthy
+ Container wtgui09f105dc6b3ed747-backup-1  Healthy
+ Container wtgui09f105dc6b3ed747-frontend-1  Healthy
+ Container wtgui09f105dc6b3ed747-api-1  Healthy
+ Container wtgui09f105dc6b3ed747-web-1  Healthy
+
+exit=0

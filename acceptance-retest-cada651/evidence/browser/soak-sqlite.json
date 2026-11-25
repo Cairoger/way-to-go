@@ -1,0 +1,303 @@
+{
+  "config": {
+    "clients": 2,
+    "upstream": "sqlite",
+    "client": "2 isolated Chrome browser contexts"
+  },
+  "samples": [
+    {
+      "seconds": 0,
+      "ws": [
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        }
+      ]
+    },
+    {
+      "seconds": 6,
+      "ws": [
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        }
+      ]
+    },
+    {
+      "seconds": 60,
+      "ws": [
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        }
+      ]
+    },
+    {
+      "seconds": 120,
+      "ws": [
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        }
+      ]
+    },
+    {
+      "seconds": 180,
+      "ws": [
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        }
+      ]
+    },
+    {
+      "seconds": 240,
+      "ws": [
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        }
+      ]
+    },
+    {
+      "seconds": 300,
+      "ws": [
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        }
+      ]
+    },
+    {
+      "seconds": 360,
+      "ws": [
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        }
+      ]
+    }
+  ],
+  "apiMs": [
+    29,
+    45,
+    37,
+    44,
+    36,
+    45,
+    48,
+    52,
+    36,
+    42,
+    36,
+    44,
+    135,
+    142,
+    233,
+    236,
+    77,
+    77,
+    80,
+    92,
+    62,
+    63,
+    37,
+    45,
+    72,
+    82,
+    71,
+    85,
+    94,
+    109,
+    177,
+    210,
+    44,
+    45,
+    30,
+    32,
+    29,
+    33,
+    33,
+    57
+  ],
+  "editVisibleMs": [
+    {
+      "round": 1,
+      "client": 2,
+      "ms": 190
+    },
+    {
+      "round": 2,
+      "client": 2,
+      "ms": 196
+    },
+    {
+      "round": 3,
+      "client": 2,
+      "ms": 193
+    },
+    {
+      "round": 4,
+      "client": 2,
+      "ms": 192
+    },
+    {
+      "round": 5,
+      "client": 2,
+      "ms": 189
+    },
+    {
+      "round": 6,
+      "client": 2,
+      "ms": 196
+    },
+    {
+      "round": 7,
+      "client": 2,
+      "ms": 192
+    },
+    {
+      "round": 8,
+      "client": 2,
+      "ms": 193
+    },
+    {
+      "round": 9,
+      "client": 2,
+      "ms": 194
+    },
+    {
+      "round": 10,
+      "client": 2,
+      "ms": 187
+    },
+    {
+      "round": 11,
+      "client": 2,
+      "ms": 191
+    },
+    {
+      "round": 12,
+      "client": 2,
+      "ms": 192
+    },
+    {
+      "round": 13,
+      "client": 2,
+      "ms": 192
+    },
+    {
+      "round": 14,
+      "client": 2,
+      "ms": 192
+    },
+    {
+      "round": 15,
+      "client": 2,
+      "ms": 220
+    },
+    {
+      "round": 16,
+      "client": 2,
+      "ms": 202
+    },
+    {
+      "round": 17,
+      "client": 2,
+      "ms": 298
+    },
+    {
+      "round": 18,
+      "client": 2,
+      "ms": 799
+    },
+    {
+      "round": 19,
+      "client": 2,
+      "ms": 265
+    },
+    {
+      "round": 20,
+      "client": 2,
+      "ms": 229
+    }
+  ],
+  "parallelCreates": 2,
+  "parallelPosts": {
+    "expected": 2,
+    "unique": 2,
+    "readBack": 2
+  },
+  "p95": {
+    "editToRenderedOtherClientMs": 298,
+    "apiGetTripMs": 210
+  },
+  "visibleGroup": [
+    true,
+    true
+  ]
+}

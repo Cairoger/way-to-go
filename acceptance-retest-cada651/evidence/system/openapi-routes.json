@@ -1,0 +1,231 @@
+{
+  "/api/v1/auth/me": [
+    "get",
+    "patch"
+  ],
+  "/api/v1/auth/local-test": [
+    "get",
+    "post"
+  ],
+  "/api/v1/auth/logout": [
+    "post"
+  ],
+  "/api/v1/auth/google": [
+    "post"
+  ],
+  "/api/v1/auth/google/callback": [
+    "get"
+  ],
+  "/api/v1/trips": [
+    "get",
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}": [
+    "get",
+    "patch",
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/archive": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/restore": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/members": [
+    "get"
+  ],
+  "/api/v1/trips/{trip_id}/transfer": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/members/{member_id}": [
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/invitations": [
+    "get",
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/invitations/{invite_id}": [
+    "delete"
+  ],
+  "/api/v1/auth/guest": [
+    "post"
+  ],
+  "/api/v1/invitations/accept": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/copy": [
+    "post"
+  ],
+  "/api/v1/edit-leases": [
+    "post"
+  ],
+  "/api/v1/edit-leases/{lease_id}/renew": [
+    "post"
+  ],
+  "/api/v1/edit-leases/{lease_id}": [
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/places": [
+    "get",
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/place-search": [
+    "get"
+  ],
+  "/api/v1/places/{place_id}/history": [
+    "get"
+  ],
+  "/api/v1/places/{place_id}": [
+    "delete",
+    "patch"
+  ],
+  "/api/v1/trips/{trip_id}/candidates": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/candidates/{candidate_id}": [
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/days": [
+    "get",
+    "post"
+  ],
+  "/api/v1/days/{day_id}/items": [
+    "post"
+  ],
+  "/api/v1/itinerary-items/{item_id}": [
+    "patch",
+    "delete"
+  ],
+  "/api/v1/itinerary-items/{item_id}/move": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/planner-history": [
+    "get"
+  ],
+  "/api/v1/planner-history/{kind}/{resource_id}/restore": [
+    "post"
+  ],
+  "/api/v1/days/{day_id}/weather": [
+    "get"
+  ],
+  "/api/v1/trips/{trip_id}/polls": [
+    "get",
+    "post"
+  ],
+  "/api/v1/polls/{poll_id}": [
+    "patch",
+    "delete"
+  ],
+  "/api/v1/polls/{poll_id}/options": [
+    "post"
+  ],
+  "/api/v1/polls/{poll_id}/ballot": [
+    "put"
+  ],
+  "/api/v1/polls/{poll_id}/close": [
+    "post"
+  ],
+  "/api/v1/polls/{poll_id}/reopen": [
+    "post"
+  ],
+  "/api/v1/polls/{poll_id}/adopt": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/comments": [
+    "get",
+    "post"
+  ],
+  "/api/v1/comments/{comment_id}": [
+    "patch",
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/availability": [
+    "get",
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/availability/{entry_id}": [
+    "patch",
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/finance/rates": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/expenses": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/expenses/{expense_id}": [
+    "patch",
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/budgets": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/budgets/{budget_id}": [
+    "patch",
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/finance": [
+    "get"
+  ],
+  "/api/v1/trips/{trip_id}/settlements": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/settlements/{settlement_id}": [
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/files": [
+    "get",
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/files/limits": [
+    "get"
+  ],
+  "/api/v1/files/{file_id}/download": [
+    "get"
+  ],
+  "/api/v1/files/{file_id}/preview": [
+    "get"
+  ],
+  "/api/v1/files/{file_id}": [
+    "patch",
+    "delete"
+  ],
+  "/api/v1/files/{file_id}/restore": [
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/tasks": [
+    "get",
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/tasks/{task_id}": [
+    "put",
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/tasks/{task_id}/progress": [
+    "put"
+  ],
+  "/api/v1/trips/{trip_id}/bookings": [
+    "get",
+    "post"
+  ],
+  "/api/v1/trips/{trip_id}/bookings/{booking_id}": [
+    "put",
+    "delete"
+  ],
+  "/api/v1/trips/{trip_id}/bookings/{booking_id}/public": [
+    "put"
+  ],
+  "/api/v1/notifications": [
+    "get"
+  ],
+  "/api/v1/notifications/preferences": [
+    "put"
+  ],
+  "/api/v1/notifications/{notice_id}/read": [
+    "post"
+  ],
+  "/api/v1/notifications/device": [
+    "put",
+    "delete"
+  ]
+}

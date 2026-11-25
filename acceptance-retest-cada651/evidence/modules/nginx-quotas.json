@@ -1,0 +1,24 @@
+{
+  "configured": {
+    "file_max_bytes": 10485760,
+    "trip_max_bytes": 524288000,
+    "batch_max": 10
+  },
+  "samples": [
+    {
+      "bytes": 1048577,
+      "status": 201,
+      "returned_error": null
+    },
+    {
+      "bytes": 10485760,
+      "status": 201,
+      "returned_error": null
+    },
+    {
+      "bytes": 10485761,
+      "status": 413,
+      "returned_error": "FILE_TOO_LARGE"
+    }
+  ]
+}

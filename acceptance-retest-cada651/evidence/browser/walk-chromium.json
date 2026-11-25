@@ -1,0 +1,16 @@
+{
+  "engine": "chromium",
+  "observations": {
+    "inertText": {
+      "displayed": "O'Brien & 旅伴 <em>春遊</em>",
+      "emChildren": 0
+    },
+    "liveDate": "2027-05-04 written from UI and read back from API",
+    "ratingHTTP": 200,
+    "mapPaidHint": "自動規劃道路路線：付費功能開發中。可使用景點旁的免費導航。",
+    "flightHintOnList": 0,
+    "flightHintInForm": 0,
+    "flightManualEntry": 1,
+    "flightText": "新增航班\n航班預訂名稱\n預訂狀態\n規劃中\n已預訂\n已取消\n航段 1\n航空公司\n航班編號\n出發機場\n抵達機場\n出發航廈\n抵達航廈\n起飛（當地時間）\nUTC 時差\n抵達（當地時間）\nUTC 時差\n此航段的旅客\ntester\n新增航段\n價格\n幣別\n訂位代號\n只有建立者與這筆預訂的旅客可查看。\n官方或航班資訊網址\n關聯行程活動\n無關聯活動\nO'Brien & 旅伴 <em>春遊</em>\n取消\n儲存預訂"
+  }
+}

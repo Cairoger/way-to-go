@@ -1,0 +1,10 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source
+command=D:\WayToGo\.local\docker-compose-v2.exe --project-directory D:\WayToGo\.local\acceptance-retest-cada651\source -f D:\WayToGo\.local\acceptance-retest-cada651\source\compose.yaml -p wtgrerunbe5550cd53 ps --format "table {{.Service}}	{{.State}}	{{.Health}}"
+SERVICE    STATE     <no value>
+api        running   healthy
+backup     running   
+db         running   healthy
+frontend   running   
+web        running   healthy
+
+exit=0 elapsed=0.57s

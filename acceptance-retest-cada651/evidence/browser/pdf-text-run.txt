@@ -1,0 +1,4 @@
+cwd=D:\WayToGo
+command=D:\WayToGo\.venv\Scripts\python.exe D:\WayToGo\acceptance-retest-cada651\evidence\browser\pdf-private-text.py
+
+exit=0 elapsed=0.91s

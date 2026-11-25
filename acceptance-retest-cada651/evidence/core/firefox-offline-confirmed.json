@@ -1,0 +1,9 @@
+{
+  "controller_before_close": false,
+  "offline": true,
+  "saved_activity": true,
+  "address_seen": true,
+  "local_time_seen": true,
+  "edit_buttons": 0,
+  "origin_tcp_reachable": false
+}

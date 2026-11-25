@@ -1,0 +1,14 @@
+{
+  "GET /api/v1/trips": {
+    "200": 1
+  },
+  "DELETE /api/v1/edit-leases/{lease_id}": {
+    "200": 1
+  },
+  "POST /api/v1/trips/{trip_id}/candidates": {
+    "200": 1
+  },
+  "WS /ws/trips/{trip_id}": {
+    "101": 1
+  }
+}

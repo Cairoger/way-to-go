@@ -1,0 +1,39 @@
+{
+  "profile": {
+    "initial_etag": null,
+    "version_in_representation": false,
+    "update_a": 200,
+    "update_b_from_same_initial_view": 200,
+    "latest_nickname": "第二個已開啟頁面的修改",
+    "a_overwritten": true
+  },
+  "code_scan_raw_sql_constants": [
+    [
+      "files.py",
+      182,
+      true
+    ],
+    [
+      "main.py",
+      33,
+      true
+    ],
+    [
+      "main.py",
+      152,
+      true
+    ]
+  ],
+  "bound_capture": [
+    {
+      "operation": "UPDATE",
+      "literal_in_statement": false,
+      "bound_parameter": true
+    },
+    {
+      "operation": "INSERT",
+      "literal_in_statement": false,
+      "bound_parameter": true
+    }
+  ]
+}

@@ -1,0 +1,349 @@
+{
+  "utc": "2026-11-25T14:45:25.350158+00:00",
+  "repo": {
+    "full_name": "Cairoger/way-to-go",
+    "default_branch": "main",
+    "private": false,
+    "error": null
+  },
+  "pr": {
+    "number": 1,
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "html_url": "https://github.com/Cairoger/way-to-go/pull/1",
+    "error": null,
+    "base": "f398d983b5a2769ca2d06285cbece4fbabc176ab",
+    "head": "cada651b990923166e8efa6ee20f72885a9c2b92"
+  },
+  "runs": [
+    {
+      "name": "WayToGo",
+      "event": "pull_request",
+      "head_sha": "cada651b990923166e8efa6ee20f72885a9c2b92",
+      "conclusion": "success",
+      "html_url": "https://github.com/Cairoger/way-to-go/actions/runs/45630906954",
+      "created_at": "2026-11-25T14:09:01Z"
+    },
+    {
+      "name": "WayToGo",
+      "event": "push",
+      "head_sha": "cada651b990923166e8efa6ee20f72885a9c2b92",
+      "conclusion": "success",
+      "html_url": "https://github.com/Cairoger/way-to-go/actions/runs/45630889087",
+      "created_at": "2026-11-25T14:08:55Z"
+    }
+  ],
+  "workflow_error": null,
+  "jobs": [
+    {
+      "name": "backend",
+      "conclusion": "success",
+      "html_url": "https://github.com/Cairoger/way-to-go/actions/runs/45630906954/job/139263516569",
+      "steps": [
+        [
+          "Set up job",
+          "success"
+        ],
+        [
+          "Initialize containers",
+          "success"
+        ],
+        [
+          "Run actions/checkout@v4",
+          "success"
+        ],
+        [
+          "Run actions/setup-python@v5",
+          "success"
+        ],
+        [
+          "Run pip install -r requirements-dev.txt",
+          "success"
+        ],
+        [
+          "Set an ephemeral invitation key for the PostgreSQL test service",
+          "success"
+        ],
+        [
+          "Run ruff check . && ruff format --check .",
+          "success"
+        ],
+        [
+          "Run alembic upgrade head && alembic check",
+          "success"
+        ],
+        [
+          "Run pytest -q",
+          "success"
+        ],
+        [
+          "Verify the SQLite-specific attachment backup",
+          "success"
+        ],
+        [
+          "Restore a PostgreSQL custom archive and compare all table checksums",
+          "success"
+        ],
+        [
+          "Verify restored file content, links, permissions and recycle state through the API",
+          "success"
+        ],
+        [
+          "Post Run actions/setup-python@v5",
+          "success"
+        ],
+        [
+          "Post Run actions/checkout@v4",
+          "success"
+        ],
+        [
+          "Stop containers",
+          "success"
+        ],
+        [
+          "Complete job",
+          "success"
+        ]
+      ]
+    },
+    {
+      "name": "browser",
+      "conclusion": "success",
+      "html_url": "https://github.com/Cairoger/way-to-go/actions/runs/45630906954/job/139263517136",
+      "steps": [
+        [
+          "Set up job",
+          "success"
+        ],
+        [
+          "Run actions/checkout@v4",
+          "success"
+        ],
+        [
+          "Run actions/setup-node@v4",
+          "success"
+        ],
+        [
+          "Run actions/setup-python@v5",
+          "success"
+        ],
+        [
+          "Run python -m pip install pypdf==7.1.1",
+          "success"
+        ],
+        [
+          "Run pnpm/action-setup@v4",
+          "success"
+        ],
+        [
+          "Run pnpm install --frozen-lockfile",
+          "success"
+        ],
+        [
+          "Run pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
+          "success"
+        ],
+        [
+          "Run pnpm exec playwright install --with-deps chromium",
+          "success"
+        ],
+        [
+          "Build and start the self-hosted application",
+          "success"
+        ],
+        [
+          "Prepare isolated travel group",
+          "success"
+        ],
+        [
+          "Run pnpm e2e",
+          "success"
+        ],
+        [
+          "Restore a backup into an empty verification database",
+          "success"
+        ],
+        [
+          "Run docker compose down --volumes",
+          "success"
+        ],
+        [
+          "Post Run pnpm/action-setup@v4",
+          "success"
+        ],
+        [
+          "Post Run actions/setup-python@v5",
+          "success"
+        ],
+        [
+          "Post Run actions/setup-node@v4",
+          "success"
+        ],
+        [
+          "Post Run actions/checkout@v4",
+          "success"
+        ],
+        [
+          "Complete job",
+          "success"
+        ]
+      ]
+    },
+    {
+      "name": "backend",
+      "conclusion": "success",
+      "html_url": "https://github.com/Cairoger/way-to-go/actions/runs/45630889087/job/139263454252",
+      "steps": [
+        [
+          "Set up job",
+          "success"
+        ],
+        [
+          "Initialize containers",
+          "success"
+        ],
+        [
+          "Run actions/checkout@v4",
+          "success"
+        ],
+        [
+          "Run actions/setup-python@v5",
+          "success"
+        ],
+        [
+          "Run pip install -r requirements-dev.txt",
+          "success"
+        ],
+        [
+          "Set an ephemeral invitation key for the PostgreSQL test service",
+          "success"
+        ],
+        [
+          "Run ruff check . && ruff format --check .",
+          "success"
+        ],
+        [
+          "Run alembic upgrade head && alembic check",
+          "success"
+        ],
+        [
+          "Run pytest -q",
+          "success"
+        ],
+        [
+          "Verify the SQLite-specific attachment backup",
+          "success"
+        ],
+        [
+          "Restore a PostgreSQL custom archive and compare all table checksums",
+          "success"
+        ],
+        [
+          "Verify restored file content, links, permissions and recycle state through the API",
+          "success"
+        ],
+        [
+          "Post Run actions/setup-python@v5",
+          "success"
+        ],
+        [
+          "Post Run actions/checkout@v4",
+          "success"
+        ],
+        [
+          "Stop containers",
+          "success"
+        ],
+        [
+          "Complete job",
+          "success"
+        ]
+      ]
+    },
+    {
+      "name": "browser",
+      "conclusion": "success",
+      "html_url": "https://github.com/Cairoger/way-to-go/actions/runs/45630889087/job/139263454958",
+      "steps": [
+        [
+          "Set up job",
+          "success"
+        ],
+        [
+          "Run actions/checkout@v4",
+          "success"
+        ],
+        [
+          "Run actions/setup-node@v4",
+          "success"
+        ],
+        [
+          "Run actions/setup-python@v5",
+          "success"
+        ],
+        [
+          "Run python -m pip install pypdf==7.1.1",
+          "success"
+        ],
+        [
+          "Run pnpm/action-setup@v4",
+          "success"
+        ],
+        [
+          "Run pnpm install --frozen-lockfile",
+          "success"
+        ],
+        [
+          "Run pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
+          "success"
+        ],
+        [
+          "Run pnpm exec playwright install --with-deps chromium",
+          "success"
+        ],
+        [
+          "Build and start the self-hosted application",
+          "success"
+        ],
+        [
+          "Prepare isolated travel group",
+          "success"
+        ],
+        [
+          "Run pnpm e2e",
+          "success"
+        ],
+        [
+          "Restore a backup into an empty verification database",
+          "success"
+        ],
+        [
+          "Run docker compose down --volumes",
+          "success"
+        ],
+        [
+          "Post Run pnpm/action-setup@v4",
+          "success"
+        ],
+        [
+          "Post Run actions/setup-python@v5",
+          "success"
+        ],
+        [
+          "Post Run actions/setup-node@v4",
+          "success"
+        ],
+        [
+          "Post Run actions/checkout@v4",
+          "success"
+        ],
+        [
+          "Complete job",
+          "success"
+        ]
+      ]
+    }
+  ],
+  "git_ls_remote": "ref: refs/heads/main\tHEAD\nf398d983b5a2769ca2d06285cbece4fbabc176ab\tHEAD\ncada651b990923166e8efa6ee20f72885a9c2b92\trefs/heads/codex/acceptance-fixes-20261125\nf398d983b5a2769ca2d06285cbece4fbabc176ab\trefs/heads/main"
+}

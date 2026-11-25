@@ -1,0 +1,44 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- D:\WayToGo\.venv\Scripts\python.exe
+rootdir: D:\WayToGo
+plugins: anyio-4.16.0
+collecting ... collected 9 items / 1 deselected / 8 selected
+
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_trip_fields_status_retention optional fields, 3 days, two countries/cities, metadata, date-less title-only verified
+four states; completed editable; archive preserves days; deleted 29d restore=200; 31d restore=404
+PASSED
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_trip_original_creator_after_transfer creation actor persists in audit log; summary keys: ['archived', 'cover', 'created_at', 'currency', 'day_count', 'deleted_at', 'description', 'destinations', 'end_date', 'id', 'member_count', 'owner_id', 'place_count', 'start_date', 'status', 'title', 'version']
+FAILED
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_qr_and_default_invitation href token equals invite code; generated SVG byte-equal to QR encoding full URL; TTL seconds 604800
+PASSED
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_context_session_https HTTPS Set-Cookie attributes HttpOnly, Secure, SameSite=Lax, Max-Age; next request /trips/{id}=200
+PASSED
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_places_fields_status_author_days all 15 manually entered fields persisted; author retained; 4 statuses; 5 audit entries; same place in two date-less days -> April 1, 2
+PASSED
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_original_place_removal original place DELETE 405 ; candidate relation and place are distinct
+FAILED
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_time_options_types_and_order 6 types, 4 time modes, no place or date required; overlapping values saved; invalid reverse range=422
+PASSED
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_lease_duration_and_explicit_release lease TTLs (s) 89.99 ; renewed; other member sees holder; explicit release and reacquire
+PASSED
+
+================================== FAILURES ===================================
+E   AssertionError: assert None == '7c983fca-8898-4139-98ae-3b756f7b1da2'
+     +  where None = <built-in method get of dict object at 0x000001EC8E501AC0>('created_by', None)
+     +    where <built-in method get of dict object at 0x000001EC8E501AC0> = {'id': '919cd289-96c5-480b-abb3-ee2da489be13', 'owner_id': 'ecf1cfbf-a824-42f7-b513-b9af82fb2ff5', 'title': '台南散步', 'description': '', ...}.get
+     +    and   None = <built-in method get of dict object at 0x000001EC8E501AC0>('creator_id')
+     +      where <built-in method get of dict object at 0x000001EC8E501AC0> = {'id': '919cd289-96c5-480b-abb3-ee2da489be13', 'owner_id': 'ecf1cfbf-a824-42f7-b513-b9af82fb2ff5', 'title': '台南散步', 'description': '', ...}.get
+D:\WayToGo\acceptance-20261125\evidence\core\test_acceptance_core.py:72: AssertionError: assert None == '7c983fca-8898-4139-98ae-3b756f7b1da2'
+E   assert 405 in (200, 204)
+     +  where 405 = <Response [405 Method Not Allowed]>.status_code
+D:\WayToGo\acceptance-20261125\evidence\core\test_acceptance_core.py:135: assert 405 in (200, 204)
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  D:\WayToGo\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_trip_original_creator_after_transfer
+FAILED acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_original_place_removal
+============ 2 failed, 6 passed, 1 deselected, 1 warning in 3.96s =============

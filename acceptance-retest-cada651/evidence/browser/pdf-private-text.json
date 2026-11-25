@@ -1,0 +1,36 @@
+{
+  "engine": "pypdf 7.1.1",
+  "exports": {
+    "details": {
+      "pages": 1,
+      "sha256": "ae1e639343955f52b809248b880a1bfd29f80e4c3ed6bd641308ba813e4d289e",
+      "extractedText": "Day 1 · 2027-07-10\nAsia/Taipei\n15:00　PUBLICCHECKINWWT\n住宿 · Asia/Taipei · PUBLICADDRESSWWT",
+      "publicItemPresent": true,
+      "addressPresent": true,
+      "privateMarkersAbsent": {
+        "BOOKPRIVATEWWT": true,
+        "EXPENSEPRIVATEWWT": true,
+        "SPLITGUESTWWT": true,
+        "125.79": true,
+        "91.23": true,
+        "34.56": true
+      }
+    },
+    "brief": {
+      "pages": 1,
+      "sha256": "b9801e15b516805e650b38bccb53a02f5f52b4a12fa92ef10da7a97d85b27c5d",
+      "extractedText": "Day 1 · 2027-07-10\nAsia/Taipei\n15:00　PUBLICCHECKINWWT",
+      "publicItemPresent": true,
+      "addressPresent": false,
+      "privateMarkersAbsent": {
+        "BOOKPRIVATEWWT": true,
+        "EXPENSEPRIVATEWWT": true,
+        "SPLITGUESTWWT": true,
+        "125.79": true,
+        "91.23": true,
+        "34.56": true
+      }
+    }
+  },
+  "privateFileObject": "BLOCKED - no actual private file could be attached"
+}

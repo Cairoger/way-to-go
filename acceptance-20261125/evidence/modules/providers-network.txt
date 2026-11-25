@@ -1,0 +1,3 @@
+day used for forecast 2026-11-25
+USD/TWD 32.956 2026-11-25
+Open-Meteo {'available': True, 'code': 51, 'min': 15.8, 'max': 19.7, 'rain': 31}

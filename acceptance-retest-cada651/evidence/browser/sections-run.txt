@@ -1,0 +1,4 @@
+cwd=D:\WayToGo
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\acceptance-retest-cada651\evidence\browser\sections.cjs
+
+exit=0 elapsed=8.44s

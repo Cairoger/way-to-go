@@ -1,0 +1,38 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- D:\WayToGo\.venv\Scripts\python.exe
+rootdir: D:\WayToGo\.local\audit-core-head-ondxc12m\clean\backend
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collecting ... collected 23 items
+
+tests/test_core.py::test_guest_invite_lifecycle PASSED                   [  4%]
+tests/test_core.py::test_trip_versions_archives_and_idempotency PASSED   [  8%]
+tests/test_core.py::test_member_removal_transfers_poll_control_and_transfer_owner PASSED [ 13%]
+tests/test_core.py::test_server_session_revocation_and_expiry PASSED     [ 17%]
+tests/test_core.py::test_google_oidc_cookie_rotation_and_state_binding PASSED [ 21%]
+tests/test_core.py::test_missing_oidc_settings_and_request_origin PASSED [ 26%]
+tests/test_core.py::test_private_demo_membership_and_seeded_itinerary PASSED [ 30%]
+tests/test_core.py::test_five_connected_clients_receive_committed_edits_and_revocation PASSED [ 34%]
+tests/test_decisions.py::test_secret_ballots_and_review_after_new_option PASSED [ 39%]
+tests/test_decisions.py::test_manual_adoption_keeps_item_after_revote PASSED [ 43%]
+tests/test_decisions.py::test_expired_date_poll_zero_result PASSED       [ 47%]
+tests/test_decisions.py::test_comment_moderation_and_preserved_replies PASSED [ 52%]
+tests/test_decisions.py::test_retried_comment_request PASSED             [ 56%]
+tests/test_local_login.py::test_local_auth_is_private_stable_and_can_own_trips PASSED [ 60%]
+tests/test_local_login.py::test_simultaneous_first_signins_share_one_subject PASSED [ 65%]
+tests/test_local_login.py::test_local_login_disabled_outside_http_loopback[https://localhost] PASSED [ 69%]
+tests/test_local_login.py::test_local_login_disabled_outside_http_loopback[https://travel.example] PASSED [ 73%]
+tests/test_local_login.py::test_local_login_disabled_outside_http_loopback[http://testserver] PASSED [ 78%]
+tests/test_local_login.py::test_incomplete_local_configuration_fails_closed PASSED [ 82%]
+tests/test_planning.py::test_place_retained_after_candidate_removal PASSED [ 86%]
+tests/test_planning.py::test_move_overlap_and_passive_order PASSED       [ 91%]
+tests/test_planning.py::test_lease_contention_renewal_timeout_and_stale_version PASSED [ 95%]
+tests/test_planning.py::test_search_outage_preserves_saved_content PASSED [100%]
+
+============================== warnings summary ===============================
+..\..\..\..\.venv\Lib\site-packages\fastapi\testclient.py:1
+  D:\WayToGo\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 23 passed, 1 warning in 9.10s ========================

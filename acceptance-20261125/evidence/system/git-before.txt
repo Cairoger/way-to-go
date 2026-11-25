@@ -1,0 +1,74 @@
+## main...origin/main
+ M .env.example
+ M .github/workflows/ci.yml
+ M README.md
+ M backend/app/auth.py
+ M backend/app/decisions.py
+ M backend/app/decisions_models.py
+ M backend/app/main.py
+ M backend/app/planning.py
+ M backend/app/planning_models.py
+ M backend/app/realtime.py
+ M backend/app/trips.py
+ M backend/migrations/env.py
+ M backend/requirements.txt
+ M backend/tests/test_decisions.py
+ M compose.yaml
+ M frontend/components/Decisions.tsx
+ M frontend/components/Members.tsx
+ M frontend/components/Planner.tsx
+ M frontend/components/PlannerForms.tsx
+ M frontend/components/PlannerMap.tsx
+ M frontend/components/TripDetail.tsx
+ M frontend/components/Workspace.tsx
+ M frontend/components/decisions.css
+ M frontend/components/planner.css
+ M frontend/components/plannerTypes.tsx
+ M frontend/public/sw.js
+?? backend/app/availability.py
+?? backend/app/availability_models.py
+?? backend/app/finance.py
+?? backend/app/finance_models.py
+?? backend/app/finance_money.py
+?? backend/app/merge.py
+?? backend/app/merge_models.py
+?? backend/app/notice_models.py
+?? backend/app/notices.py
+?? backend/app/planning_time.py
+?? backend/app/planning_weather.py
+?? backend/app/preparation_models.py
+?? backend/app/preparations.py
+?? backend/app/trip_copy.py
+?? backend/migrations/versions/0003_trip_finances.py
+?? backend/migrations/versions/0004_availability_and_scored_polls.py
+?? backend/migrations/versions/0005_planner_revisions.py
+?? backend/migrations/versions/0006_preparations_notices.py
+?? backend/migrations/versions/0007_guest_merges.py
+?? backend/run_live_acceptance.py
+?? backend/tests/test_availability.py
+?? backend/tests/test_finance.py
+?? backend/tests/test_guest_merge.py
+?? backend/tests/test_notices.py
+?? backend/tests/test_planning_extensions.py
+?? backend/tests/test_preparations.py
+?? backend/tests/test_trip_copy.py
+?? frontend/components/Availability.tsx
+?? frontend/components/Finance.tsx
+?? frontend/components/NoticeCenter.tsx
+?? frontend/components/PlannerTools.tsx
+?? frontend/components/Preparation.tsx
+?? frontend/components/Reservations.tsx
+?? frontend/components/finance.css
+?? frontend/components/financeForms.tsx
+?? frontend/components/financeTypes.ts
+?? frontend/components/notice.css
+?? frontend/components/preparation.css
+?? frontend/components/preparationTypes.tsx
+?? frontend/tests/coordination.spec.ts
+?? frontend/tests/live-finance.spec.ts
+?? frontend/tests/live-preparations.spec.ts
+?? frontend/tests/planner-print.spec.ts
+?? frontend/tests/planner.test.ts
+origin	https://github.com/Cairoger/way-to-go.git (fetch)
+origin	https://github.com/Cairoger/way-to-go.git (push)
+f398d983b5a2769ca2d06285cbece4fbabc176ab

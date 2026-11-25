@@ -1,0 +1,26 @@
+{
+  "stats": {
+    "startTime": "2026-11-25T14:46:28.312Z",
+    "duration": 17277.566,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "spec": "live-push.spec.ts",
+      "title": "已安裝瀏覽器在隔離的一般設定檔訂閱並接收背景提及",
+      "result": "passed",
+      "duration_ms": 13724,
+      "reason": "[]"
+    },
+    {
+      "spec": "live-push.spec.ts",
+      "title": "模擬瀏覽器收到推播後以授權通知定位留言",
+      "result": "passed",
+      "duration_ms": 1420,
+      "reason": "[]"
+    }
+  ]
+}

@@ -1,0 +1,632 @@
+[
+  {
+    "id": "FR-VOTE-01",
+    "section": "§3.7 投票 · P0 · L227",
+    "condition": "支援景點與日期的單選、多選投票。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_four_kind_mode_combinations_and_options）",
+    "notes": "日期及景點各測單選、多選，四組皆能投票。"
+  },
+  {
+    "id": "FR-VOTE-02",
+    "section": "§3.7 投票 · P1 · L229",
+    "condition": "擴充評分投票及排序投票。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_rating_ballot_requirements_privacy_review_and_result）、evidence/modules/pytest.txt（test_ranked_ballots_and_tie_round）、evidence/browser/chrome-playwright.txt #2",
+    "notes": "檢查評分 1–5、排序不可重複、勝者、私密結果與平票。UI 的評分排序案例有替身 API。"
+  },
+  {
+    "id": "FR-VOTE-03",
+    "section": "§3.7 投票 · P0 · L231",
+    "condition": "所有旅程成員都能建立投票及補充候選選項。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_four_kind_mode_combinations_and_options）、evidence/modules/pytest.txt（test_secret_ballots_and_review_after_new_option）",
+    "notes": "Member 建立四組投票，Owner 可補其他人建立的投票選項。反向由 Member 補選項亦通過。"
+  },
+  {
+    "id": "FR-VOTE-04",
+    "section": "§3.7 投票 · P0 · L233",
+    "condition": "發起者可以修改、結束、刪除投票。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_poll_creator_lifecycle_and_no_deadline）",
+    "notes": "Member 發起後改標題／方式、結束、刪除均 HTTP 200，其他成員重讀清單已無該投票。"
+  },
+  {
+    "id": "FR-VOTE-05",
+    "section": "§3.7 投票 · P0 · L235",
+    "condition": "截止時間為選填；未設定時可保持開放。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_poll_creator_lifecycle_and_no_deadline）、evidence/modules/pytest.txt（test_expired_date_poll_zero_result）",
+    "notes": "無截止時間的投票，在模擬經過 60 天後仍開放。有截止時間者到期後拒絕投票。"
+  },
+  {
+    "id": "FR-VOTE-06",
+    "section": "§3.7 投票 · P0 · L237",
+    "condition": "投票期間可以修改自己的選票。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_secret_ballots_and_review_after_new_option）、evidence/modules/pytest.txt（test_ranked_ballots_and_tie_round）",
+    "notes": "更新自己選票需帶目前 ballot_version，舊版回 409，重讀可見新選擇。"
+  },
+  {
+    "id": "FR-VOTE-07",
+    "section": "§3.7 投票 · P0 · L239",
+    "condition": "投票結束前不公開即時得票統計或其他人的選擇；結束後公開結果及每位成員的投票。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_secret_ballots_and_review_after_new_option）、evidence/modules/pytest.txt（test_rating_ballot_requirements_privacy_review_and_result）",
+    "notes": "開放時無 results 且僅見自身選擇。結束後讀回兩張選票、個人選擇、各項得票及勝者。"
+  },
+  {
+    "id": "FR-VOTE-08",
+    "section": "§3.7 投票 · P0 · L241",
+    "condition": "不設最低參與人數，零票結束顯示「無結果」。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_expired_date_poll_zero_result）、evidence/modules/module-ui.txt（VOTE-08）",
+    "notes": "零人投票也能結束，Chrome 顯示「無結果，本輪未收到選票。」"
+  },
+  {
+    "id": "FR-VOTE-09",
+    "section": "§3.7 投票 · P0 · L243",
+    "condition": "平票時透過新一輪投票重新決定。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_ranked_ballots_and_tie_round）、evidence/modules/pytest.txt（test_secret_ballots_and_review_after_new_option）",
+    "notes": "同票選項進入下一輪，上一輪統計與各成員的票保留。"
+  },
+  {
+    "id": "FR-VOTE-10",
+    "section": "§3.7 投票 · P0 · L245",
+    "condition": "結果不自動修改行程；任一有權新增行程的 Member 可手動採用。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_manual_adoption_keeps_item_after_revote）、evidence/modules/cross-checks.txt（test_closing_poll_preserves_existing_items_until_manual_adoption）",
+    "notes": "關閉後由另一位 Member 選日採用，活動歸屬該次新增者。重送同一請求只建立一項。"
+  },
+  {
+    "id": "FR-VOTE-11",
+    "section": "§3.7 投票 · P1 · L247",
+    "condition": "重新開啟投票時建立新的投票輪次，保留歷史結果及既有行程。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_manual_adoption_keeps_item_after_revote）、evidence/modules/pytest.txt（test_ranked_ballots_and_tie_round）、evidence/modules/cross-checks.txt（test_closing_poll_preserves_existing_items_until_manual_adoption）",
+    "notes": "再開後仍能讀舊輪統計，已採用的活動 id 與標題不變。"
+  },
+  {
+    "id": "EXT-VOTE-01",
+    "section": "§3.7 投票 · 段末附加條款",
+    "condition": "已有選票後，變更影響公平性的核心規則必須進入新輪次。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_secret_ballots_and_review_after_new_option）、evidence/modules/pytest.txt（test_rating_ballot_requirements_privacy_review_and_result）、evidence/modules/cross-checks.txt（test_closing_poll_preserves_existing_items_until_manual_adoption）",
+    "notes": "已有票時修改方式回 409 並要求新輪。結束並重新開啟後輪次增加。"
+  },
+  {
+    "id": "EXT-VOTE-02",
+    "section": "§3.7 投票 · 段末附加條款",
+    "condition": "新增選項時明確通知已投票者重新檢視選票。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/module-ui.txt（VOTE-08）、evidence/modules/poll-review.png、evidence/modules/pytest.txt（test_secret_ballots_and_review_after_new_option）",
+    "notes": "另一成員新增選項後，已投票者的 Chrome 頁面自動顯示重新檢視及儲存選票提示。"
+  },
+  {
+    "id": "FR-DATE-01",
+    "section": "§3.8 日期協調 · P1 · L253",
+    "condition": "支援單日及日期區間選擇。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_single_dates_ranges_overlap_and_active_members）",
+    "notes": "可建立單日及多日區間。逆序日期回 422，同人重疊區間回 409。"
+  },
+  {
+    "id": "FR-DATE-02",
+    "section": "§3.8 日期協調 · P1 · L255",
+    "condition": "成員可以標記可以、可能、不行。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_single_dates_ranges_overlap_and_active_members）",
+    "notes": "兩位成員分別送出 yes／maybe／no，統計包含三種狀態及尚未填寫人數。"
+  },
+  {
+    "id": "FR-DATE-03",
+    "section": "§3.8 日期協調 · P1 · L257",
+    "condition": "統計共同可用日期並推薦重疊度較高的區間。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_single_dates_ranges_overlap_and_active_members）、evidence/modules/pytest.txt（test_adjacent_intervals_merge_only_for_same_members）",
+    "notes": "兩人皆可的 2/3–2/4 排第一，部分可、未填及不可的區間依順序列出。"
+  },
+  {
+    "id": "FR-DATE-04",
+    "section": "§3.8 日期協調 · P1 · L259",
+    "condition": "日期協調與正式日期投票分開。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_availability_is_independent）",
+    "notes": "先登記日期，投票清單仍空。另外投日期票後，原日期標記保持 5/9。"
+  },
+  {
+    "id": "FR-DATE-05",
+    "section": "§3.8 日期協調 · P1 · L261",
+    "condition": "日期確認後可套用至每日行程；再次修改時保留原有行程，必要的個別調整由使用者手動完成。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_apply_dates_preserves_scheduled_items_and_versions）、evidence/browser/chrome-playwright.txt #1",
+    "notes": "日期由兩日縮為單日，三個原旅程日及已有活動、編輯者保持。超出結束日期的行程日仍可手動調整。"
+  },
+  {
+    "id": "FR-COMMENT-01",
+    "section": "§3.9 討論 · P0 · L265",
+    "condition": "每個旅程具有共用討論區。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_comment_moderation_and_preserved_replies）、evidence/browser/chrome-playwright.txt #11",
+    "notes": "同一旅程的兩位成員能看見相同討論串。"
+  },
+  {
+    "id": "FR-COMMENT-02",
+    "section": "§3.9 討論 · P0 · L267",
+    "condition": "支援留言、回覆、編輯及刪除。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_comment_moderation_and_preserved_replies）、evidence/modules/own-comments.txt",
+    "notes": "建立主留言和回覆、修改、刪除，重讀後舊內容清空、回覆仍保留。"
+  },
+  {
+    "id": "FR-COMMENT-03",
+    "section": "§3.9 討論 · P0 · L269",
+    "condition": "留言即時同步。",
+    "implementation": "Implemented",
+    "result": "FAIL",
+    "evidence": "evidence/browser/collaboration.json、evidence/browser/collaboration-postgres.json → parallelPosts、error、evidence/browser/chrome-playwright.txt #11、evidence/modules/pytest.txt（test_five_connected_clients_receive_committed_edits_and_revocation）",
+    "notes": "雙人 Chrome 及五條 TestClient 的建立事件通過。五個 Chrome 在 SQLite 與 Compose/PostgreSQL 17.12 均可新增並重讀五筆留言，隨後編輯一筆，其他頁面等待 10 秒仍沒有新文字。"
+  },
+  {
+    "id": "FR-COMMENT-04",
+    "section": "§3.9 討論 · P1 · L271",
+    "condition": "支援 @成員 提及通知。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_structured_and_plain_mentions_on_create_edit）、evidence/browser/chrome-playwright.txt #4",
+    "notes": "選人及純文字提及都創建通知。同一提及編輯不重送，雙人 UI 查得到通知。"
+  },
+  {
+    "id": "FR-COMMENT-05",
+    "section": "§3.9 討論 · P2 · L273",
+    "condition": "支援留言圖片附件。",
+    "implementation": "Missing",
+    "result": "FAIL",
+    "evidence": "evidence/modules/probes.txt（test_file_contract_and_comment_images）、backend/app/decisions.py:76",
+    "notes": "只有文字及父留言欄位。附上圖片描述資料送出雖回 201，重讀為純文字，無圖片或檔案入口。"
+  },
+  {
+    "id": "FR-COMMENT-06",
+    "section": "§3.9 討論 · P0 · L275",
+    "condition": "Member 只能修改或刪除自己的留言；Owner 可以刪除任一留言。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_comment_moderation_and_preserved_replies）、evidence/modules/own-comments.txt",
+    "notes": "Owner 編輯他人留言、Member 刪他人回覆皆 403。兩種角色都能刪自己的留言且保留對方回覆，Owner 也能管理他人留言。"
+  },
+  {
+    "id": "FR-TASK-01",
+    "section": "§3.10 任務 · P1 · L279",
+    "condition": "支援共用待辦與個人行前清單。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_shared_tasks_and_private_lists）、evidence/browser/chrome-playwright.txt #4",
+    "notes": "建立個人及共用清單，其他成員看不到私人任務。共用任務可跨瀏覽器更新。"
+  },
+  {
+    "id": "FR-TASK-02",
+    "section": "§3.10 任務 · P1 · L281",
+    "condition": "任務包含標題、描述、負責人、截止日期、優先程度及狀態。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_task_all_fields_links_and_repeat）、evidence/modules/pytest.txt（test_shared_tasks_and_private_lists）",
+    "notes": "輸入名稱、說明、日期、優先序、負責人後以另一人讀回，初始 todo、後續狀態能更新。"
+  },
+  {
+    "id": "FR-TASK-03",
+    "section": "§3.10 任務 · P1 · L283",
+    "condition": "一個任務可指定多個負責人。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_shared_tasks_and_private_lists）",
+    "notes": "同一個共用任務有兩名負責人。兩人分別完成後，整筆狀態才變 done。"
+  },
+  {
+    "id": "FR-TASK-04",
+    "section": "§3.10 任務 · P1 · L285",
+    "condition": "只有負責人可以完成自己的任務。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_shared_tasks_and_private_lists）、evidence/browser/chrome-playwright.txt #4",
+    "notes": "未被指派的 Owner 呼叫完成回 403，個別進度不能替其他人送出。"
+  },
+  {
+    "id": "FR-TASK-05",
+    "section": "§3.10 任務 · P1 · L287",
+    "condition": "任務可以關聯景點或行程項目。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_task_all_fields_links_and_repeat）、evidence/modules/pytest.txt（test_existing_task_and_booking_links_survive_item_removal）",
+    "notes": "新增任務可連景點或每日活動，重讀取回對應 id。新增連到已刪活動被拒。"
+  },
+  {
+    "id": "FR-TASK-06",
+    "section": "§3.10 任務 · P2 · L289",
+    "condition": "支援重複任務與附件。",
+    "implementation": "Missing",
+    "result": "FAIL",
+    "evidence": "evidence/modules/probes.txt（test_task_all_fields_links_and_repeat）、backend/app/preparations.py:39",
+    "notes": "recurrence 與 attachment_ids 都回 422。任務欄位及表單無重複週期、附件。"
+  },
+  {
+    "id": "FR-FIN-01",
+    "section": "§3.11 財務 · P1 · L293",
+    "condition": "支援旅程、個人及類別預算。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_budgets_settlements_and_idempotence）",
+    "notes": "旅程、個人、類別預算都回 201。個人預算由其本人可見。"
+  },
+  {
+    "id": "FR-FIN-02",
+    "section": "§3.11 財務 · P1 · L295",
+    "condition": "區分預估支出與實際支出。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_budgets_settlements_and_idempotence）",
+    "notes": "兩筆同金額以預估及實際分開保存，各自合計 100.00。"
+  },
+  {
+    "id": "FR-FIN-03",
+    "section": "§3.11 財務 · P1 · L297",
+    "condition": "支援多幣別及自動取得參考匯率。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/providers-network.txt、evidence/modules/pytest.txt（test_fx_snapshot_precision_and_departed_history）、evidence/modules/pytest.txt（test_manual_fx_and_member_validation）",
+    "notes": "公開 Frankfurter 回 USD/TWD 32.956（2026-11-25）。API 用受控匯率測快照入帳，另實測手動匯率及多種貨幣。"
+  },
+  {
+    "id": "FR-FIN-04",
+    "section": "§3.11 財務 · P1 · L299",
+    "condition": "超出預算時顯示警告，不阻止記帳。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_budgets_settlements_and_idempotence）、evidence/browser/chrome-playwright.txt #3",
+    "notes": "超額費用仍可入帳，對方頁面顯示「實際支出已超出預算」。"
+  },
+  {
+    "id": "FR-FIN-05",
+    "section": "§3.11 財務 · P1 · L301",
+    "condition": "分帳支援平均、自訂金額及比例分配。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_budgets_settlements_and_idempotence）、evidence/modules/pytest.txt（test_fx_snapshot_precision_and_departed_history）、evidence/modules/pytest.txt（test_manual_fx_and_member_validation）",
+    "notes": "實測自訂、比例及平均分配。合計不符回 422，尾差分配後總額守恆。"
+  },
+  {
+    "id": "FR-FIN-06",
+    "section": "§3.11 財務 · P1 · L303",
+    "condition": "一筆費用可以有多個付款人，且只由部分成員分攤。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_split_multiple_payers_and_subset）",
+    "notes": "兩位付款人合計 100，分攤參與者只選一人，另一位成員重讀人數仍是 2／1。"
+  },
+  {
+    "id": "FR-FIN-07",
+    "section": "§3.11 財務 · P1 · L305",
+    "condition": "提供淨額結算及轉帳次數較少的結算建議。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_integer_rounding_and_netting）、evidence/modules/pytest.txt（test_budgets_settlements_and_idempotence）",
+    "notes": "四人淨額例最多三筆還款即可結清，還款後重算餘額與建議。"
+  },
+  {
+    "id": "FR-FIN-08",
+    "section": "§3.11 財務 · P1 · L307",
+    "condition": "記錄未結清、部分結清及已結清狀態。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_budgets_settlements_and_idempotence）、evidence/browser/chrome-playwright.txt #3",
+    "notes": "未結清→分次還款→已結清。兩個瀏覽器核對兩筆記錄與歸零餘額。"
+  },
+  {
+    "id": "FR-FIN-09",
+    "section": "§3.11 財務 · P1 · L309",
+    "condition": "成員退出後，保留歷史財務資料。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_fx_snapshot_precision_and_departed_history）",
+    "notes": "退出者失去旅程財務存取。原作者、歷史匯率及金額保留，Owner 可維護。"
+  },
+  {
+    "id": "FR-FIN-10",
+    "section": "§3.11 財務 · P1 · L311",
+    "condition": "不直接處理金流，不整合銀行或第三方支付。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_budgets_settlements_and_idempotence）、evidence/browser/chrome-playwright.txt #3、backend/app/finance.py:531",
+    "notes": "以兩筆站內還款紀錄結算，資料庫與頁面餘額歸零。結算路徑只寫後端帳本，無銀行或支付呼叫。"
+  },
+  {
+    "id": "EXT-FIN-01",
+    "section": "§3.11 財務 · 段末附加條款",
+    "condition": "財務金額以精確十進位或整數最小單位計算。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_fx_snapshot_precision_and_departed_history）、evidence/modules/pytest.txt（test_manual_fx_and_member_validation）",
+    "notes": "KWD 0.001 × 103.123456789123 換算 TWD 0.10，保存輸入精度。"
+  },
+  {
+    "id": "EXT-FIN-02",
+    "section": "§3.11 財務 · 段末附加條款",
+    "condition": "保存每次換算時使用的匯率及時間。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_fx_snapshot_precision_and_departed_history）",
+    "notes": "JPY 報價的匯率日期、擷取時間與來源寫入，修改費用、成員退出後仍相同。"
+  },
+  {
+    "id": "EXT-FIN-03",
+    "section": "§3.11 財務 · 段末附加條款",
+    "condition": "依幣別精度處理分攤及換算尾差。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_fx_snapshot_precision_and_departed_history）、evidence/modules/pytest.txt（test_integer_rounding_and_netting）",
+    "notes": "101 JPY 以 1 比 2 分攤為 34＋67。單位測試另覆蓋四位小數及尾差分配穩定性。"
+  },
+  {
+    "id": "FR-BOOK-01",
+    "section": "§3.12 交通住宿 · P1 · L317",
+    "condition": "支援多段航班及不同乘客。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_reservation_privacy_and_edits）、evidence/browser/chrome-playwright.txt #4",
+    "notes": "同一預訂建立兩個航段，每段可指定不同旅客及座位。"
+  },
+  {
+    "id": "FR-BOOK-02",
+    "section": "§3.12 交通住宿 · P1 · L319",
+    "condition": "記錄航空公司、航班編號、航廈、時間、座位、行李、價格與訂位資訊。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_booking_complete_fields_and_links）、evidence/modules/pytest.txt（test_reservation_privacy_and_edits）",
+    "notes": "完整航司、班號、雙端航廈、含時差起降時間、座位行李、費用與訂位代號讀回一致。"
+  },
+  {
+    "id": "FR-BOOK-03",
+    "section": "§3.12 交通住宿 · P1 · L321",
+    "condition": "支援多間住宿、入住及退房日期、房型、住客、費用與預訂狀態。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_booking_complete_fields_and_links）",
+    "notes": "同旅程兩筆住宿，重讀確認日期、房型、住客、費用、狀態及所連行程。"
+  },
+  {
+    "id": "FR-BOOK-04",
+    "section": "§3.12 交通住宿 · P1 · L323",
+    "condition": "機票與住宿資訊可關聯每日行程。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_existing_task_and_booking_links_survive_item_removal）、evidence/modules/probes.txt（test_booking_complete_fields_and_links）",
+    "notes": "航班與兩筆住宿均可連至指定每日活動。失效的 item_id 不可作新連結。"
+  },
+  {
+    "id": "FR-BOOK-05",
+    "section": "§3.12 交通住宿 · P1 · L325",
+    "condition": "訂位代號及私人文件僅限授權成員查看。",
+    "implementation": "Partial",
+    "result": "BLOCKED",
+    "evidence": "evidence/modules/pytest.txt（test_reservation_privacy_and_edits）、evidence/browser/chrome-playwright.txt #4、evidence/modules/probes.txt（test_file_contract_and_comment_images）",
+    "notes": "本人及指定旅客可見訂位代號，其他人不可見。私有文件沒有上傳入口，無法驗證授權下載。"
+  },
+  {
+    "id": "FR-BOOK-06",
+    "section": "§3.12 交通住宿 · P1 · L327",
+    "condition": "允許手動更新，並提供外部航班資訊或導航連結，不承諾免費即時航班追蹤。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_booking_complete_fields_and_links）、evidence/modules/module-ui.txt（BOOK-06）",
+    "notes": "更新狀態及官方網址後讀回。Chrome 實際渲染已設的外部網址和含住宿地址的 Google 導航連結。"
+  },
+  {
+    "id": "FR-FILE-01",
+    "section": "§3.13 附件 · P2 · L331",
+    "condition": "支援常見圖片、PDF 與 Office 文件。",
+    "implementation": "Missing",
+    "result": "FAIL",
+    "evidence": "evidence/modules/probes.txt（test_file_contract_and_comment_images）、README.md:71",
+    "notes": "已登入成員向旅程檔案路徑上傳有效 PNG、PDF、DOCX 皆 404，OpenAPI 無檔案路由。"
+  },
+  {
+    "id": "FR-FILE-02",
+    "section": "§3.13 附件 · P2 · L333",
+    "condition": "支援分類、預覽、下載與批次上傳。",
+    "implementation": "Missing",
+    "result": "FAIL",
+    "evidence": "evidence/modules/probes.txt（test_file_contract_and_comment_images）、README.md:71",
+    "notes": "GET／POST 檔案集合均 404，無檔案清單或批次上傳入口，後續具體預覽格式無從檢查。"
+  },
+  {
+    "id": "FR-FILE-03",
+    "section": "§3.13 附件 · P2 · L335",
+    "condition": "檔案可關聯旅程、行程、任務或費用。",
+    "implementation": "Missing",
+    "result": "BLOCKED",
+    "evidence": "evidence/modules/probes.txt（test_file_contract_and_comment_images）、backend/app/preparations.py:39",
+    "notes": "檔案上傳回 404，無檔案 id 可建立四類連結。模型／OpenAPI 未提供檔案關聯。"
+  },
+  {
+    "id": "FR-FILE-04",
+    "section": "§3.13 附件 · P2 · L337",
+    "condition": "Member 管理自己的檔案；涉及私人文件時需檢查相關成員存取權。",
+    "implementation": "Missing",
+    "result": "BLOCKED",
+    "evidence": "evidence/modules/probes.txt（test_file_contract_and_comment_images）、README.md:71",
+    "notes": "無法產生兩位成員持有的真實私有與共用測試檔，因此無法判斷物件層授權或下載結果。"
+  },
+  {
+    "id": "FR-FILE-05",
+    "section": "§3.13 附件 · P2 · L339",
+    "condition": "刪除附件先進入回收狀態。",
+    "implementation": "Missing",
+    "result": "BLOCKED",
+    "evidence": "evidence/modules/probes.txt（test_file_contract_and_comment_images）、README.md:71",
+    "notes": "檔案服務缺少，沒有可刪除、查回收狀態的已存檔案。"
+  },
+  {
+    "id": "FR-FILE-06",
+    "section": "§3.13 附件 · P2 · L341",
+    "condition": "預設每個檔案上限 10 MB，每旅程附件總量 500 MB，採可設定配額，部署時依實際免費儲存空間調整。",
+    "implementation": "Missing",
+    "result": "BLOCKED",
+    "evidence": "evidence/modules/probes.txt（test_file_contract_and_comment_images）、README.md:71",
+    "notes": "小型檔案已得到 404。缺少上傳與旅程配額設定，無法比較 10 MB、500 MB 臨界值。"
+  },
+  {
+    "id": "FR-MAP-01",
+    "section": "§3.14 地圖 · P0 · L345",
+    "condition": "顯示景點地圖與不同類型的標記。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/map-network.txt、evidence/modules/live-map-online.png、evidence/browser/experience.json → map.pins、frontend/components/PlannerMap.tsx:10",
+    "notes": "正常外連時 OSM 回 2 張 HTTP 200，目標景點及圖磚實際顯示並有署名。另在外部圖磚中斷下確認三個地點的不同顏色和類別標記仍可見。"
+  },
+  {
+    "id": "FR-MAP-02",
+    "section": "§3.14 地圖 · P0 · L347",
+    "condition": "提供 Google Maps 搜尋及導航外部連結。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/browser/experience.json → map.popupRequests、frontend/components/plannerTypes.tsx:111",
+    "notes": "分別點擊外開搜尋與導航，核對請求到 Google Maps 的路徑與目標參數。第三方目的頁以攔截保留網址。"
+  },
+  {
+    "id": "FR-MAP-03",
+    "section": "§3.14 地圖 · P1 · L349",
+    "condition": "支援依行程順序顯示景點間連線，但不得將直線距離標示為實際道路路程。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/browser/experience.json → map.line、frontend/components/PlannerMap.tsx:73",
+    "notes": "選擇第一天後 SVG 產生一條連接前兩站的虛線，stroke-dasharray 為 6 8，畫面明示須參考導航決定實際道路。"
+  },
+  {
+    "id": "FR-MAP-04",
+    "section": "§3.14 地圖 · P2 · L351",
+    "condition": "實際交通路線、預估交通時間及路線最佳化，須有符合免費條件且可穩定使用的方案才能啟用。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/browser/experience.json → map、frontend/components/PlannerMap.tsx:70",
+    "notes": "條件式限制以「尚無選用的免費路由方案時不啟用」驗收。本版只顯示順序線與外部導航，沒有實際道路、ETA 或最佳化引擎。"
+  },
+  {
+    "id": "FR-WEATHER-01",
+    "section": "§3.14 天氣 · P1 · L353",
+    "condition": "顯示每日天氣、氣溫及降雨機率。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/providers-network.txt、evidence/modules/pytest.txt（test_weather_success_and_provider_failure）、evidence/modules/module-ui.txt（WEATHER-01）",
+    "notes": "真實臺北查詢回 code 51、15.8–19.7°C、31%。後端以供應商替身測每日 API，前端以本次真實回應重播核對文字。"
+  },
+  {
+    "id": "FR-WEATHER-02",
+    "section": "§3.14 天氣 · P1 · L355",
+    "condition": "尚無預報時顯示「尚無可用天氣預報」。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_weather_success_and_provider_failure）、evidence/modules/module-ui.txt（WEATHER-02）",
+    "notes": "無日期地點時 Chrome 顯示規定文字。供應商逾時時 API 回相同訊息且原活動仍可讀。"
+  },
+  {
+    "id": "FR-NOTIFY-01",
+    "section": "§3.14 通知 · P1 · L357",
+    "condition": "提供網站內通知紀錄、已讀狀態及通知偏好。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_preferences_read_and_membership）、evidence/browser/chrome-playwright.txt #4",
+    "notes": "提及入站內收件匣、可設定偏好與標已讀。重新載入仍為已讀。"
+  },
+  {
+    "id": "FR-NOTIFY-02",
+    "section": "§3.14 通知 · P1 · L359",
+    "condition": "支援符合瀏覽器條件的 Web Push。",
+    "implementation": "Implemented",
+    "result": "BLOCKED",
+    "evidence": "evidence/modules/pytest.txt（test_push_permission_delivery_and_gone）、evidence/modules/push-network.txt、evidence/modules/module-ui.txt（NOTIFY-02）",
+    "notes": "VAPID 簽章、模擬供應商及失效訂閱清除通過。裝置給予通知權限、使用臨時 VAPID 及產品 SW 後，Chrome 訂閱仍報 AbortError: Registration failed - permission denied，無法確認第三方實際投遞。"
+  },
+  {
+    "id": "FR-NOTIFY-03",
+    "section": "§3.14 通知 · P1 · L361",
+    "condition": "Email 發送僅使用符合零付費條件的服務，否則改用手動郵件邀請或站內通知。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/module-ui.txt（NOTIFY-03）、frontend/components/Members.tsx:202",
+    "notes": "Chrome 中的 mailto 草稿含旅程、邀請碼與正確站台連結。此次驗證至建立草稿連結，沒有發送郵件。"
+  },
+  {
+    "id": "FR-PDF-01",
+    "section": "§3.14 匯出 · P1 · L363",
+    "condition": "提供每日行程 PDF 匯出，可選擇日期與詳細程度。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/browser/chrome-playwright.txt #8、evidence/browser/unit.txt（prints only allowlisted…）、evidence/browser/experience.json → pdf",
+    "notes": "取消第二天後實際產生詳表 31,026 bytes 及簡表 24,086 bytes，均具 %PDF 檔頭。兩份都只有第一天，地址僅詳表顯示。"
+  },
+  {
+    "id": "FR-PDF-02",
+    "section": "§3.14 匯出 · P1 · L365",
+    "condition": "PDF 預設排除訂位代號、私人文件及分帳細節。",
+    "implementation": "Implemented",
+    "result": "BLOCKED",
+    "evidence": "evidence/browser/pdf-private.json、evidence/browser/pdf-private-text.json、evidence/browser/unit.txt、evidence/modules/probes.txt（test_file_contract_and_comment_images）",
+    "notes": "同旅程以 API 存入並重讀訂位及分攤。獨立解析詳細及簡表兩份 PDF，均含公開活動，各排除訂位代號、費用名稱、分攤對象、125.79 總額及 91.23／34.56 明細。檔案入口 404，私人文件無法建立，該子條件仍受阻。"
+  },
+  {
+    "id": "FR-OFFLINE-01",
+    "section": "§3.14 離線 · P2 · L367",
+    "condition": "PWA 可離線查看已儲存的行程文字、地址及基本資料。",
+    "implementation": "Missing",
+    "result": "FAIL",
+    "evidence": "evidence/browser/experience.json → offline、frontend/public/sw.js:3、README.md:71",
+    "notes": "Service Worker 已控制頁面且只快取 7 個圖示與插圖。離線新開已讀旅程回 ERR_INTERNET_DISCONNECTED，活動數 0。重連後復原。"
+  },
+  {
+    "id": "FR-OFFLINE-02",
+    "section": "§3.14 離線 · P2 · L369",
+    "condition": "不提供離線編輯與離線多人資料合併。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/module-ui.txt（OFFLINE-02）、frontend/public/sw.js:26",
+    "notes": "離線嘗試新增活動，寫入失敗。恢復網路後重新載入，資料庫中無該草稿。SW 僅處理指定 GET 靜態資產。"
+  },
+  {
+    "id": "FR-HISTORY-01",
+    "section": "§3.14 異動紀錄 · P1 · L371",
+    "condition": "記錄重要資料異動及原始操作者。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/probes.txt（test_audit_origins）、evidence/modules/pytest.txt（test_restore_changed_place_and_deleted_item）、backend/app/core.py:175",
+    "notes": "改動寫入 audit_logs，留言與任務各記錄正確操作者。景點／活動另外保留版本。"
+  },
+  {
+    "id": "FR-HISTORY-02",
+    "section": "§3.14 異動紀錄 · P1 · L373",
+    "condition": "允許有權限的成員復原單筆資料，不提供整趟旅程資料庫時間回溯。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/modules/pytest.txt（test_restore_changed_place_and_deleted_item）、backend/app/planning.py:697",
+    "notes": "景點與行程活動可復原原名稱、成本、標籤、原作者，過期版本回 409，無編輯權回 403。驗收以規格未枚舉類別的「單筆資料」為景點／活動。其他類別未提供通用復原。"
+  }
+]

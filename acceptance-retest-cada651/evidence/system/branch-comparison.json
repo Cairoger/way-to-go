@@ -1,0 +1,365 @@
+{
+  "main": {
+    "alembic": "0002",
+    "tables": [
+      "alembic_version",
+      "audit_logs",
+      "auth_identities",
+      "ballot_choices",
+      "ballots",
+      "comments",
+      "creation_keys",
+      "edit_leases",
+      "invitations",
+      "itinerary_items",
+      "oauth_attempts",
+      "places",
+      "poll_adoptions",
+      "poll_options",
+      "poll_rounds",
+      "polls",
+      "sessions",
+      "trip_candidates",
+      "trip_days",
+      "trip_members",
+      "trips",
+      "users"
+    ],
+    "operations": [
+      "DELETE /api/v1/comments/{comment_id}",
+      "DELETE /api/v1/edit-leases/{lease_id}",
+      "DELETE /api/v1/itinerary-items/{item_id}",
+      "DELETE /api/v1/polls/{poll_id}",
+      "DELETE /api/v1/trips/{trip_id}",
+      "DELETE /api/v1/trips/{trip_id}/candidates/{candidate_id}",
+      "DELETE /api/v1/trips/{trip_id}/invitations/{invite_id}",
+      "DELETE /api/v1/trips/{trip_id}/members/{member_id}",
+      "GET /api/v1/auth/google/callback",
+      "GET /api/v1/auth/local-test",
+      "GET /api/v1/auth/me",
+      "GET /api/v1/places/{place_id}/history",
+      "GET /api/v1/trips",
+      "GET /api/v1/trips/{trip_id}",
+      "GET /api/v1/trips/{trip_id}/comments",
+      "GET /api/v1/trips/{trip_id}/days",
+      "GET /api/v1/trips/{trip_id}/invitations",
+      "GET /api/v1/trips/{trip_id}/members",
+      "GET /api/v1/trips/{trip_id}/place-search",
+      "GET /api/v1/trips/{trip_id}/places",
+      "GET /api/v1/trips/{trip_id}/polls",
+      "PATCH /api/v1/comments/{comment_id}",
+      "PATCH /api/v1/itinerary-items/{item_id}",
+      "PATCH /api/v1/places/{place_id}",
+      "PATCH /api/v1/polls/{poll_id}",
+      "PATCH /api/v1/trips/{trip_id}",
+      "POST /api/v1/auth/google",
+      "POST /api/v1/auth/guest",
+      "POST /api/v1/auth/local-test",
+      "POST /api/v1/auth/logout",
+      "POST /api/v1/days/{day_id}/items",
+      "POST /api/v1/edit-leases",
+      "POST /api/v1/edit-leases/{lease_id}/renew",
+      "POST /api/v1/invitations/accept",
+      "POST /api/v1/itinerary-items/{item_id}/move",
+      "POST /api/v1/polls/{poll_id}/adopt",
+      "POST /api/v1/polls/{poll_id}/close",
+      "POST /api/v1/polls/{poll_id}/options",
+      "POST /api/v1/polls/{poll_id}/reopen",
+      "POST /api/v1/trips",
+      "POST /api/v1/trips/{trip_id}/archive",
+      "POST /api/v1/trips/{trip_id}/candidates",
+      "POST /api/v1/trips/{trip_id}/comments",
+      "POST /api/v1/trips/{trip_id}/days",
+      "POST /api/v1/trips/{trip_id}/invitations",
+      "POST /api/v1/trips/{trip_id}/places",
+      "POST /api/v1/trips/{trip_id}/polls",
+      "POST /api/v1/trips/{trip_id}/restore",
+      "POST /api/v1/trips/{trip_id}/transfer",
+      "PUT /api/v1/polls/{poll_id}/ballot"
+    ],
+    "http": {
+      "places": 200,
+      "days": 200,
+      "polls": 200,
+      "comments": 200,
+      "availability": 404,
+      "finance": 404,
+      "tasks": 404,
+      "bookings": 404,
+      "notifications": 404,
+      "weather": 404,
+      "planner-history": 404,
+      "files": 404,
+      "copy (POST)": 404,
+      "rating poll (POST)": 422
+    },
+    "validated_credential_type": "local_test",
+    "versions": {
+      "alembic": {
+        "required": "1.20.1",
+        "installed": "1.20.1"
+      },
+      "fastapi": {
+        "required": "0.165.0",
+        "installed": "0.165.0"
+      },
+      "google-auth[requests]": {
+        "required": "2.62.2",
+        "installed": "2.62.2"
+      },
+      "httpx": {
+        "required": "0.28.1",
+        "installed": "0.28.1"
+      },
+      "psycopg[binary]": {
+        "required": "3.3.9",
+        "installed": "3.3.9"
+      },
+      "pydantic": {
+        "required": "2.14.3",
+        "installed": "2.14.3"
+      },
+      "qrcode": {
+        "required": "8.2",
+        "installed": "8.2"
+      },
+      "requests": {
+        "required": "2.34.2",
+        "installed": "2.34.2"
+      },
+      "SQLAlchemy": {
+        "required": "2.0.58",
+        "installed": "2.0.58"
+      },
+      "tzdata": {
+        "required": "2026.6",
+        "installed": "2026.6"
+      },
+      "uvicorn[standard]": {
+        "required": "0.54.0",
+        "installed": "0.54.0"
+      }
+    }
+  },
+  "candidate": {
+    "alembic": "0009",
+    "tables": [
+      "account_merges",
+      "alembic_version",
+      "audit_logs",
+      "auth_identities",
+      "availability_entries",
+      "ballot_choices",
+      "ballots",
+      "bookings",
+      "budgets",
+      "comments",
+      "creation_keys",
+      "edit_leases",
+      "entity_revisions",
+      "exchange_rate_snapshots",
+      "expense_payers",
+      "expense_splits",
+      "expenses",
+      "file_links",
+      "file_permissions",
+      "files",
+      "finance_ledgers",
+      "invitations",
+      "itinerary_items",
+      "notification_preferences",
+      "notifications",
+      "oauth_attempts",
+      "places",
+      "poll_adoptions",
+      "poll_options",
+      "poll_rounds",
+      "polls",
+      "push_subscriptions",
+      "sessions",
+      "settlements",
+      "task_assignees",
+      "task_occurrences",
+      "tasks",
+      "trip_candidates",
+      "trip_days",
+      "trip_members",
+      "trips",
+      "users"
+    ],
+    "operations": [
+      "DELETE /api/v1/comments/{comment_id}",
+      "DELETE /api/v1/edit-leases/{lease_id}",
+      "DELETE /api/v1/files/{file_id}",
+      "DELETE /api/v1/itinerary-items/{item_id}",
+      "DELETE /api/v1/notifications/device",
+      "DELETE /api/v1/places/{place_id}",
+      "DELETE /api/v1/polls/{poll_id}",
+      "DELETE /api/v1/trips/{trip_id}",
+      "DELETE /api/v1/trips/{trip_id}/availability/{entry_id}",
+      "DELETE /api/v1/trips/{trip_id}/bookings/{booking_id}",
+      "DELETE /api/v1/trips/{trip_id}/budgets/{budget_id}",
+      "DELETE /api/v1/trips/{trip_id}/candidates/{candidate_id}",
+      "DELETE /api/v1/trips/{trip_id}/expenses/{expense_id}",
+      "DELETE /api/v1/trips/{trip_id}/invitations/{invite_id}",
+      "DELETE /api/v1/trips/{trip_id}/members/{member_id}",
+      "DELETE /api/v1/trips/{trip_id}/settlements/{settlement_id}",
+      "DELETE /api/v1/trips/{trip_id}/tasks/{task_id}",
+      "GET /api/v1/auth/google/callback",
+      "GET /api/v1/auth/local-test",
+      "GET /api/v1/auth/me",
+      "GET /api/v1/days/{day_id}/weather",
+      "GET /api/v1/files/{file_id}/download",
+      "GET /api/v1/files/{file_id}/preview",
+      "GET /api/v1/notifications",
+      "GET /api/v1/places/{place_id}/history",
+      "GET /api/v1/trips",
+      "GET /api/v1/trips/{trip_id}",
+      "GET /api/v1/trips/{trip_id}/availability",
+      "GET /api/v1/trips/{trip_id}/bookings",
+      "GET /api/v1/trips/{trip_id}/comments",
+      "GET /api/v1/trips/{trip_id}/days",
+      "GET /api/v1/trips/{trip_id}/files",
+      "GET /api/v1/trips/{trip_id}/files/limits",
+      "GET /api/v1/trips/{trip_id}/finance",
+      "GET /api/v1/trips/{trip_id}/invitations",
+      "GET /api/v1/trips/{trip_id}/members",
+      "GET /api/v1/trips/{trip_id}/place-search",
+      "GET /api/v1/trips/{trip_id}/places",
+      "GET /api/v1/trips/{trip_id}/planner-history",
+      "GET /api/v1/trips/{trip_id}/polls",
+      "GET /api/v1/trips/{trip_id}/tasks",
+      "PATCH /api/v1/auth/me",
+      "PATCH /api/v1/comments/{comment_id}",
+      "PATCH /api/v1/files/{file_id}",
+      "PATCH /api/v1/itinerary-items/{item_id}",
+      "PATCH /api/v1/places/{place_id}",
+      "PATCH /api/v1/polls/{poll_id}",
+      "PATCH /api/v1/trips/{trip_id}",
+      "PATCH /api/v1/trips/{trip_id}/availability/{entry_id}",
+      "PATCH /api/v1/trips/{trip_id}/budgets/{budget_id}",
+      "PATCH /api/v1/trips/{trip_id}/expenses/{expense_id}",
+      "POST /api/v1/auth/google",
+      "POST /api/v1/auth/guest",
+      "POST /api/v1/auth/local-test",
+      "POST /api/v1/auth/logout",
+      "POST /api/v1/days/{day_id}/items",
+      "POST /api/v1/edit-leases",
+      "POST /api/v1/edit-leases/{lease_id}/renew",
+      "POST /api/v1/files/{file_id}/restore",
+      "POST /api/v1/invitations/accept",
+      "POST /api/v1/itinerary-items/{item_id}/move",
+      "POST /api/v1/notifications/{notice_id}/read",
+      "POST /api/v1/planner-history/{kind}/{resource_id}/restore",
+      "POST /api/v1/polls/{poll_id}/adopt",
+      "POST /api/v1/polls/{poll_id}/close",
+      "POST /api/v1/polls/{poll_id}/options",
+      "POST /api/v1/polls/{poll_id}/reopen",
+      "POST /api/v1/trips",
+      "POST /api/v1/trips/{trip_id}/archive",
+      "POST /api/v1/trips/{trip_id}/availability",
+      "POST /api/v1/trips/{trip_id}/bookings",
+      "POST /api/v1/trips/{trip_id}/budgets",
+      "POST /api/v1/trips/{trip_id}/candidates",
+      "POST /api/v1/trips/{trip_id}/comments",
+      "POST /api/v1/trips/{trip_id}/copy",
+      "POST /api/v1/trips/{trip_id}/days",
+      "POST /api/v1/trips/{trip_id}/expenses",
+      "POST /api/v1/trips/{trip_id}/files",
+      "POST /api/v1/trips/{trip_id}/finance/rates",
+      "POST /api/v1/trips/{trip_id}/invitations",
+      "POST /api/v1/trips/{trip_id}/places",
+      "POST /api/v1/trips/{trip_id}/polls",
+      "POST /api/v1/trips/{trip_id}/restore",
+      "POST /api/v1/trips/{trip_id}/settlements",
+      "POST /api/v1/trips/{trip_id}/tasks",
+      "POST /api/v1/trips/{trip_id}/transfer",
+      "PUT /api/v1/notifications/device",
+      "PUT /api/v1/notifications/preferences",
+      "PUT /api/v1/polls/{poll_id}/ballot",
+      "PUT /api/v1/trips/{trip_id}/bookings/{booking_id}",
+      "PUT /api/v1/trips/{trip_id}/bookings/{booking_id}/public",
+      "PUT /api/v1/trips/{trip_id}/tasks/{task_id}",
+      "PUT /api/v1/trips/{trip_id}/tasks/{task_id}/progress"
+    ],
+    "http": {
+      "places": 200,
+      "days": 200,
+      "polls": 200,
+      "comments": 200,
+      "availability": 200,
+      "finance": 200,
+      "tasks": 200,
+      "bookings": 200,
+      "notifications": 200,
+      "weather": 200,
+      "planner-history": 200,
+      "files": 200,
+      "copy (POST)": 201,
+      "rating poll (POST)": 201
+    },
+    "validated_credential_type": "local_test",
+    "versions": {
+      "alembic": {
+        "required": "1.20.1",
+        "installed": "1.20.1"
+      },
+      "cryptography": {
+        "required": "50.0.2",
+        "installed": "50.0.2"
+      },
+      "fastapi": {
+        "required": "0.165.0",
+        "installed": "0.165.0"
+      },
+      "google-auth[requests]": {
+        "required": "2.62.2",
+        "installed": "2.62.2"
+      },
+      "httpx": {
+        "required": "0.28.1",
+        "installed": "0.28.1"
+      },
+      "psycopg[binary]": {
+        "required": "3.3.9",
+        "installed": "3.3.9"
+      },
+      "pydantic": {
+        "required": "2.14.3",
+        "installed": "2.14.3"
+      },
+      "Pillow": {
+        "required": "13.0.0",
+        "installed": "13.0.0"
+      },
+      "pypdf": {
+        "required": "7.1.1",
+        "installed": "7.1.1"
+      },
+      "python-multipart": {
+        "required": "0.0.34",
+        "installed": "0.0.34"
+      },
+      "qrcode": {
+        "required": "8.2",
+        "installed": "8.2"
+      },
+      "requests": {
+        "required": "2.34.2",
+        "installed": "2.34.2"
+      },
+      "SQLAlchemy": {
+        "required": "2.0.58",
+        "installed": "2.0.58"
+      },
+      "tzdata": {
+        "required": "2026.6",
+        "installed": "2026.6"
+      },
+      "uvicorn[standard]": {
+        "required": "0.54.0",
+        "installed": "0.54.0"
+      }
+    }
+  }
+}

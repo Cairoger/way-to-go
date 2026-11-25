@@ -1,0 +1,42 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- D:\WayToGo\.venv\Scripts\python.exe
+rootdir: D:\WayToGo
+plugins: anyio-4.16.0
+collecting ... collected 8 items
+
+..\acceptance-20261125\evidence\modules\test_module_probes.py::test_four_kind_mode_combinations_and_options date single member-created; owner-voted; cross-author option 200
+date multiple member-created; owner-voted; cross-author option 200
+place single member-created; owner-voted; cross-author option 200
+place multiple member-created; owner-voted; cross-author option 200
+member added option on owner-created poll 200
+PASSED
+..\acceptance-20261125\evidence\modules\test_module_probes.py::test_poll_creator_lifecycle_and_no_deadline edit, close, delete 200 200 200 open after 60 simulated days
+PASSED
+..\acceptance-20261125\evidence\modules\test_module_probes.py::test_availability_is_independent PASSED
+..\acceptance-20261125\evidence\modules\test_module_probes.py::test_task_all_fields_links_and_repeat recurrence, attachment fields 422 422
+PASSED
+..\acceptance-20261125\evidence\modules\test_module_probes.py::test_booking_complete_fields_and_links flight attributes persisted, two stays linked to itinerary; website changed 200
+PASSED
+..\acceptance-20261125\evidence\modules\test_module_probes.py::test_split_multiple_payers_and_subset persisted payers 2 participants 1
+PASSED
+..\acceptance-20261125\evidence\modules\test_module_probes.py::test_file_contract_and_comment_images OpenAPI file/attachment/upload paths []
+file HTTP /files multipart POST 404 GET 404
+file HTTP /api/v1/trips/{id}/files multipart POST 404 GET 404
+synthetic upload sample.png 404
+synthetic upload sample.pdf 404
+synthetic upload sample.docx 404
+comment with attachment metadata 201 stored fields ['author_id', 'content', 'created_at', 'deleted', 'id', 'nickname', 'parent_id', 'updated_at', 'version']
+TaskInput ['assignees', 'description', 'due_date', 'item_id', 'place_id', 'priority', 'scope', 'title']
+BookingInput ['currency', 'item_id', 'kind', 'price', 'reference', 'segments', 'status', 'stay', 'title', 'website']
+NewComment ['content', 'parent_id']
+PASSED
+..\acceptance-20261125\evidence\modules\test_module_probes.py::test_audit_origins audit rows (no identity values) [('trip', 'create'), ('invitation', 'create'), ('membership', 'join'), ('comment', 'comment.created'), ('task', 'create')]
+PASSED
+
+============================== warnings summary ===============================
+..\.venv\Lib\site-packages\fastapi\testclient.py:1
+  D:\WayToGo\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 8 passed, 1 warning in 3.52s =========================

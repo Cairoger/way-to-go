@@ -1,0 +1,4 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source\frontend
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\.local\acceptance-retest-cada651\source\frontend\node_modules\typescript\bin\tsc --noEmit --incremental false
+
+exit=0 elapsed=3.75s

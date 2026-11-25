@@ -1,0 +1,4 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source\frontend
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\.local\acceptance-retest-cada651\source\frontend\node_modules\eslint\bin\eslint.js app components lib tests
+
+exit=0 elapsed=5.86s

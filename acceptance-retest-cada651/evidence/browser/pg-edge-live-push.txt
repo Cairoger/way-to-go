@@ -1,0 +1,14 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source\frontend
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\.local\acceptance-retest-cada651\source\frontend\node_modules\@playwright\test\cli.js test tests/live-push.spec.ts --browser=chromium --reporter=list,json --trace=off --output=D:\WayToGo\.local\acceptance-retest-cada651\pg-edge-live-push-results
+
+Running 2 tests using 1 worker
+
+(node:78664) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node.EXE --trace-warnings ...` to show where the warning was created)
+Background push probe: {"browser":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36 Edg/158.0.0.0","secure":true,"permission":"granted","subscribed":true,"sentAt":"2026-11-25T14:46:36.041Z","inboxMatched":true,"notificationMatched":true,"browserNotificationObservedAt":"2026-11-25T14:46:37.094Z","windowsBanner":"no-matching-actionable-banner"}
+  ok 1 [chromium] › tests\live-push.spec.ts:52:1 › 已安裝瀏覽器在隔離的一般設定檔訂閱並接收背景提及 (13.7s)
+  ok 2 [chromium] › tests\live-push.spec.ts:141:1 › 模擬瀏覽器收到推播後以授權通知定位留言 (1.4s)
+
+  2 passed (17.3s)
+
+exit=0 elapsed=18.23s

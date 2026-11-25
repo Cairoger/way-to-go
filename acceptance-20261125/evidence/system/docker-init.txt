@@ -1,0 +1,3 @@
+Created .env. Add Google OIDC credentials to enable sign-in.
+
+exit=0

@@ -1,0 +1,157 @@
+{
+  "a11y": {
+    "home": {
+      "tool": "4.14.1",
+      "passes": 21,
+      "incomplete": 2,
+      "violations": []
+    },
+    "planner": {
+      "tool": "4.14.1",
+      "passes": 25,
+      "incomplete": 2,
+      "violations": []
+    }
+  },
+  "form": {
+    "nativeRequired": "請填寫這個欄位。",
+    "locale": "zh-TW",
+    "invalidCredentials": "帳號或密碼錯誤。"
+  },
+  "weather": "尚無可用天氣預報",
+  "map": {
+    "tileRequestsAborted": 30,
+    "pins": [
+      {
+        "text": "景",
+        "color": "rgb(34, 130, 100)"
+      },
+      {
+        "text": "餐",
+        "color": "rgb(182, 85, 36)"
+      },
+      {
+        "text": "住",
+        "color": "rgb(134, 87, 154)"
+      }
+    ],
+    "line": {
+      "dash": "6 8",
+      "path": "M428 291L545 102"
+    },
+    "notice": "底圖暫時無法載入。可使用下方景點地址及導航連結。",
+    "places": [
+      "港邊步道港邊步道測試路一號定位",
+      "車站咖啡車站咖啡測試路一號定位",
+      "古城旅館古城旅館測試路一號定位"
+    ],
+    "links": [
+      {
+        "text": "在 Google Maps 搜尋港邊步道",
+        "url": "https://www.google.com/maps/search/?api=1&query=22.62%2C120.29",
+        "target": "_blank"
+      },
+      {
+        "text": "導航至港邊步道",
+        "url": "https://www.google.com/maps/dir/?api=1&destination=22.62%2C120.29",
+        "target": "_blank"
+      },
+      {
+        "text": "在 Google Maps 搜尋車站咖啡",
+        "url": "https://www.google.com/maps/search/?api=1&query=22.635%2C120.3",
+        "target": "_blank"
+      },
+      {
+        "text": "導航至車站咖啡",
+        "url": "https://www.google.com/maps/dir/?api=1&destination=22.635%2C120.3",
+        "target": "_blank"
+      },
+      {
+        "text": "在 Google Maps 搜尋古城旅館",
+        "url": "https://www.google.com/maps/search/?api=1&query=22.63%2C120.28",
+        "target": "_blank"
+      },
+      {
+        "text": "導航至古城旅館",
+        "url": "https://www.google.com/maps/dir/?api=1&destination=22.63%2C120.28",
+        "target": "_blank"
+      }
+    ],
+    "attribution": " Leaflet | © OpenStreetMap contributors",
+    "popupRequests": [
+      "https://www.google.com/maps/search/?api=1&query=22.62%2C120.29",
+      "https://www.google.com/maps/dir/?api=1&destination=22.62%2C120.29"
+    ]
+  },
+  "rwd": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "clientWidth": 320
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "clientWidth": 390
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "clientWidth": 768
+    },
+    {
+      "width": 1280,
+      "scrollWidth": 1280,
+      "clientWidth": 1280
+    }
+  ],
+  "pdf": {
+    "details": {
+      "bytes": 31026,
+      "signature": "%PDF",
+      "printed": "列印或儲存 PDF\nDay 1 · 2027-02-01\n\nAsia/Taipei\n\n09:00　港邊步道\n景點 · Asia/Taipei · 45 分鐘 · 港邊步道測試路一號\n14:00　車站咖啡\n餐飲 · Asia/Taipei · 45 分鐘 · 車站咖啡測試路一號",
+      "includesDay1": true,
+      "includesDay2": false,
+      "includesAddress": true,
+      "includesPrivateNote": false
+    },
+    "brief": {
+      "bytes": 24086,
+      "signature": "%PDF",
+      "printed": "列印或儲存 PDF\nDay 1 · 2027-02-01\n\nAsia/Taipei\n\n09:00　港邊步道\n14:00　車站咖啡",
+      "includesDay1": true,
+      "includesDay2": false,
+      "includesAddress": false,
+      "includesPrivateNote": false
+    }
+  },
+  "offline": {
+    "ready": [
+      "waytogo-art-v2"
+    ],
+    "sw": {
+      "controlling": true,
+      "keys": [
+        {
+          "key": "waytogo-art-v2",
+          "urls": [
+            "/offline.html",
+            "/offline-reader.js",
+            "/offline-reader.css",
+            "/compass.svg",
+            "/icon-192.png",
+            "/icon-512.png",
+            "/art/valley.webp",
+            "/art/kyoto.webp",
+            "/art/alps.webp",
+            "/art/tainan.webp"
+          ]
+        }
+      ]
+    },
+    "error": null,
+    "showsItinerary": 0,
+    "online": false,
+    "afterReconnecting": true
+  }
+}

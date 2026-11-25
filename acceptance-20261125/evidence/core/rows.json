@@ -1,0 +1,479 @@
+[
+  {
+    "id": "FR-AUTH-01",
+    "section": "§3.1 L104",
+    "condition": "從 Google 完成 OIDC 同意、回呼、登入並可建立旅程。",
+    "implementation": "Implemented",
+    "result": "BLOCKED",
+    "evidence": "evidence/core/pytest.log · test_google_oidc_cookie_rotation_and_state_binding、test_missing_oidc_settings_and_request_origin；backend/app/auth.py:163、213、240",
+    "notes": "本機可驗 PKCE、回呼、輪替與錯誤。隔離部署使用合成帳號，無可用 Google 測試憑證與互動帳戶，Google 實際授權待驗。"
+  },
+  {
+    "id": "FR-AUTH-02",
+    "section": "§3.1 L106",
+    "condition": "訪客持有效邀請、輸入暱稱後成為旅程成員。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · GUEST_JOIN_EMAIL_QR_PRESENCE；evidence/core/pytest.log · test_guest_invite_lifecycle",
+    "notes": "兩個獨立 Chrome 環境，訪客加入後可看同一旅程。"
+  },
+  {
+    "id": "FR-AUTH-03",
+    "section": "§3.1 L108",
+    "condition": "HTTPS Cookie 有安全屬性，同瀏覽器重整保有身分。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_context_session_https；evidence/core/browser.log · TITLE_ONLY_SESSION_RELOAD",
+    "notes": "HTTPS ASGI 回應含 Secure、HttpOnly、SameSite=Lax、Max-Age；loopback Chrome 重整後仍可讀取已建立的旅程。"
+  },
+  {
+    "id": "FR-AUTH-04",
+    "section": "§3.1 L110",
+    "condition": "訪客經 Google 登入後保留或合併旅程、原身分、選票、留言。",
+    "implementation": "Implemented",
+    "result": "BLOCKED",
+    "evidence": "evidence/core/pytest.log · test_merge_keeps_owner_authorization_finances_and_private_travel_data、test_open_ballot_collisions_dates_and_closed_results；evidence/core/timeout-merge.log · test_core_merge_comment_ownership",
+    "notes": "在替代 Google 交換結果之後，實際合併資料庫、舊 Session 撤銷、選票及留言轉移均成功。與真實 Google 串接的整段流程受阻。"
+  },
+  {
+    "id": "FR-AUTH-05",
+    "section": "§3.1 L112",
+    "condition": "訪客嘗試建立旅程，回應權限拒絕並提示以 Google 登入。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_guest_invite_lifecycle；backend/app/trips.py:174",
+    "notes": "實測建立回應 403，處理分支為 GOOGLE_REQUIRED。"
+  },
+  {
+    "id": "FR-AUTH-06",
+    "section": "§3.1 L114",
+    "condition": "登出、到期及撤銷後受保護資源拒絕存取。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_server_session_revocation_and_expiry、test_google_oidc_cookie_rotation_and_state_binding",
+    "notes": "登出後以原 cookie 與過期 Session 讀取被拒絕；身分升級後舊 Session 亦失效。"
+  },
+  {
+    "id": "FR-TRIP-01",
+    "section": "§3.2 L118",
+    "condition": "建立、重讀、修改、封存、刪除同一旅程並可驗證保存狀態。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_trip_versions_archives_and_idempotency；evidence/core/probes.log · test_core_trip_fields_status_retention",
+    "notes": "新建回應 201，版本更新、封存、回收及復原皆有 API 斷言。"
+  },
+  {
+    "id": "FR-TRIP-02",
+    "section": "§3.2 L120",
+    "condition": "建立旅程時僅填名稱即成功。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · TITLE_ONLY_SESSION_RELOAD；evidence/core/probes.log · test_core_trip_fields_status_retention",
+    "notes": "真實建立表單使用預設值；API body 只有 title 亦為 201。"
+  },
+  {
+    "id": "FR-TRIP-03",
+    "section": "§3.2 L131",
+    "condition": "能保存起迄日期皆空白的旅程。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention；evidence/core/browser.log · TITLE_ONLY_SESSION_RELOAD",
+    "notes": "建立後回讀 start_date、end_date 皆為 null。"
+  },
+  {
+    "id": "FR-TRIP-04",
+    "section": "§3.2 L133",
+    "condition": "日期和景點未定可先排活動或投票，之後能補資料。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_time_options_types_and_order；evidence/core/probes.log · test_core_places_fields_status_author_days；evidence/core/pytest.log · test_member_removal_transfers_poll_control_and_transfer_owner",
+    "notes": "無景點、無日期能建立 6 型活動；先排後補日期保留兩天引用；未設定日期前也能開投票。"
+  },
+  {
+    "id": "FR-TRIP-05",
+    "section": "§3.2 L135",
+    "condition": "可依序設定、由另一位成員讀回四個指定狀態。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention",
+    "notes": "planning、confirmed、traveling、completed 均保存。"
+  },
+  {
+    "id": "FR-TRIP-06",
+    "section": "§3.2 L137",
+    "condition": "封存只改變清單分類，保留原狀態與旅程內容。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention；evidence/core/browser-lifecycle.log · ARCHIVE_UI",
+    "notes": "已完成旅程封存後仍為 completed；真實網頁在總覽移除，經已封存入口可見原活動。"
+  },
+  {
+    "id": "FR-TRIP-07",
+    "section": "§3.2 L139",
+    "condition": "Owner 可在刪除後 30 日的回收窗口內復原，過期後不能。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention；evidence/core/browser-lifecycle.log · RESTORE_UI；backend/app/core.py:154",
+    "notes": "測試固定已刪時間至 29 天前 → 200；31 天前 → 列表排除且復原回 404。此條以使用者可復原期限驗收。"
+  },
+  {
+    "id": "FR-TRIP-08",
+    "section": "§3.2 L141",
+    "condition": "複製景點、每日安排；排除原成員、投票、分帳及私人文件。",
+    "implementation": "Implemented",
+    "result": "BLOCKED",
+    "evidence": "evidence/core/pytest.log · test_copy_planning_snapshot_to_own_trip_only、test_copy_linked_travel_arrangements_without_private_booking_or_assignees；backend/app/trip_copy.py:88",
+    "notes": "兩個快照測試通過，已檢查公開安排、成員、投票、預算、訂位代號等。原專案缺少私人文件入口，無法放入真實私檔驗證完整排除條件。"
+  },
+  {
+    "id": "TRIP-OPT-01",
+    "section": "§3.2 L124",
+    "condition": "可儲存多國、多城市目的地。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention",
+    "notes": "同一旅程讀回 Japan、Kyoto、Taiwan、Taipei。"
+  },
+  {
+    "id": "TRIP-OPT-02",
+    "section": "§3.2 L125",
+    "condition": "可設定開始與結束日期。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention",
+    "notes": "讀回 2027-04-01 至 2027-04-02。"
+  },
+  {
+    "id": "TRIP-OPT-03",
+    "section": "§3.2 L126",
+    "condition": "可指定封面和描述。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention；frontend/components/TripForm.tsx:130",
+    "notes": "讀回 kyoto 和 night；UI 封面使用專案預設圖。"
+  },
+  {
+    "id": "TRIP-OPT-04",
+    "section": "§3.2 L127",
+    "condition": "可指定主要幣別。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention",
+    "notes": "指定 JPY，讀回相符。"
+  },
+  {
+    "id": "TRIP-OPT-05",
+    "section": "§3.2 L128",
+    "condition": "可設定旅遊天數。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention；evidence/core/browser.log · TITLE_ONLY_SESSION_RELOAD、DRAG_CROSS_DAY",
+    "notes": "API 建立時指定 3 天，讀回 3 天。UI 建立時無一次指定天數欄位，旅程內能逐日新增。"
+  },
+  {
+    "id": "TRIP-OPT-06",
+    "section": "§3.2 L129",
+    "condition": "旅程資料可辨識建立者與建立時間，所有權轉移後仍能區分。",
+    "implementation": "Partial",
+    "result": "FAIL",
+    "evidence": "evidence/core/probes.log · test_core_trip_original_creator_after_transfer；backend/app/trips.py:99、289",
+    "notes": "建立時間存在；最初建立者只存於內部 audit_logs，旅程資料只暴露當任 owner_id。此判斷把「可選資料」解讀為成員可讀。"
+  },
+  {
+    "id": "TRIP-COMPLETED-EDIT",
+    "section": "§3.2 L143",
+    "condition": "已完成的旅程仍允許編輯。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_trip_fields_status_retention",
+    "notes": "將狀態改為 completed 後成功改名，另一位成員讀回新名稱。"
+  },
+  {
+    "id": "FR-INV-01",
+    "section": "§3.3 L147",
+    "condition": "可生成並以邀請連結或邀請碼加入。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · GUEST_JOIN_EMAIL_QR_PRESENCE；evidence/core/probes.log · test_core_qr_and_default_invitation",
+    "notes": "Chrome 使用連結加入；HTTP 輸入 URL 中的邀請碼也取得成員身分。"
+  },
+  {
+    "id": "FR-INV-02",
+    "section": "§3.3 L149",
+    "condition": "顯示的 QR Code 必須編碼同一邀請連結。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_qr_and_default_invitation；evidence/core/browser.log · GUEST_JOIN_EMAIL_QR_PRESENCE",
+    "notes": "將完整 URL 另行編碼為 QR，比對 endpoint 回傳 SVG 完全一致；瀏覽器確認 QR 可見。"
+  },
+  {
+    "id": "FR-INV-03",
+    "section": "§3.3 L151",
+    "condition": "可將旅程邀請以 Email 傳遞。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · GUEST_JOIN_EMAIL_QR_PRESENCE；frontend/components/Members.tsx:202",
+    "notes": "依 §3.14 允許手動郵件；驗證 mailto 草稿主旨含旅程名、內文含同一連結。未向任何外部收件者寄信。"
+  },
+  {
+    "id": "FR-INV-04",
+    "section": "§3.3 L153",
+    "condition": "邀請預設七天到期，到期後不能新加入。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_qr_and_default_invitation；evidence/core/pytest.log · test_guest_invite_lifecycle",
+    "notes": "實測剩餘 604800 秒，測試資料調至過期後新訪客加入回 403。"
+  },
+  {
+    "id": "FR-INV-05",
+    "section": "§3.3 L155",
+    "condition": "Owner 可撤銷邀請、產生新連結並移除成員。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_guest_invite_lifecycle；evidence/core/pytest.log · test_member_removal_transfers_poll_control_and_transfer_owner",
+    "notes": "撤銷後新加入被拒；可重新產生邀請；移除成員後其讀取被拒。"
+  },
+  {
+    "id": "FR-INV-06",
+    "section": "§3.3 L157",
+    "condition": "有效邀請無須 Owner 審核，加入即可參與。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · GUEST_JOIN_EMAIL_QR_PRESENCE、CREATE_VISIBLE_ON_PEER、OVERLAP",
+    "notes": "訪客加入後自行建立活動，Owner 頁面可見。"
+  },
+  {
+    "id": "FR-INV-07",
+    "section": "§3.3 L159",
+    "condition": "同一身分接受同一邀請兩次只留一筆成員資格。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_guest_invite_lifecycle",
+    "notes": "加入前後清單均為 Owner 和一位訪客。"
+  },
+  {
+    "id": "INV-MEMBER-RETAIN",
+    "section": "§3.3 L161",
+    "condition": "邀請過期、撤銷後，已加入成員仍能使用。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_guest_invite_lifecycle",
+    "notes": "撤銷原邀請並使替代邀請過期後，新人遭拒，既有訪客讀成員名單得到 200。"
+  },
+  {
+    "id": "FR-PLACE-01",
+    "section": "§3.4 L165",
+    "condition": "能手動建立景點並用外部服務搜尋含座標的地點。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/wiki-retry.log · test_core_live_wikipedia；evidence/core/probes.log · test_core_places_fields_status_author_days",
+    "notes": "允許網路重試後，實際 Wikipedia 查「台北101」回 200 與 25.03361111、121.56444444。手動欄位也成功保存。"
+  },
+  {
+    "id": "FR-PLACE-02",
+    "section": "§3.4 L167",
+    "condition": "辨識明碼 Google Maps 地點，未能解析時手動補上並儲存。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · MAP_LINK_PARSE_AND_MANUAL_SAVE",
+    "notes": "臺北 101 連結帶入名稱與緯度 25.03；不可解析的短連結顯示提示，手動景點出現在清單。"
+  },
+  {
+    "id": "FR-PLACE-03",
+    "section": "§3.4 L169",
+    "condition": "保存名稱、地址、經緯度、國家、城市、分類、標籤、狀態、停留、費用、營業時間、官網、照片、備註、建立者與修改紀錄。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_places_fields_status_author_days；backend/app/planning.py:50、330、373；frontend/components/PlannerForms.tsx:280",
+    "notes": "逐欄比對持久化回讀；照片以 URL 填寫，另確認建立者及五筆具操作者的異動紀錄。"
+  },
+  {
+    "id": "FR-PLACE-04",
+    "section": "§3.4 L181",
+    "condition": "必去、想去、備選、不考慮四種狀態均可保存。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_places_fields_status_author_days",
+    "notes": "四次修改並於另一個成員工作階段分別讀回 must/want/maybe/skip。"
+  },
+  {
+    "id": "FR-PLACE-05",
+    "section": "§3.4 L183",
+    "condition": "同一景點可在兩個日期各排一次。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_places_fields_status_author_days",
+    "notes": "讀回兩天保存同一 place_id，轉為實際日期後引用仍在。"
+  },
+  {
+    "id": "FR-PLACE-06",
+    "section": "§3.4 L185",
+    "condition": "移出候選清單不影響既有每日行程引用。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_place_retained_after_candidate_removal",
+    "notes": "候選狀態為 false，原先的 item_id 與 place_id 均保留。"
+  },
+  {
+    "id": "FR-PLACE-07",
+    "section": "§3.4 L187",
+    "condition": "僅編輯權持有人能修改或移除原始景點。",
+    "implementation": "Partial",
+    "result": "FAIL",
+    "evidence": "evidence/core/pytest.log · test_place_retained_after_candidate_removal；evidence/core/probes.log · test_core_original_place_removal；backend/app/planning.py:420、462",
+    "notes": "Owner 無法鎖定他人的景點，作者能改內容及移出候選。作者取得有效鎖嘗試移除原始景點回 405；UI 僅提供移出候選。"
+  },
+  {
+    "id": "PLACE-MANUAL-FALLBACK",
+    "section": "§3.4 L179",
+    "condition": "外部資料無法取得時可手動輸入對應欄位。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · MAP_LINK_PARSE_AND_MANUAL_SAVE；evidence/core/probes.log · test_core_places_fields_status_author_days；evidence/core/pytest.log · test_search_outage_preserves_saved_content",
+    "notes": "外部搜尋停用回 503 時已存資料可讀；手動補值能儲存，包含照片網址與開放時間。"
+  },
+  {
+    "id": "FR-PLAN-01",
+    "section": "§3.5 L191",
+    "condition": "無實際日期可建立並區分多個行程日。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_places_fields_status_author_days；evidence/core/browser.log · DRAG_CROSS_DAY",
+    "notes": "API 確認兩天日期皆 null，Chrome 可切換 Day 01／02。"
+  },
+  {
+    "id": "FR-PLAN-02",
+    "section": "§3.5 L193",
+    "condition": "確認起始日後，各 Day 自動對應連續實際日期。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_places_fields_status_author_days",
+    "notes": "兩天自動顯示 2027-04-01、04-02，原景點引用仍存在。"
+  },
+  {
+    "id": "FR-PLAN-03",
+    "section": "§3.5 L195",
+    "condition": "可加入並讀回景點、餐飲、交通、住宿、航班與自訂活動。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_time_options_types_and_order",
+    "notes": "六種類型均建立成功，讀回順序與類型一致。"
+  },
+  {
+    "id": "FR-PLAN-04",
+    "section": "§3.5 L197",
+    "condition": "使用者可同日及跨日拖曳自己持有編輯權的項目。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · DRAG_SAME_DAY、DRAG_CROSS_DAY；evidence/core/pytest.log · test_move_overlap_and_passive_order",
+    "notes": "Playwright 以真實 dragTo 完成兩次拖曳，另一個瀏覽器看見新順序與日期。"
+  },
+  {
+    "id": "FR-PLAN-05",
+    "section": "§3.5 L199",
+    "condition": "拖曳自己的項目，他人的項目可被動換位，內容版本不變。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · DRAG_SAME_DAY；evidence/core/pytest.log · test_move_overlap_and_passive_order",
+    "notes": "畫面排序改變，被動項目版本保持原值；旅伴頁面該項目 draggable=false。"
+  },
+  {
+    "id": "FR-PLAN-06",
+    "section": "§3.5 L201",
+    "condition": "允許不填時間、只填開始、開始與結束、開始加停留等四種模式。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_time_options_types_and_order",
+    "notes": "四種均成功持久化；結束早於開始時回 422。"
+  },
+  {
+    "id": "FR-PLAN-07",
+    "section": "§3.5 L203",
+    "condition": "保存重疊的兩個活動，同時在畫面呈現警告。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · OVERLAP；evidence/core/pytest.log · test_move_overlap_and_passive_order",
+    "notes": "Chrome 中 09:00＋60 分與 09:20＋25 分均保存，兩個活動均顯示時間重疊。"
+  },
+  {
+    "id": "FR-PLAN-08",
+    "section": "§3.5 L205",
+    "condition": "重排後重算建議時間，不改寫他人的手動時間。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_time_suggestions_and_local_zones",
+    "notes": "紐約 12:00 ＋60 分後建議 13:00；移動自動時間項目後手動項目仍 12:00 且版本相同。"
+  },
+  {
+    "id": "FR-PLAN-09",
+    "section": "§3.5 L207",
+    "condition": "使用有效 IANA 時區並將目的地時間轉為其他時區顯示。",
+    "implementation": "Partial",
+    "result": "FAIL",
+    "evidence": "evidence/modules/cross-checks.txt · test_iana_dst_gap_round_trip；evidence/core/pytest.log · test_time_suggestions_and_local_zones；evidence/core/browser-lifecycle.log · ZONES_UI",
+    "notes": "一般夏季日期正確顯示紐約 09:00／臺北 21:00。2027-03-14 紐約跳時日不存在的 02:30 卻獲 201；傳回 07:30Z 換回當地為 03:30，與保存的活動時間矛盾。"
+  },
+  {
+    "id": "FR-COLLAB-01",
+    "section": "§3.6 L211",
+    "condition": "新增、編輯及刪除行程後另一個在線成員毋需重整即看見。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · CREATE_VISIBLE_ON_PEER、EDIT_AND_LOCK_VISIBLE_ON_PEER、DELETE_VISIBLE_ON_PEER",
+    "notes": "查碼與顯示在不同 Chrome context，三種操作都反映。"
+  },
+  {
+    "id": "FR-COLLAB-02",
+    "section": "§3.6 L213",
+    "condition": "在線成員名單與編輯中的項目、持有人可見。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · GUEST_JOIN_EMAIL_QR_PRESENCE、EDIT_AND_LOCK_VISIBLE_ON_PEER；evidence/core/probes.log · test_core_lease_duration_and_explicit_release",
+    "notes": "顯示 2 人在線、訪客姓名旁在線、另一頁看見活動編輯中與 API 所持鎖姓名。"
+  },
+  {
+    "id": "FR-COLLAB-03",
+    "section": "§3.6 L215",
+    "condition": "一筆項目一次只允許一筆有效編輯鎖。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_lease_contention_renewal_timeout_and_stale_version；evidence/core/browser.log · EDIT_AND_LOCK_VISIBLE_ON_PEER",
+    "notes": "已鎖定資源的第二次取得回 423；他人的資源編輯權先以 403 拒絕。"
+  },
+  {
+    "id": "FR-COLLAB-04",
+    "section": "§3.6 L217",
+    "condition": "鎖定期限預設 90 秒，持續編輯允許續期。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_lease_duration_and_explicit_release；frontend/components/Planner.tsx:282",
+    "notes": "測得初始 TTL 89.99 秒；renew 成功延長 expires_at，表單每 35 秒續期。"
+  },
+  {
+    "id": "FR-COLLAB-05",
+    "section": "§3.6 L219",
+    "condition": "結束編輯可主動釋放，編輯者失聯或租約到期可重新取得。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/probes.log · test_core_lease_duration_and_explicit_release；evidence/core/timeout-merge.log · test_core_expiration_after_editor_disappears",
+    "notes": "明確解除後可立即重新取得；關閉編輯端且未發 release/renew，競爭先獲 423，實際等待 90.5 秒取得新鎖。"
+  },
+  {
+    "id": "FR-COLLAB-06",
+    "section": "§3.6 L221",
+    "condition": "對已有版本的行程／景點提交陳舊版本時，拒絕覆寫。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/pytest.log · test_lease_contention_renewal_timeout_and_stale_version；evidence/core/pytest.log · test_trip_versions_archives_and_idempotency、test_restore_changed_place_and_deleted_item",
+    "notes": "驗證旅程、景點、復原操作的 409，查回保有已提交的新版本。"
+  },
+  {
+    "id": "FR-COLLAB-07",
+    "section": "§3.6 L223",
+    "condition": "即時連線中斷且其間有資料修改，恢復後能取得新資料。",
+    "implementation": "Implemented",
+    "result": "PASS",
+    "evidence": "evidence/core/browser.log · RECONNECT_BEFORE_RESTORE、RECONNECT_REFETCH；frontend/components/TripDetail.tsx:129",
+    "notes": "測試代理中斷該分頁 WebSocket，另一分頁新增活動；恢復前 0 筆，回連後自行顯示 1 筆。"
+  }
+]

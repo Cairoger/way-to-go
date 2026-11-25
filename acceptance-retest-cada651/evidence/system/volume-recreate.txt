@@ -1,0 +1,10 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source
+command=D:\WayToGo\.local\docker-compose-v2.exe --project-directory D:\WayToGo\.local\acceptance-retest-cada651\source -f D:\WayToGo\.local\acceptance-retest-cada651\source\compose.yaml -p wtgrerunbe5550cd53 up -d --force-recreate --no-deps --wait db
+ Container wtgrerunbe5550cd53-db-1  Recreate
+ Container wtgrerunbe5550cd53-db-1  Recreated
+ Container wtgrerunbe5550cd53-db-1  Starting
+ Container wtgrerunbe5550cd53-db-1  Started
+ Container wtgrerunbe5550cd53-db-1  Waiting
+ Container wtgrerunbe5550cd53-db-1  Healthy
+
+exit=0 elapsed=6.95s

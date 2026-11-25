@@ -1,0 +1,1 @@
+Verified synthetic-only test roots removed: 4; disposable SQLite files removed: 26.

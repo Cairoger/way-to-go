@@ -1,0 +1,4 @@
+ wtgaudita6bfed116b788db5-db-1 copy C:\Users\a0928\AppData\Local\Temp\wtg-compose-1c8mjdp1\backups\waytogo-20261125T122649Z.dump to wtgaudita6bfed116b788db5-db-1:/tmp/qa.dump Copying
+ wtgaudita6bfed116b788db5-db-1 copy C:\Users\a0928\AppData\Local\Temp\wtg-compose-1c8mjdp1\backups\waytogo-20261125T122649Z.dump to wtgaudita6bfed116b788db5-db-1:/tmp/qa.dump Copied
+
+exit=0

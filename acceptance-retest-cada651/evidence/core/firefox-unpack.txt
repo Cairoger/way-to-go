@@ -1,0 +1,4 @@
+cwd=D:\WayToGo
+command=tar -xf D:\WayToGo\.local\acceptance-retest-cada651\official-firefox\firefox.7z -C D:\WayToGo\.local\acceptance-retest-cada651\official-firefox
+
+exit=0 elapsed=5.61s

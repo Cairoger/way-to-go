@@ -1,0 +1,409 @@
+{
+  "posts": 5,
+  "samples": 80,
+  "timeouts": 0,
+  "p95Ms": 321,
+  "maxMs": 401,
+  "measurements": [
+    {
+      "edit": 1,
+      "observer": 2,
+      "ms": 204
+    },
+    {
+      "edit": 1,
+      "observer": 3,
+      "ms": 305
+    },
+    {
+      "edit": 1,
+      "observer": 4,
+      "ms": 224
+    },
+    {
+      "edit": 1,
+      "observer": 5,
+      "ms": 306
+    },
+    {
+      "edit": 2,
+      "observer": 2,
+      "ms": 208
+    },
+    {
+      "edit": 2,
+      "observer": 3,
+      "ms": 208
+    },
+    {
+      "edit": 2,
+      "observer": 4,
+      "ms": 209
+    },
+    {
+      "edit": 2,
+      "observer": 5,
+      "ms": 208
+    },
+    {
+      "edit": 3,
+      "observer": 2,
+      "ms": 194
+    },
+    {
+      "edit": 3,
+      "observer": 3,
+      "ms": 195
+    },
+    {
+      "edit": 3,
+      "observer": 4,
+      "ms": 198
+    },
+    {
+      "edit": 3,
+      "observer": 5,
+      "ms": 197
+    },
+    {
+      "edit": 4,
+      "observer": 2,
+      "ms": 201
+    },
+    {
+      "edit": 4,
+      "observer": 3,
+      "ms": 202
+    },
+    {
+      "edit": 4,
+      "observer": 4,
+      "ms": 202
+    },
+    {
+      "edit": 4,
+      "observer": 5,
+      "ms": 204
+    },
+    {
+      "edit": 5,
+      "observer": 2,
+      "ms": 194
+    },
+    {
+      "edit": 5,
+      "observer": 3,
+      "ms": 194
+    },
+    {
+      "edit": 5,
+      "observer": 4,
+      "ms": 201
+    },
+    {
+      "edit": 5,
+      "observer": 5,
+      "ms": 200
+    },
+    {
+      "edit": 6,
+      "observer": 2,
+      "ms": 197
+    },
+    {
+      "edit": 6,
+      "observer": 3,
+      "ms": 202
+    },
+    {
+      "edit": 6,
+      "observer": 4,
+      "ms": 202
+    },
+    {
+      "edit": 6,
+      "observer": 5,
+      "ms": 201
+    },
+    {
+      "edit": 7,
+      "observer": 2,
+      "ms": 193
+    },
+    {
+      "edit": 7,
+      "observer": 3,
+      "ms": 194
+    },
+    {
+      "edit": 7,
+      "observer": 4,
+      "ms": 194
+    },
+    {
+      "edit": 7,
+      "observer": 5,
+      "ms": 194
+    },
+    {
+      "edit": 8,
+      "observer": 2,
+      "ms": 207
+    },
+    {
+      "edit": 8,
+      "observer": 3,
+      "ms": 206
+    },
+    {
+      "edit": 8,
+      "observer": 4,
+      "ms": 208
+    },
+    {
+      "edit": 8,
+      "observer": 5,
+      "ms": 208
+    },
+    {
+      "edit": 9,
+      "observer": 2,
+      "ms": 201
+    },
+    {
+      "edit": 9,
+      "observer": 3,
+      "ms": 201
+    },
+    {
+      "edit": 9,
+      "observer": 4,
+      "ms": 205
+    },
+    {
+      "edit": 9,
+      "observer": 5,
+      "ms": 202
+    },
+    {
+      "edit": 10,
+      "observer": 2,
+      "ms": 220
+    },
+    {
+      "edit": 10,
+      "observer": 3,
+      "ms": 218
+    },
+    {
+      "edit": 10,
+      "observer": 4,
+      "ms": 223
+    },
+    {
+      "edit": 10,
+      "observer": 5,
+      "ms": 220
+    },
+    {
+      "edit": 11,
+      "observer": 2,
+      "ms": 195
+    },
+    {
+      "edit": 11,
+      "observer": 3,
+      "ms": 193
+    },
+    {
+      "edit": 11,
+      "observer": 4,
+      "ms": 193
+    },
+    {
+      "edit": 11,
+      "observer": 5,
+      "ms": 200
+    },
+    {
+      "edit": 12,
+      "observer": 2,
+      "ms": 208
+    },
+    {
+      "edit": 12,
+      "observer": 3,
+      "ms": 209
+    },
+    {
+      "edit": 12,
+      "observer": 4,
+      "ms": 211
+    },
+    {
+      "edit": 12,
+      "observer": 5,
+      "ms": 216
+    },
+    {
+      "edit": 13,
+      "observer": 2,
+      "ms": 209
+    },
+    {
+      "edit": 13,
+      "observer": 3,
+      "ms": 209
+    },
+    {
+      "edit": 13,
+      "observer": 4,
+      "ms": 216
+    },
+    {
+      "edit": 13,
+      "observer": 5,
+      "ms": 215
+    },
+    {
+      "edit": 14,
+      "observer": 2,
+      "ms": 205
+    },
+    {
+      "edit": 14,
+      "observer": 3,
+      "ms": 211
+    },
+    {
+      "edit": 14,
+      "observer": 4,
+      "ms": 215
+    },
+    {
+      "edit": 14,
+      "observer": 5,
+      "ms": 215
+    },
+    {
+      "edit": 15,
+      "observer": 2,
+      "ms": 266
+    },
+    {
+      "edit": 15,
+      "observer": 3,
+      "ms": 266
+    },
+    {
+      "edit": 15,
+      "observer": 4,
+      "ms": 272
+    },
+    {
+      "edit": 15,
+      "observer": 5,
+      "ms": 234
+    },
+    {
+      "edit": 16,
+      "observer": 2,
+      "ms": 304
+    },
+    {
+      "edit": 16,
+      "observer": 3,
+      "ms": 287
+    },
+    {
+      "edit": 16,
+      "observer": 4,
+      "ms": 300
+    },
+    {
+      "edit": 16,
+      "observer": 5,
+      "ms": 288
+    },
+    {
+      "edit": 17,
+      "observer": 2,
+      "ms": 395
+    },
+    {
+      "edit": 17,
+      "observer": 3,
+      "ms": 390
+    },
+    {
+      "edit": 17,
+      "observer": 4,
+      "ms": 401
+    },
+    {
+      "edit": 17,
+      "observer": 5,
+      "ms": 290
+    },
+    {
+      "edit": 18,
+      "observer": 2,
+      "ms": 308
+    },
+    {
+      "edit": 18,
+      "observer": 3,
+      "ms": 307
+    },
+    {
+      "edit": 18,
+      "observer": 4,
+      "ms": 291
+    },
+    {
+      "edit": 18,
+      "observer": 5,
+      "ms": 314
+    },
+    {
+      "edit": 19,
+      "observer": 2,
+      "ms": 293
+    },
+    {
+      "edit": 19,
+      "observer": 3,
+      "ms": 303
+    },
+    {
+      "edit": 19,
+      "observer": 4,
+      "ms": 287
+    },
+    {
+      "edit": 19,
+      "observer": 5,
+      "ms": 302
+    },
+    {
+      "edit": 20,
+      "observer": 2,
+      "ms": 288
+    },
+    {
+      "edit": 20,
+      "observer": 3,
+      "ms": 304
+    },
+    {
+      "edit": 20,
+      "observer": 4,
+      "ms": 324
+    },
+    {
+      "edit": 20,
+      "observer": 5,
+      "ms": 321
+    }
+  ]
+}

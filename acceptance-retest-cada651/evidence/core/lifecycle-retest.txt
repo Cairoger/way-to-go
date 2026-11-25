@@ -1,0 +1,7 @@
+ZONES_UI 09:00
+自訂活動 · America/New_York · 60 分鐘
+紐約出發
+附件
+裝置時間 · 7/1 21:00 [GMT+8]
+ARCHIVE_UI shown only under archived; entry persisted
+RESTORE_UI restored retaining archive status and New York activity

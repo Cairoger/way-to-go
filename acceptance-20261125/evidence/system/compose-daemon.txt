@@ -1,0 +1,4 @@
+WARNING: Error loading config file: open C:\Users\a0928\.docker\config.json: Access is denied.
+error during connect: in the default daemon configuration on Windows, the docker client must be run with elevated privileges to connect: Get "http://%2F%2F.%2Fpipe%2Fdocker_engine/v1.51/containers/json?filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dwtgaudit31714d31%22%3Atrue%7D%7D": open //./pipe/docker_engine: Access is denied.
+
+exit=1

@@ -1,0 +1,53 @@
+{
+  "config": {
+    "clients": 5,
+    "upstream": "Docker Compose nginx / Next / FastAPI / PostgreSQL 17, same-origin loopback",
+    "client": "5 isolated Chrome browser contexts"
+  },
+  "samples": [
+    {
+      "seconds": 0,
+      "ws": [
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        },
+        {
+          "opened": 1,
+          "closed": 0,
+          "peak": 1,
+          "live": 1
+        }
+      ]
+    }
+  ],
+  "apiMs": [],
+  "editVisibleMs": [],
+  "parallelCreates": 5,
+  "parallelPosts": {
+    "expected": 5,
+    "unique": 5,
+    "readBack": 5
+  },
+  "error": "TimeoutError: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('跨裝置留言編輯 0', { exact: true }) to be visible\u001b[22m\n"
+}

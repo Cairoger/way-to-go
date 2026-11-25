@@ -1,0 +1,88 @@
+{
+  "全部": {
+    "total": 436,
+    "implementation": {
+      "Implemented": 387,
+      "Partial": 23,
+      "Missing": 20,
+      "Unknown": 6
+    },
+    "result": {
+      "PASS": 369,
+      "FAIL": 33,
+      "BLOCKED": 32,
+      "NOT TESTED": 2
+    }
+  },
+  "原編號功能": {
+    "total": 109,
+    "implementation": {
+      "Implemented": 97,
+      "Missing": 9,
+      "Partial": 3
+    },
+    "result": {
+      "PASS": 91,
+      "FAIL": 8,
+      "BLOCKED": 10
+    }
+  },
+  "業務規則": {
+    "total": 14,
+    "implementation": {
+      "Implemented": 13,
+      "Missing": 1
+    },
+    "result": {
+      "PASS": 13,
+      "BLOCKED": 1
+    }
+  },
+  "核心驗收": {
+    "total": 20,
+    "implementation": {
+      "Missing": 1,
+      "Implemented": 19
+    },
+    "result": {
+      "BLOCKED": 1,
+      "PASS": 19
+    }
+  },
+  "P0": {
+    "total": 51,
+    "implementation": {
+      "Implemented": 50,
+      "Partial": 1
+    },
+    "result": {
+      "PASS": 48,
+      "FAIL": 2,
+      "BLOCKED": 1
+    }
+  },
+  "P1": {
+    "total": 47,
+    "implementation": {
+      "Implemented": 45,
+      "Partial": 2
+    },
+    "result": {
+      "PASS": 41,
+      "BLOCKED": 5,
+      "FAIL": 1
+    }
+  },
+  "P2": {
+    "total": 11,
+    "implementation": {
+      "Implemented": 2,
+      "Missing": 9
+    },
+    "result": {
+      "PASS": 2,
+      "FAIL": 5,
+      "BLOCKED": 4
+    }
+  }
+}

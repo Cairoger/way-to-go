@@ -1,0 +1,10 @@
+{
+  "tables": 42,
+  "manifests_match": true,
+  "file_rows": 22,
+  "explicit_permission_rows": 2,
+  "recycled_file_rows": 1,
+  "sha256_of_dump": "d9711f0bbe398f112e1ac87b9dac6cf6ab709f267e6ccd1ece7b9e84737892c4",
+  "workflow_step": "Verify restored file content, links, permissions and recycle state through the API",
+  "restored_reader_acl_and_recycle_checks": "passed"
+}

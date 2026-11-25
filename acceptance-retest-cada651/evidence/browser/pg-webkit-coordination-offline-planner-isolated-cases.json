@@ -1,0 +1,47 @@
+{
+  "stats": {
+    "startTime": "2026-11-25T14:59:14.942Z",
+    "duration": 91528.796,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 5,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "spec": "coordination.spec.ts",
+      "title": "旅伴標記單日並套用至旅程日期",
+      "result": "failed",
+      "duration_ms": 6659,
+      "reason": "Error: expect(locator).toBeVisible() failed\n\nLocator: getByText('1 可以 · 0 可能 · 0 不行 · 1 未填')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toBeVisible\" getByText('1 可以 · 0 可能 · 0 不行 · 1 未填') with timeout 5000ms\n  - waiting for getByText('1 可以 · 0 可能 · 0 不行 · 1 未填')\n"
+    },
+    {
+      "spec": "coordination.spec.ts",
+      "title": "評分、排序及提及旅伴的輸入與呈現",
+      "result": "timedOut",
+      "duration_ms": 35029,
+      "reason": "Test timeout of 35000ms exceeded."
+    },
+    {
+      "spec": "offline-planner.spec.ts",
+      "title": "自行儲存之後，關閉原頁、開新頁可離線唯讀；登出清除所有分頁的副本",
+      "result": "failed",
+      "duration_ms": 6080,
+      "reason": "Error: expect(locator).toBeVisible() failed\n\nLocator: getByRole('button', { name: '更新離線旅程' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toBeVisible\" getByRole('button', { name: '更新離線旅程' }) with timeout 5000ms\n  - waiting for getByRole('button', { name: '更新離線旅程' })\n"
+    },
+    {
+      "spec": "offline-planner.spec.ts",
+      "title": "切換帳號後移除上一個帳號的離線旅程",
+      "result": "failed",
+      "duration_ms": 5889,
+      "reason": "Error: expect(locator).toBeVisible() failed\n\nLocator: getByRole('button', { name: '更新離線旅程' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toBeVisible\" getByRole('button', { name: '更新離線旅程' }) with timeout 5000ms\n  - waiting for getByRole('button', { name: '更新離線旅程' })\n"
+    },
+    {
+      "spec": "offline-planner.spec.ts",
+      "title": "從景點詳情移除原始景點；地圖顯示付費提示與免費導航",
+      "result": "timedOut",
+      "duration_ms": 35039,
+      "reason": "Test timeout of 35000ms exceeded."
+    }
+  ]
+}

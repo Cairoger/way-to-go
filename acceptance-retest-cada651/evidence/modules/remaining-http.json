@@ -1,0 +1,19 @@
+{
+  "DELETE /api/v1/polls/{poll_id}": {
+    "200": 1
+  },
+  "DELETE /api/v1/trips/{trip_id}/tasks/{task_id}": {
+    "204": 1
+  },
+  "PATCH /api/v1/trips/{trip_id}/budgets/{budget_id}": {
+    "403": 1,
+    "200": 1
+  },
+  "DELETE /api/v1/trips/{trip_id}/budgets/{budget_id}": {
+    "409": 1,
+    "200": 1
+  },
+  "DELETE /api/v1/trips/{trip_id}/settlements/{settlement_id}": {
+    "200": 1
+  }
+}

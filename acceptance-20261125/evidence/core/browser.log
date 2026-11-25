@@ -1,0 +1,12 @@
+{"name":"TITLE_ONLY_SESSION_RELOAD","createFields":["title","destinations","start_date","end_date","description","currency","status"]}
+{"name":"GUEST_JOIN_EMAIL_QR_PRESENCE","emailIncludesInvite":true,"membersOnline":2}
+{"name":"CREATE_VISIBLE_ON_PEER"}
+{"name":"OVERLAP","persisted":2,"warnings":2}
+{"name":"EDIT_AND_LOCK_VISIBLE_ON_PEER"}
+{"name":"DRAG_SAME_DAY","first":"旅伴早餐","passive":"更新散步"}
+{"name":"DRAG_CROSS_DAY","guestAndOwnerSeeNewDay":true}
+{"name":"DELETE_VISIBLE_ON_PEER"}
+{"name":"RECONNECT_BEFORE_RESTORE","received":0,"heldConnections":1}
+{"name":"RECONNECT_REFETCH","before":0,"after":1}
+{"name":"MAP_LINK_PARSE_AND_MANUAL_SAVE","parsed":"Taipei 101","lat":25.03,"manualSaved":true}
+{"name":"COMPLETE","browser":"158.0.8127.36"}

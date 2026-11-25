@@ -1,0 +1,65 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- D:\WayToGo\.venv\Scripts\python.exe
+rootdir: C:\Users\a0928\AppData\Local\Temp\wtg-sys-z5h1pllp\backend
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.16.0
+collecting ... collected 47 items
+
+tests/test_availability.py::test_single_dates_ranges_overlap_and_active_members PASSED [  2%]
+tests/test_availability.py::test_apply_dates_preserves_scheduled_items_and_versions PASSED [  4%]
+tests/test_availability.py::test_adjacent_intervals_merge_only_for_same_members PASSED [  6%]
+tests/test_core.py::test_guest_invite_lifecycle PASSED                   [  8%]
+tests/test_core.py::test_trip_versions_archives_and_idempotency PASSED   [ 10%]
+tests/test_core.py::test_member_removal_transfers_poll_control_and_transfer_owner PASSED [ 12%]
+tests/test_core.py::test_server_session_revocation_and_expiry PASSED     [ 14%]
+tests/test_core.py::test_google_oidc_cookie_rotation_and_state_binding PASSED [ 17%]
+tests/test_core.py::test_missing_oidc_settings_and_request_origin PASSED [ 19%]
+tests/test_core.py::test_private_demo_membership_and_seeded_itinerary PASSED [ 21%]
+tests/test_core.py::test_five_connected_clients_receive_committed_edits_and_revocation PASSED [ 23%]
+tests/test_decisions.py::test_secret_ballots_and_review_after_new_option PASSED [ 25%]
+tests/test_decisions.py::test_manual_adoption_keeps_item_after_revote PASSED [ 27%]
+tests/test_decisions.py::test_expired_date_poll_zero_result PASSED       [ 29%]
+tests/test_decisions.py::test_comment_moderation_and_preserved_replies PASSED [ 31%]
+tests/test_decisions.py::test_retried_comment_request PASSED             [ 34%]
+tests/test_decisions.py::test_rating_ballot_requirements_privacy_review_and_result PASSED [ 36%]
+tests/test_decisions.py::test_ranked_ballots_and_tie_round PASSED        [ 38%]
+tests/test_decisions.py::test_structured_and_plain_mentions_on_create_edit PASSED [ 40%]
+tests/test_finance.py::test_budgets_settlements_and_idempotence PASSED   [ 42%]
+tests/test_finance.py::test_fx_snapshot_precision_and_departed_history PASSED [ 44%]
+tests/test_finance.py::test_manual_fx_and_member_validation PASSED       [ 46%]
+tests/test_finance.py::test_integer_rounding_and_netting PASSED          [ 48%]
+tests/test_guest_merge.py::test_merge_keeps_owner_authorization_finances_and_private_travel_data PASSED [ 51%]
+tests/test_guest_merge.py::test_open_ballot_collisions_dates_and_closed_results PASSED [ 53%]
+tests/test_local_login.py::test_local_auth_is_private_stable_and_can_own_trips PASSED [ 55%]
+tests/test_local_login.py::test_simultaneous_first_signins_share_one_subject PASSED [ 57%]
+tests/test_local_login.py::test_local_login_disabled_outside_http_loopback[https://localhost] PASSED [ 59%]
+tests/test_local_login.py::test_local_login_disabled_outside_http_loopback[https://travel.example] PASSED [ 61%]
+tests/test_local_login.py::test_local_login_disabled_outside_http_loopback[http://testserver] PASSED [ 63%]
+tests/test_local_login.py::test_incomplete_local_configuration_fails_closed PASSED [ 65%]
+tests/test_notices.py::test_push_device_cannot_reassign_another_active_account PASSED [ 68%]
+tests/test_notices.py::test_preferences_read_and_membership PASSED       [ 70%]
+tests/test_notices.py::test_push_permission_delivery_and_gone PASSED     [ 72%]
+tests/test_planning.py::test_place_retained_after_candidate_removal PASSED [ 74%]
+tests/test_planning.py::test_move_overlap_and_passive_order PASSED       [ 76%]
+tests/test_planning.py::test_lease_contention_renewal_timeout_and_stale_version PASSED [ 78%]
+tests/test_planning.py::test_search_outage_preserves_saved_content PASSED [ 80%]
+tests/test_planning_extensions.py::test_time_suggestions_and_local_zones PASSED [ 82%]
+tests/test_planning_extensions.py::test_restore_changed_place_and_deleted_item PASSED [ 85%]
+tests/test_planning_extensions.py::test_weather_success_and_provider_failure PASSED [ 87%]
+tests/test_preparations.py::test_existing_task_and_booking_links_survive_item_removal PASSED [ 89%]
+tests/test_preparations.py::test_shared_tasks_and_private_lists PASSED   [ 91%]
+tests/test_preparations.py::test_reservation_privacy_and_edits PASSED    [ 93%]
+tests/test_preparations.py::test_owner_maintains_departed_creators_public_booking_only PASSED [ 95%]
+tests/test_trip_copy.py::test_copy_planning_snapshot_to_own_trip_only PASSED [ 97%]
+tests/test_trip_copy.py::test_copy_linked_travel_arrangements_without_private_booking_or_assignees PASSED [100%]
+
+============================== warnings summary ===============================
+D:\WayToGo\.venv\Lib\site-packages\fastapi\testclient.py:1
+  D:\WayToGo\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 47 passed, 1 warning in 23.14s ========================
+
+exit=0

@@ -1,0 +1,71 @@
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.resolve(__dirname,'../../..');
+const lab=path.join(root,'.local/audit-ui-20261125');
+process.env.PLAYWRIGHT_BROWSERS_PATH=path.join(lab,'pw-browsers');
+const {webkit,expect}=require(path.join(root,'frontend/node_modules/@playwright/test'));
+const setup=JSON.parse(fs.readFileSync(path.join(lab,'runtime.json'),'utf8'));
+const fact={};
+const save=()=>fs.writeFileSync(path.join(__dirname,'webkit-focus.json'),JSON.stringify(fact,null,2));
+const headers={'X-Requested-With':'WayToGo'};
+async function api(r){if(!r.ok())throw Error('HTTP '+r.status());return r.json()}
+(async()=>{
+  const b=await webkit.launch();
+  const cutoff=setTimeout(()=>{fact.deadline='70 s diagnostic deadline at '+fact.stage;save();process.exit(2)},70000);
+  try{
+    const owner=await b.newContext({baseURL:setup.origin,locale:'zh-TW'});
+    const guest=await b.newContext({baseURL:setup.origin,locale:'zh-TW'});
+    const a=await owner.newPage(),g=await guest.newPage();
+    a.setDefaultTimeout(8000);g.setDefaultTimeout(8000);
+    await a.goto('/');
+    await a.getByRole('button',{name:'建立旅程',exact:true}).click();
+    const login=a.getByRole('form',{name:'本機測試帳號登入'});
+    await login.getByLabel('測試帳號',{exact:true}).fill(setup.username);
+    await login.getByLabel('密碼').fill(setup.password);
+    await login.getByRole('button',{name:'使用測試帳號登入'}).click();
+    await expect(a.getByRole('dialog',{name:'建立旅程'})).toBeVisible();
+    await a.getByRole('button',{name:'關閉',exact:true}).click();
+    await a.reload();
+    await expect(a.getByRole('heading',{name:/我的旅程/})).toBeVisible();
+    fact.reloadRealLogin=true;save();
+    const t=await api(await owner.request.post('/api/v1/trips',{headers,data:{title:'WebKit 通知驗收'}}));
+    const u='/api/v1/trips/'+t.id;
+    const {code}=await api(await owner.request.post(u+'/invitations',{headers,data:{}}));
+    await api(await guest.request.post('/api/v1/auth/guest',{headers,data:{code,nickname:'通知旅伴'}}));
+    const me=await api(await guest.request.get('/api/v1/auth/me'));
+    await g.goto('/?trip='+t.id);
+    await a.goto('/?trip='+t.id);
+    await a.getByRole('button',{name:'討論',exact:true}).click();
+    await expect(a.getByText(/2 人在線/)).toBeVisible();
+    const before=await g.getByRole('button',{name:/通知中心/}).getAttribute('aria-label');
+    // The browser context distinguishes foreground from background windows.
+    const vis=()=>g.evaluate(()=>({visibility:document.visibilityState,hasFocus:document.hasFocus()}));
+    fact.before={badge:before,visibility:await vis()};
+    await a.getByLabel('新增留言').fill('測試通知 ');
+    await a.getByLabel('提及旅伴').selectOption(me.id);
+    await a.getByRole('button',{name:'送出留言'}).click();
+    await expect(a.getByText('測試通知 @通知旅伴',{exact:true})).toBeVisible();
+    await g.waitForTimeout(1200);
+    fact.afterSubmit={badge:await g.getByRole('button',{name:/通知中心/}).getAttribute('aria-label'),visibility:await vis(),storedUnread:(await api(await guest.request.get('/api/v1/notifications'))).items.filter(x=>!x.read).length};
+    await g.bringToFront();
+    await g.waitForTimeout(900);
+    fact.afterFocus={badge:await g.getByRole('button',{name:/通知中心/}).getAttribute('aria-label'),visibility:await vis()};save();
+    fact.stage='open inbox';save();
+    await g.getByRole('button',{name:/通知中心/}).click();
+    fact.stage='see mention';save();
+    await expect(g.getByRole('dialog').getByText(/提及你/)).toBeVisible({timeout:6000});
+    fact.stage='seen visible mention';save();
+    await g.waitForTimeout(500);
+    fact.inbox=await g.evaluate(()=>({body:document.body.innerText,buttons:Array.from(document.querySelectorAll('[role=dialog] button'),x=>({text:x.textContent,name:x.getAttribute('aria-label'),html:x.outerHTML.slice(0,160)}))}));save();
+    fact.stage='mark as read';save();
+    await g.getByRole('button',{name:'標為已讀'}).click();
+    await expect(g.getByRole('button',{name:'標為已讀'})).toHaveCount(0);
+    fact.stage='reload after marking';save();
+    await g.reload({waitUntil:'domcontentloaded'});
+    fact.stage='open inbox after reload';save();
+    await g.getByRole('button',{name:/通知中心/}).click();
+    await expect(g.getByRole('dialog').getByText(/提及你/)).toBeVisible();
+    fact.readAfterReload=await g.getByRole('button',{name:'標為已讀'}).count()===0;save();
+  }catch(e){fact.error=String(e);save();process.exitCode=1}
+  finally{clearTimeout(cutoff);await b.close()}
+})();

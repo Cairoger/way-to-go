@@ -1,0 +1,4 @@
+## codex/acceptance-fixes-20261125...origin/codex/acceptance-fixes-20261125
+origin	https://github.com/Cairoger/way-to-go.git (fetch)
+origin	https://github.com/Cairoger/way-to-go.git (push)
+cada651b990923166e8efa6ee20f72885a9c2b92

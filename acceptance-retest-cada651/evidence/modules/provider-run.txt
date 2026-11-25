@@ -1,0 +1,7 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source
+command=D:\WayToGo\.venv\Scripts\python.exe D:\WayToGo\acceptance-retest-cada651\evidence\modules\provider_probe.py
+day used for forecast 2026-11-25
+FX unavailable HTTPException {'code': 'RATE_UNAVAILABLE', 'message': '目前沒有可用的參考匯率，請稍後再試或手動填寫。'}
+Open-Meteo {'available': False, 'message': '尚無可用天氣預報'}
+
+exit=0 elapsed=1.54s

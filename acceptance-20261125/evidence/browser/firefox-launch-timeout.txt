@@ -1,0 +1,11 @@
+
+Running 10 tests using 1 worker
+
+(node:26784) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   1 [firefox] › tests\coordination.spec.ts:115:1 › 旅伴標記單日並套用至旅程日期 (4ms)
+(node:86400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   2 [firefox] › tests\coordination.spec.ts:128:1 › 評分、排序及提及旅伴的輸入與呈現 (2ms)
+(node:86956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

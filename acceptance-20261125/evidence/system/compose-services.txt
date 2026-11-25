@@ -1,0 +1,8 @@
+WARNING: Error loading config file: open C:\Users\a0928\.docker\config.json: Access is denied.
+db
+frontend
+api
+web
+backup
+
+exit=0

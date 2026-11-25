@@ -1,0 +1,124 @@
+{
+  "expectedPublic": "PUBLICCHECKINWWT",
+  "expectedAddress": "PUBLICADDRESSWWT",
+  "expectedPrivate": [
+    "BOOKPRIVATEWWT",
+    "EXPENSEPRIVATEWWT",
+    "SPLITGUESTWWT",
+    "125.79",
+    "91.23",
+    "34.56"
+  ],
+  "http": [
+    {
+      "endpoint": "POST /api/v1/auth/local-test",
+      "status": 200
+    },
+    {
+      "endpoint": "GET auth/me",
+      "status": 200
+    },
+    {
+      "endpoint": "POST /api/v1/trips",
+      "status": 201
+    },
+    {
+      "endpoint": "POST /api/v1/trips/41256114-c468-48c6-867c-86033a52609d/invitations",
+      "status": 201
+    },
+    {
+      "endpoint": "POST auth/guest",
+      "status": 200
+    },
+    {
+      "endpoint": "GET guest auth/me",
+      "status": 200
+    },
+    {
+      "endpoint": "GET trip/days",
+      "status": 200
+    },
+    {
+      "endpoint": "POST /api/v1/trips/41256114-c468-48c6-867c-86033a52609d/places",
+      "status": 201
+    },
+    {
+      "endpoint": "POST /api/v1/days/361c6bbe-51cf-4191-85c3-b19b31e4076b/items",
+      "status": 201
+    },
+    {
+      "endpoint": "POST /api/v1/trips/41256114-c468-48c6-867c-86033a52609d/bookings",
+      "status": 201
+    },
+    {
+      "endpoint": "POST /api/v1/trips/41256114-c468-48c6-867c-86033a52609d/expenses",
+      "status": 201
+    },
+    {
+      "endpoint": "GET bookings",
+      "status": 200
+    },
+    {
+      "endpoint": "GET finance",
+      "status": 200
+    }
+  ],
+  "printed": {
+    "details": {
+      "dom": "列印或儲存 PDF\nDay 1 · 2027-07-10\n\nAsia/Taipei\n\n15:00　PUBLICCHECKINWWT\n住宿 · Asia/Taipei · PUBLICADDRESSWWT",
+      "bytes": 22618,
+      "sha256": "ae1e639343955f52b809248b880a1bfd29f80e4c3ed6bd641308ba813e4d289e",
+      "absentFromDOM": {
+        "BOOKPRIVATEWWT": true,
+        "EXPENSEPRIVATEWWT": true,
+        "SPLITGUESTWWT": true,
+        "125.79": true,
+        "91.23": true,
+        "34.56": true
+      }
+    },
+    "brief": {
+      "dom": "列印或儲存 PDF\nDay 1 · 2027-07-10\n\nAsia/Taipei\n\n15:00　PUBLICCHECKINWWT",
+      "bytes": 20790,
+      "sha256": "b9801e15b516805e650b38bccb53a02f5f52b4a12fa92ef10da7a97d85b27c5d",
+      "absentFromDOM": {
+        "BOOKPRIVATEWWT": true,
+        "EXPENSEPRIVATEWWT": true,
+        "SPLITGUESTWWT": true,
+        "125.79": true,
+        "91.23": true,
+        "34.56": true
+      }
+    }
+  },
+  "persisted": {
+    "tripId": "41256114-c468-48c6-867c-86033a52609d",
+    "booking": {
+      "reference": "BOOKPRIVATEWWT",
+      "linkedToPrintedItem": true
+    },
+    "expense": {
+      "title": "EXPENSEPRIVATEWWT",
+      "amount": "125.79",
+      "payers": {
+        "34955cc3-7fe6-47fc-8d86-652d2de2a14e": "125.79"
+      },
+      "splits": {
+        "34955cc3-7fe6-47fc-8d86-652d2de2a14e": {
+          "amount": "91.23",
+          "weight": "91.23"
+        },
+        "dd9d128b-e85d-436e-be1d-bf84c8ee2a6b": {
+          "amount": "34.56",
+          "weight": "34.56"
+        }
+      },
+      "guestNickname": "SPLITGUESTWWT"
+    }
+  },
+  "privateFiles": {
+    "collectionStatus": 200,
+    "expected": "Create authorized private file, then assert its absence",
+    "actual": "Private file object unavailable; separate from booking and expense verification"
+  }
+}

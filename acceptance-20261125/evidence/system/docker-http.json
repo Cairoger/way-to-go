@@ -1,0 +1,32 @@
+{
+  "/": [
+    200,
+    "text/html; charset=utf-8",
+    24417,
+    "<!DOCTYPE html><html lang=\"zh-Hant\"><head><meta charSet=\"utf"
+  ],
+  "/docs": [
+    200,
+    "text/html; charset=utf-8",
+    1023,
+    "\n    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name=\"v"
+  ],
+  "/openapi.json": [
+    200,
+    "application/json",
+    78217,
+    "{\"openapi\":\"3.1.0\",\"info\":{\"title\":\"WayToGo \u65c5\u7a0b\u5354\u4f5c API"
+  ],
+  "/health": [
+    200,
+    "application/json",
+    15,
+    "{\"status\":\"ok\"}"
+  ],
+  "/manifest.webmanifest": [
+    200,
+    "application/manifest+json",
+    334,
+    "{\"id\":\"/\",\"name\":\"WayToGo \u65c5\u4f34\u624b\u672d\",\"short_name\":\"WayToG"
+  ]
+}

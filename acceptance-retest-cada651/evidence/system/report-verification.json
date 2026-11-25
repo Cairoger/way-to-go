@@ -1,0 +1,100 @@
+{
+  "checked_at": "2026-11-25T23:32:37.186201+08:00",
+  "spec_lines": 710,
+  "nonblank_lines": 474,
+  "classified_nonblank": {
+    "文件結構／說明": 86,
+    "可驗收／追蹤": 374,
+    "參考資料": 14
+  },
+  "ids": 436,
+  "duplicate_ids": 0,
+  "all_rows_have_direct_evidence_or_dependencies": true,
+  "per_row_evidence_links": 724,
+  "all_109_FR_14_BR_20_AC_in_original_spec_matched": true,
+  "published_http_operations_exercised": 93,
+  "websocket_handshake": 101,
+  "handoff_cards_rechecked": 17,
+  "results": {
+    "total": 436,
+    "implementation": {
+      "Implemented": 417,
+      "Partial": 16,
+      "Missing": 0,
+      "Unknown": 3
+    },
+    "result": {
+      "PASS": 407,
+      "FAIL": 14,
+      "BLOCKED": 15,
+      "NOT TESTED": 0
+    }
+  },
+  "pass_gain_ids": [
+    "VALUE-03",
+    "SUCCESS-03",
+    "IDENT-03",
+    "TRIP-OPT-06",
+    "COPY-FILES",
+    "FR-TRIP-08",
+    "FR-PLACE-07",
+    "FR-PLAN-09",
+    "FR-COMMENT-03",
+    "FR-COMMENT-05",
+    "FR-TASK-06",
+    "BOOK-FILES",
+    "FR-BOOK-05",
+    "FR-FILE-01",
+    "FR-FILE-02",
+    "FR-FILE-03",
+    "FR-FILE-04",
+    "FR-FILE-05",
+    "FR-FILE-06",
+    "FR-PDF-02",
+    "PDF-FILES",
+    "FR-OFFLINE-01",
+    "BR-013",
+    "PERF-02",
+    "RATE-4",
+    "DEF-1",
+    "DEF-3",
+    "SEC-06",
+    "OPS-04",
+    "TECH-12",
+    "DATA-IANA",
+    "DB-FILE-LINKS",
+    "DB-FILE-PERMISSIONS",
+    "DB-FILES",
+    "API-EXT-FILES",
+    "API-RULE-05",
+    "DEV-WORKFLOW",
+    "MS1-1",
+    "MS4-DONE",
+    "MS5-3",
+    "MS5-DONE",
+    "AC-018"
+  ],
+  "prior_pass_now_fails": [
+    "FR-COLLAB-06",
+    "API-RULE-03",
+    "API-RULE-04",
+    "AC-009"
+  ],
+  "rendered": {
+    "需求追蹤矩陣.md": {
+      "parsed_gfm_tables": 11,
+      "six_column_requirement_rows": 436,
+      "unique_requirement_anchors": 436,
+      "working_local_links_and_anchors_unique": 157,
+      "pinned_source_links_verified_against_the_SHA": 0
+    },
+    "第二輪功能驗收報告.md": {
+      "parsed_gfm_tables": 17,
+      "six_column_requirement_rows": 436,
+      "unique_requirement_anchors": 436,
+      "working_local_links_and_anchors_unique": 179,
+      "pinned_source_links_verified_against_the_SHA": 8
+    }
+  },
+  "source_integrity": "integrity.json"
+}

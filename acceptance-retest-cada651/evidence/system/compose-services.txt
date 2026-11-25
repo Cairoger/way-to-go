@@ -1,0 +1,7 @@
+db
+api
+backup
+frontend
+web
+
+exit=0

@@ -1,0 +1,87 @@
+Downloading Firefox 159.0 (playwright firefox v1572)[2m from https://cdn.playwright.dev/dbazure/download/playwright/builds/firefox/1572/firefox-win64.zip[22m
+Error: connect EACCES 150.171.110.194:443
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2083:16) {
+  errno: -4092,
+  code: 'EACCES',
+  syscall: 'connect',
+  address: '150.171.110.194',
+  port: 443
+}
+Downloading Firefox 159.0 (playwright firefox v1572)[2m from https://playwright.download.prss.microsoft.com/dbazure/download/playwright/builds/firefox/1572/firefox-win64.zip[22m
+AggregateError: connect EACCES 23.205.119.136:443
+connect EACCES 23.205.119.142:443
+    at internalConnectMultiple (node:net:1492:18)
+    at afterConnectMultiple (node:net:2161:7) {
+  code: 'EACCES',
+  [errors]: [
+    Error: connect EACCES 23.205.119.136:443
+        at createConnectionError (node:net:2124:14)
+        at afterConnectMultiple (node:net:2154:16) {
+      errno: -4092,
+      code: 'EACCES',
+      syscall: 'connect',
+      address: '23.205.119.136',
+      port: 443
+    },
+    Error: connect EACCES 23.205.119.142:443
+        at createConnectionError (node:net:2124:14)
+        at afterConnectMultiple (node:net:2154:16) {
+      errno: -4092,
+      code: 'EACCES',
+      syscall: 'connect',
+      address: '23.205.119.142',
+      port: 443
+    }
+  ]
+}
+Downloading Firefox 159.0 (playwright firefox v1572)[2m from https://cdn.playwright.dev/builds/firefox/1572/firefox-win64.zip[22m
+Error: connect EACCES 150.171.110.194:443
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2083:16) {
+  errno: -4092,
+  code: 'EACCES',
+  syscall: 'connect',
+  address: '150.171.110.194',
+  port: 443
+}
+Downloading Firefox 159.0 (playwright firefox v1572)[2m from https://cdn.playwright.dev/dbazure/download/playwright/builds/firefox/1572/firefox-win64.zip[22m
+Error: connect EACCES 150.171.110.194:443
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2083:16) {
+  errno: -4092,
+  code: 'EACCES',
+  syscall: 'connect',
+  address: '150.171.110.194',
+  port: 443
+}
+Downloading Firefox 159.0 (playwright firefox v1572)[2m from https://playwright.download.prss.microsoft.com/dbazure/download/playwright/builds/firefox/1572/firefox-win64.zip[22m
+AggregateError: connect EACCES 23.205.119.136:443
+connect EACCES 23.205.119.142:443
+    at internalConnectMultiple (node:net:1492:18)
+    at afterConnectMultiple (node:net:2161:7) {
+  code: 'EACCES',
+  [errors]: [
+    Error: connect EACCES 23.205.119.136:443
+        at createConnectionError (node:net:2124:14)
+        at afterConnectMultiple (node:net:2154:16) {
+      errno: -4092,
+      code: 'EACCES',
+      syscall: 'connect',
+      address: '23.205.119.136',
+      port: 443
+    },
+    Error: connect EACCES 23.205.119.142:443
+        at createConnectionError (node:net:2124:14)
+        at afterConnectMultiple (node:net:2154:16) {
+      errno: -4092,
+      code: 'EACCES',
+      syscall: 'connect',
+      address: '23.205.119.142',
+      port: 443
+    }
+  ]
+}
+Failed to install browsers
+Error: Failed to download Firefox 159.0 (playwright firefox v1572), caused by
+Error: Download failure, code=1
+    at ChildProcess.<anonymous> (D:\WayToGo\frontend\node_modules\.pnpm\playwright-core@1.65.1\node_modules\playwright-core\lib\coreBundle.js:34127:32)
+    at ChildProcess.emit (node:events:514:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:324:12)

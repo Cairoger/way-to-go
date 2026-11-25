@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-25T22:37:12.119102+08:00",
+  "head": "cada651b990923166e8efa6ee20f72885a9c2b92",
+  "branch": "codex/acceptance-fixes-20261125",
+  "remote": "https://github.com/Cairoger/way-to-go.git",
+  "refs": "cada651b990923166e8efa6ee20f72885a9c2b92 refs/heads/codex/acceptance-fixes-20261125\nf398d983b5a2769ca2d06285cbece4fbabc176ab refs/heads/main",
+  "tracked": 160,
+  "tracked_diff": "",
+  "google_configured": false,
+  "os": "Windows-11-10.0.22631-SP0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "packages": {
+    "fastapi": "0.165.0",
+    "sqlalchemy": "2.0.58",
+    "psycopg": "3.3.9",
+    "alembic": "1.20.1",
+    "pytest": "9.2.0",
+    "websockets": "17.4",
+    "pypdf": "7.1.1",
+    "httpx": "0.28.1"
+  },
+  "node": "v24.22.3",
+  "windows_export_raw_spec_hash": "9f0672613f4ae5b128f58043536722de9bd351f14d0eab73a57e1454415a03b8",
+  "attachment_sha256": "40d4681ff59734558d220dce5ce54eb9f7366ff46aa4978f51609ac0d0242376",
+  "spec_hash": "40d4681ff59734558d220dce5ce54eb9f7366ff46aa4978f51609ac0d0242376",
+  "git_blob_spec_sha256": "40d4681ff59734558d220dce5ce54eb9f7366ff46aa4978f51609ac0d0242376",
+  "archive_line_endings_equal_after_normalization": true
+}

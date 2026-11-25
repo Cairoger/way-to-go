@@ -1,0 +1,21 @@
+Command: C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\.local\audit-ui-20261125\web\node_modules\@playwright\test\cli.js test --reporter=list --trace=off --output=D:\WayToGo\.local\audit-ui-20261125\edge-results
+
+Running 11 tests using 1 worker
+
+(node:83948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node.EXE --trace-warnings ...` to show where the warning was created)
+  ok  1 tests\coordination.spec.ts:115:1 › 旅伴標記單日並套用至旅程日期 (2.4s)
+  ok  2 tests\coordination.spec.ts:128:1 › 評分、排序及提及旅伴的輸入與呈現 (1.7s)
+  ok  3 tests\live-finance.spec.ts:3:1 › 兩位旅伴記錄外幣支出、收到超額提醒並分兩次結清 (2.8s)
+  ok  4 tests\live-preparations.spec.ts:7:1 › 真實登入、邀請、私人與共用任務、訂位授權及提及通知 (4.7s)
+  ok  5 tests\local-login.spec.ts:35:1 › 本機登入停用時保留 Google 與邀請入口 (427ms)
+  ok  6 tests\local-login.spec.ts:47:1 › 從建立旅程登入本機帳號後接續原操作 (924ms)
+  ok  7 tests\local-login.spec.ts:72:1 › 從側欄登入顯示自己的工作空間與帳號 (728ms)
+  ok  8 tests\planner-print.spec.ts:3:1 › 列印指定行程日並排除私人資料 (856ms)
+  ok  9 tests\workspace.spec.ts:2:1 › 在桌面探索旅程、篩選、切換清單與分日查看 (441ms)
+  ok 10 tests\workspace.spec.ts:13:1 › 手機選單、加入表單及登入入口 (785ms)
+  ok 11 tests\workspace.spec.ts:26:1 › 兩個瀏覽器身分透過邀請加入並同步留言 (1.9s)
+
+  11 passed (19.2s)
+
+Exit: 0

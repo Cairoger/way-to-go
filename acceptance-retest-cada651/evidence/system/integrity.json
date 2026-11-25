@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-11-25T23:32:35.688577+08:00",
+  "head": "cada651b990923166e8efa6ee20f72885a9c2b92",
+  "branch": "codex/acceptance-fixes-20261125",
+  "git_refs_unchanged": true,
+  "tracked_file_count": 160,
+  "changed_tracked_files": [],
+  "worktree_final_status": "## codex/acceptance-fixes-20261125...origin/codex/acceptance-fixes-20261125\n?? acceptance-20261125/\n?? acceptance-retest-cada651/",
+  "earlier_bundle_entries_compared": 180,
+  "earlier_files_equal_to_original_archive": true,
+  "earlier_zip_sha256": "bb039aa27aa5f713c9dc3708fedab55ed33cc578b75ef74286e959f180cfd81c",
+  "attachment_and_repo_spec_sha256": "40d4681ff59734558d220dce5ce54eb9f7366ff46aa4978f51609ac0d0242376",
+  "working_copy_options": "product source, spec and existing tests were read-only",
+  "lab_removed": true,
+  "shared_frontend_dependencies_present": true,
+  "open_test_ports_after_shutdown": []
+}

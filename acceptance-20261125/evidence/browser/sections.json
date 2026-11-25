@@ -1,0 +1,730 @@
+{
+  "screens": [
+    {
+      "tab": "每日行程",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".wp-active > small"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #667069, background color: #e4eee7, font size: 8.2pt (10.88px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "候選景點",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "旅程地圖",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "日期協調",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "投票",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "討論",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "行前清單",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "交通與住宿",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "預算與分帳",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "旅伴",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".nav-heading:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".nav-heading:nth-child(6)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.88 (foreground color: #727c71, background color: #f2f3ec, font size: 8.9pt (11.84px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "每日行程",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "候選景點",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "旅程地圖",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "日期協調",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "投票",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "討論",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "行前清單",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "交通與住宿",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "預算與分帳",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "旅伴",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".breadcrumbs > span"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.8 (foreground color: #798278, background color: #fafaf6, font size: 9.7pt (12.96px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(1)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.87 (foreground color: #758072, background color: #f8f8f4, font size: 8.6pt (11.52px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

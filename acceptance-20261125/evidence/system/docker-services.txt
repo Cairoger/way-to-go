@@ -1,0 +1,8 @@
+SERVICE    STATE     <no value>
+api        running   healthy
+backup     running   
+db         running   healthy
+frontend   running   
+web        running   healthy
+
+exit=0

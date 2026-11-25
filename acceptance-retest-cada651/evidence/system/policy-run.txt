@@ -1,0 +1,5 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source
+command=D:\WayToGo\.venv\Scripts\python.exe D:\WayToGo\acceptance-retest-cada651\evidence\system\check_policies.py
+Saved D:\WayToGo\acceptance-retest-cada651\evidence\system\policies.json
+
+exit=0 elapsed=3.13s

@@ -1,0 +1,35 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source\frontend
+command=C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\.local\acceptance-retest-cada651\source\frontend\node_modules\@playwright\test\cli.js test --browser=chromium --reporter=list,json --trace=off --output=D:\WayToGo\.local\acceptance-retest-cada651\sqlite-chrome-all-retest-results
+
+Running 22 tests using 1 worker
+
+(node:83148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node.EXE --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\coordination.spec.ts:115:1 › 旅伴標記單日並套用至旅程日期 (2.9s)
+  ok  2 [chromium] › tests\coordination.spec.ts:128:1 › 評分、排序及提及旅伴的輸入與呈現 (3.0s)
+5 browser pages, posts=5, n=80, timeouts=0, P95=260 ms, max=800 ms
+  ok  3 [chromium] › tests\live-collaboration.spec.ts:55:1 › 五名旅伴同時留言，連續 20 次編輯自動顯示在其他四頁 (11.8s)
+  ok  4 [chromium] › tests\live-collaboration.spec.ts:126:1 › 雙人討論斷線後自動重連並補讀遺漏留言 (2.9s)
+  ok  5 [chromium] › tests\live-files.spec.ts:23:1 › 真實檔案入口、私人授權、每期任務、留言圖片與兩種 PDF (9.8s)
+  ok  6 [chromium] › tests\live-finance.spec.ts:3:1 › 兩位旅伴記錄外幣支出、收到超額提醒並分兩次結清 (4.4s)
+  ok  7 [chromium] › tests\live-offline-planner.spec.ts:3:1 › 真實旅程離線重開、移除已排程景點與讀取封存地址 (2.7s)
+  ok  8 [chromium] › tests\live-preparations.spec.ts:7:1 › 真實登入、邀請、私人與共用任務、訂位授權及提及通知 (6.1s)
+  -   9 [chromium] › tests\live-push.spec.ts:52:1 › 已安裝瀏覽器在隔離的一般設定檔訂閱並接收背景提及
+  -  10 [chromium] › tests\live-push.spec.ts:141:1 › 模擬瀏覽器收到推播後以授權通知定位留言
+  ok 11 [chromium] › tests\local-login.spec.ts:38:1 › 本機登入停用時保留 Google 與邀請入口 (632ms)
+  ok 12 [chromium] › tests\local-login.spec.ts:50:1 › 從建立旅程登入本機帳號後接續原操作 (1.5s)
+  ok 13 [chromium] › tests\local-login.spec.ts:75:1 › 從側欄登入顯示自己的工作空間與帳號 (839ms)
+  ok 14 [chromium] › tests\offline-planner.spec.ts:100:1 › 自行儲存之後，關閉原頁、開新頁可離線唯讀；登出清除所有分頁的副本 (1.5s)
+  ok 15 [chromium] › tests\offline-planner.spec.ts:142:1 › 切換帳號後移除上一個帳號的離線旅程 (846ms)
+  ok 16 [chromium] › tests\offline-planner.spec.ts:158:1 › 從景點詳情移除原始景點；地圖顯示付費提示與免費導航 (1.0s)
+  ok 17 [chromium] › tests\planner-print.spec.ts:3:1 › 列印指定行程日並排除私人資料 (1.1s)
+  ok 18 [chromium] › tests\review-acceptance.spec.ts:29:1 › 旅程卡、導覽和每日行程在桌機與手機通過無障礙檢查 (2.2s)
+  ok 19 [chromium] › tests\review-acceptance.spec.ts:68:1 › 儲存自己的暱稱並在重登後保留，原始建立者可見 (2.1s)
+  ok 20 [chromium] › tests\workspace.spec.ts:2:1 › 在桌面探索旅程、篩選、切換清單與分日查看 (541ms)
+  ok 21 [chromium] › tests\workspace.spec.ts:13:1 › 手機選單、加入表單及登入入口 (759ms)
+  ok 22 [chromium] › tests\workspace.spec.ts:26:1 › 兩個瀏覽器身分透過邀請加入並同步留言 (2.0s)
+
+  2 skipped
+  20 passed (1.0m)
+
+exit=0 elapsed=62.27s

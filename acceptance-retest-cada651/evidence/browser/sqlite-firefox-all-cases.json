@@ -1,0 +1,166 @@
+{
+  "stats": {
+    "startTime": "2026-11-25T14:46:03.726Z",
+    "duration": 74080.45099999999,
+    "expected": 0,
+    "skipped": 2,
+    "unexpected": 20,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "spec": "coordination.spec.ts",
+      "title": "旅伴標記單日並套用至旅程日期",
+      "result": "failed",
+      "duration_ms": 2730,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "coordination.spec.ts",
+      "title": "評分、排序及提及旅伴的輸入與呈現",
+      "result": "failed",
+      "duration_ms": 3205,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "live-collaboration.spec.ts",
+      "title": "五名旅伴同時留言，連續 20 次編輯自動顯示在其他四頁",
+      "result": "failed",
+      "duration_ms": 1944,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "live-collaboration.spec.ts",
+      "title": "雙人討論斷線後自動重連並補讀遺漏留言",
+      "result": "failed",
+      "duration_ms": 2299,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "live-files.spec.ts",
+      "title": "真實檔案入口、私人授權、每期任務、留言圖片與兩種 PDF",
+      "result": "failed",
+      "duration_ms": 2373,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "live-finance.spec.ts",
+      "title": "兩位旅伴記錄外幣支出、收到超額提醒並分兩次結清",
+      "result": "failed",
+      "duration_ms": 2017,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "live-offline-planner.spec.ts",
+      "title": "真實旅程離線重開、移除已排程景點與讀取封存地址",
+      "result": "failed",
+      "duration_ms": 853,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "live-preparations.spec.ts",
+      "title": "真實登入、邀請、私人與共用任務、訂位授權及提及通知",
+      "result": "failed",
+      "duration_ms": 991,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "live-push.spec.ts",
+      "title": "已安裝瀏覽器在隔離的一般設定檔訂閱並接收背景提及",
+      "result": "skipped",
+      "duration_ms": 5,
+      "reason": "[{'type': 'skip', 'description': '背景通知探測使用 Chromium 一般設定檔及 DevTools Protocol。', 'location': {'file': 'D:\\\\WayToGo\\\\.local\\\\acceptance-retest-cada651\\\\source\\\\frontend\\\\tests\\\\live-push.spec.ts', 'line': 9, 'column': 8}}]"
+    },
+    {
+      "spec": "live-push.spec.ts",
+      "title": "模擬瀏覽器收到推播後以授權通知定位留言",
+      "result": "skipped",
+      "duration_ms": 1,
+      "reason": "[{'type': 'skip', 'description': '背景通知探測使用 Chromium 一般設定檔及 DevTools Protocol。', 'location': {'file': 'D:\\\\WayToGo\\\\.local\\\\acceptance-retest-cada651\\\\source\\\\frontend\\\\tests\\\\live-push.spec.ts', 'line': 9, 'column': 8}}]"
+    },
+    {
+      "spec": "local-login.spec.ts",
+      "title": "本機登入停用時保留 Google 與邀請入口",
+      "result": "failed",
+      "duration_ms": 1047,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "local-login.spec.ts",
+      "title": "從建立旅程登入本機帳號後接續原操作",
+      "result": "failed",
+      "duration_ms": 1143,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "local-login.spec.ts",
+      "title": "從側欄登入顯示自己的工作空間與帳號",
+      "result": "failed",
+      "duration_ms": 1170,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "offline-planner.spec.ts",
+      "title": "自行儲存之後，關閉原頁、開新頁可離線唯讀；登出清除所有分頁的副本",
+      "result": "failed",
+      "duration_ms": 1055,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "offline-planner.spec.ts",
+      "title": "切換帳號後移除上一個帳號的離線旅程",
+      "result": "failed",
+      "duration_ms": 833,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "offline-planner.spec.ts",
+      "title": "從景點詳情移除原始景點；地圖顯示付費提示與免費導航",
+      "result": "failed",
+      "duration_ms": 906,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "planner-print.spec.ts",
+      "title": "列印指定行程日並排除私人資料",
+      "result": "failed",
+      "duration_ms": 906,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "review-acceptance.spec.ts",
+      "title": "旅程卡、導覽和每日行程在桌機與手機通過無障礙檢查",
+      "result": "failed",
+      "duration_ms": 680,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "review-acceptance.spec.ts",
+      "title": "儲存自己的暱稱並在重登後保留，原始建立者可見",
+      "result": "failed",
+      "duration_ms": 784,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "workspace.spec.ts",
+      "title": "在桌面探索旅程、篩選、切換清單與分日查看",
+      "result": "failed",
+      "duration_ms": 783,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "workspace.spec.ts",
+      "title": "手機選單、加入表單及登入入口",
+      "result": "failed",
+      "duration_ms": 709,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    },
+    {
+      "spec": "workspace.spec.ts",
+      "title": "兩個瀏覽器身分透過邀請加入並同步留言",
+      "result": "failed",
+      "duration_ms": 732,
+      "reason": "Error: browserContext.newPage: Target crashed "
+    }
+  ]
+}

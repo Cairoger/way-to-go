@@ -1,0 +1,17 @@
+Command: C:\Users\a0928\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.EXE D:\WayToGo\.local\audit-ui-20261125\web\node_modules\vitest\vitest.mjs run --reporter=verbose
+
+ RUN  v4.1.12 D:/WayToGo/.local/audit-ui-20261125/web
+
+ ✓ tests/trips.test.ts > 旅程列表 > 顯示未定日期與跨年度行程 2ms
+ ✓ tests/trips.test.ts > 旅程列表 > 依目的地及狀態篩選 1ms
+ ✓ tests/trips.test.ts > 旅程列表 > 封存、完成與回收分開 1ms
+ ✓ tests/planner.test.ts > parses explicit pin coordinates and leaves unknown short links for manual entry 3ms
+ ✓ tests/planner.test.ts > prints only allowlisted itinerary fields even in detailed mode 1ms
+
+ Test Files  2 passed (2)
+      Tests  5 passed (5)
+   Start at  20:22:58
+   Duration  1.19s (transform 267ms, setup 0ms, import 532ms, tests 10ms, environment 0ms)
+
+
+Exit: 0

@@ -1,0 +1,50 @@
+cwd=D:\WayToGo\.local\acceptance-retest-cada651\source\backend
+command=D:\WayToGo\.venv\Scripts\python.exe -m pytest -p no:cacheprovider -p conftest -vv -s --tb=short D:\WayToGo\acceptance-retest-cada651\evidence\core\test_acceptance_core.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- D:\WayToGo\.venv\Scripts\python.exe
+rootdir: D:\WayToGo
+plugins: anyio-4.16.0
+collecting ... collected 11 items
+
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_trip_fields_status_retention optional fields, 3 days, two countries/cities, metadata, date-less title-only verified
+four states; completed editable; archive preserves days; deleted 29d restore=200; 31d restore=404
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_trip_original_creator_after_transfer creation actor persists in audit log; summary keys: ['archived', 'cover', 'created_at', 'created_by', 'creator_name', 'currency', 'day_count', 'deleted_at', 'description', 'destinations', 'end_date', 'id', 'member_count', 'owner_id', 'place_count', 'start_date', 'status', 'title', 'version']
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_qr_and_default_invitation href token equals invite code; generated SVG byte-equal to QR encoding full URL; TTL seconds 604800
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_context_session_https HTTPS Set-Cookie attributes HttpOnly, Secure, SameSite=Lax, Max-Age; next request /trips/{id}=200
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_places_fields_status_author_days all 15 manually entered fields persisted; author retained; 4 statuses; 5 audit entries; same place in two date-less days -> April 1, 2
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_original_place_removal original place DELETE 200 ; candidate relation and place are distinct
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_time_options_types_and_order 6 types, 4 time modes, no place or date required; overlapping values saved; invalid reverse range=422
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_lease_duration_and_explicit_release lease TTLs (s) 89.99 ; renewed; other member sees holder; explicit release and reacquire
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_live_wikipedia Wikipedia search returned 503 {'code': 'search_unavailable', 'message': '目前無法連線至地點搜尋服務。仍可手動填寫景點。', 'request_id': '12c972dc-1795-401e-9e7c-802ac3ce54eb'}
+FAILED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_expiration_after_editor_disappears no renew/release after editor closed; contention=423; granted fresh lease after 90.5 seconds
+PASSED
+..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_merge_comment_ownership mock OIDC callback merges guest comment by ID, content and target author; trip still readable
+PASSED
+
+================================== FAILURES ===================================
+__________________________ test_core_live_wikipedia ___________________________
+D:\WayToGo\acceptance-retest-cada651\evidence\core\test_acceptance_core.py:179: in test_core_live_wikipedia
+    assert response.status_code == 200 and any("latitude" in item for item in response.json())
+E   assert (503 == 200)
+E    +  where 503 = <Response [503 Service Unavailable]>.status_code
+============================== warnings summary ===============================
+..\..\..\..\.venv\Lib\site-packages\fastapi\testclient.py:1
+  D:\WayToGo\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\acceptance-retest-cada651\evidence\core\test_acceptance_core.py::test_core_live_wikipedia - assert (503 == 200)
+ +  where 503 = <Response [503 Service Unavailable]>.status_code
+============= 1 failed, 10 passed, 1 warning in 95.51s (0:01:35) ==============
+
+exit=1 elapsed=98.41s

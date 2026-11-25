@@ -1,0 +1,7 @@
+Command: D:\WayToGo\.venv\Scripts\python.exe -m alembic upgrade head
+D:\WayToGo\.venv\Lib\site-packages\alembic\operations\batch.py:298: UserWarning: Unnamed CHECK constraint on reflected table 'users' is being omitted from the table recreate; pass the constraint explicitly using batch_alter_table.table_args.  Naming CHECK constraints avoids this going forward.
+  util.warn(
+D:\WayToGo\.venv\Lib\site-packages\alembic\operations\batch.py:298: UserWarning: Unnamed CHECK constraint on reflected table 'poll_rounds' is being omitted from the table recreate; pass the constraint explicitly using batch_alter_table.table_args.  Naming CHECK constraints avoids this going forward.
+  util.warn(
+
+Exit: 0

@@ -1,0 +1,151 @@
+{
+  "anonymous": {
+    "status": 401,
+    "body": {
+      "code": "SESSION_REQUIRED",
+      "message": "登入階段已結束，請重新登入或使用邀請加入。",
+      "request_id": "aa7a2d51-d969-4fcb-a335-a4bf3a8c4948"
+    },
+    "request_id_matches": true
+  },
+  "health": {
+    "status": 200,
+    "body": {
+      "status": "ok"
+    },
+    "request_id_matches": false
+  },
+  "oidc_missing": {
+    "status": 503,
+    "body": {
+      "code": "OIDC_NOT_CONFIGURED",
+      "message": "此部署尚未設定 Google 登入，請管理員設定 GOOGLE_CLIENT_ID 與 GOOGLE_CLIENT_SECRET。",
+      "request_id": "1708105c-1d99-4442-b266-6171e91709b1"
+    },
+    "request_id_matches": true
+  },
+  "invalid_title": {
+    "status": 422,
+    "body": {
+      "code": "INVALID_INPUT",
+      "message": "欄位 title：請檢查此欄位的格式、長度或必填內容。",
+      "request_id": "33f0f3bf-0c4a-4fe9-8b9f-8c04736344fb"
+    },
+    "request_id_matches": true
+  },
+  "create_trip": {
+    "status": 201,
+    "body": {
+      "id": "e0bb6890-4555-4a47-944f-d6d04e40e036",
+      "owner_id": "5b4626e9-f9d4-44ea-8933-c185c6767be9",
+      "title": "schema check",
+      "description": "",
+      "destinations": [],
+      "start_date": null,
+      "end_date": null,
+      "currency": "TWD",
+      "status": "planning",
+      "cover": "",
+      "created_at": "2026-11-25T12:29:21.420018+00:00",
+      "deleted_at": null,
+      "archived": false,
+      "version": 1,
+      "member_count": 1,
+      "place_count": 0,
+      "day_count": 1
+    },
+    "request_id_matches": false
+  },
+  "GET /files": {
+    "status": 404,
+    "body": {
+      "code": "HTTP_ERROR",
+      "message": "Not Found",
+      "request_id": "abd989b8-5104-4c89-86e3-624262b3bd0b"
+    },
+    "request_id_matches": true
+  },
+  "GET /bookings": {
+    "status": 200,
+    "body": [],
+    "request_id_matches": false
+  },
+  "GET /tasks": {
+    "status": 200,
+    "body": [],
+    "request_id_matches": false
+  },
+  "GET /expenses": {
+    "status": 405,
+    "body": {
+      "code": "HTTP_ERROR",
+      "message": "Method Not Allowed",
+      "request_id": "ec174d35-d3ee-4e29-bfa9-a7fd9ed49030"
+    },
+    "request_id_matches": true
+  },
+  "GET /settlements": {
+    "status": 405,
+    "body": {
+      "code": "HTTP_ERROR",
+      "message": "Method Not Allowed",
+      "request_id": "b87da1a3-ce58-4f8f-9761-bc60324030a5"
+    },
+    "request_id_matches": true
+  },
+  "GET /notifications": {
+    "status": 404,
+    "body": {
+      "code": "HTTP_ERROR",
+      "message": "Not Found",
+      "request_id": "0b428c09-4917-40e6-9608-792d70ee99e4"
+    },
+    "request_id_matches": true
+  },
+  "GET /places": {
+    "status": 200,
+    "body": [],
+    "request_id_matches": false
+  },
+  "GET /members": {
+    "status": 200,
+    "body": [
+      {
+        "id": "5b4626e9-f9d4-44ea-8933-c185c6767be9",
+        "nickname": "system audit",
+        "role": "owner",
+        "account_type": "google"
+      }
+    ],
+    "request_id_matches": false
+  },
+  "GET /days": {
+    "status": 200,
+    "body": [
+      {
+        "id": "99051ff3-e1a7-47ad-8de8-ce8e35cc7fdf",
+        "day_number": 1,
+        "title": "",
+        "timezone": "Asia/Taipei",
+        "date": null,
+        "items": []
+      }
+    ],
+    "request_id_matches": false
+  },
+  "profile-edit": {
+    "status": 405,
+    "body": {
+      "code": "HTTP_ERROR",
+      "message": "Method Not Allowed",
+      "request_id": "f3152f25-05d1-4a59-93ca-4bbfdf6b5b7d"
+    },
+    "request_id_matches": true
+  },
+  "metadata": {
+    "docs_status": 200,
+    "openapi": "3.1.0",
+    "route_count": 62,
+    "websockets": []
+  }
+}

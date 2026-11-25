@@ -1,0 +1,194 @@
+{
+  "two-trips-first": {
+    "status": 201,
+    "code": null,
+    "message": null
+  },
+  "two-trips-second": {
+    "status": 201,
+    "code": null,
+    "message": null
+  },
+  "trip-count": 2,
+  "owner-invite": {
+    "status": 201,
+    "code": null,
+    "message": null
+  },
+  "owner-repeat-invite": {
+    "status": 201,
+    "code": null,
+    "message": null
+  },
+  "repeated-invite-ids-equal": false,
+  "https-session-attributes": "HttpOnly; Max-Age=2592000; Path=/; SameSite=lax; Secure",
+  "guest-signin": {
+    "status": 200,
+    "code": null,
+    "message": null
+  },
+  "duplicate-nickname-new-identity": true,
+  "guest-create-denial": {
+    "status": 403,
+    "code": "GOOGLE_REQUIRED",
+    "message": "請先使用 Google 登入，再建立自己的旅程。"
+  },
+  "guest-invite-denial": {
+    "status": 403,
+    "code": "OWNER_REQUIRED",
+    "message": "只有旅程擁有者可以執行這個操作。"
+  },
+  "guest-archive-denial": {
+    "status": 403,
+    "code": "OWNER_REQUIRED",
+    "message": "只有旅程擁有者可以執行這個操作。"
+  },
+  "guest-delete-denial": {
+    "status": 403,
+    "code": "OWNER_REQUIRED",
+    "message": "只有旅程擁有者可以執行這個操作。"
+  },
+  "guest-remove-other-denial": {
+    "status": 403,
+    "code": "OWNER_REQUIRED",
+    "message": "只有旅程擁有者可以移除其他成員。"
+  },
+  "owner-edit-profile": {
+    "status": 405,
+    "code": "HTTP_ERROR",
+    "message": "Method Not Allowed"
+  },
+  "owner-create-item": {
+    "status": 201,
+    "code": null,
+    "message": null
+  },
+  "member-edit-other-item": {
+    "status": 403,
+    "code": "not_editor",
+    "message": "只有目前的編輯權持有人可以修改這筆資料。"
+  },
+  "owner-place": {
+    "status": 201,
+    "code": null,
+    "message": null
+  },
+  "candidate-remove": {
+    "status": 200,
+    "code": null,
+    "message": null
+  },
+  "candidate-restore": {
+    "status": 200,
+    "code": null,
+    "message": null
+  },
+  "book": {
+    "status": 201,
+    "code": null,
+    "message": null
+  },
+  "audit": {
+    "actions": [
+      "create",
+      "create",
+      "create",
+      "create",
+      "join",
+      "join",
+      "item.created",
+      "place.created",
+      "candidate.removed",
+      "candidate.restored",
+      "create"
+    ],
+    "all_have_actor": true,
+    "has_synthetic_secret": false,
+    "has_full_synthetic_booking_ref": false
+  },
+  "member-left": {
+    "status": 204,
+    "code": null,
+    "message": null
+  },
+  "after-exit": {
+    "status": 403,
+    "code": "MEMBERSHIP_REQUIRED",
+    "message": "你沒有這個旅程的存取權限。"
+  },
+  "api-contract": {
+    "POST /auth/google": true,
+    "POST /auth/guest": true,
+    "GET /auth/me": true,
+    "POST /auth/logout": true,
+    "GET /trips": true,
+    "POST /trips": true,
+    "GET /trips/{id}": true,
+    "PATCH /trips/{id}": true,
+    "DELETE /trips/{id}": true,
+    "POST /trips/{id}/restore": true,
+    "POST /trips/{id}/archive": true,
+    "POST /trips/{id}/invitations": true,
+    "POST /invitations/accept": true,
+    "GET /trips/{id}/members": true,
+    "DELETE /trips/{id}/members/{memberId}": true,
+    "GET /trips/{id}/days": true,
+    "POST /trips/{id}/days": true,
+    "GET /trips/{id}/places": true,
+    "POST /trips/{id}/places": true,
+    "POST /trips/{id}/candidates": true,
+    "DELETE /trips/{id}/candidates/{id}": true,
+    "POST /days/{id}/items": true,
+    "PATCH /itinerary-items/{id}": true,
+    "POST /itinerary-items/{id}/move": true,
+    "POST /edit-leases": true,
+    "POST /edit-leases/{id}/renew": true,
+    "DELETE /edit-leases/{id}": true,
+    "POST /trips/{id}/polls": true,
+    "GET /trips/{id}/polls": true,
+    "PUT /polls/{id}/ballot": true,
+    "POST /polls/{id}/close": true,
+    "POST /polls/{id}/reopen": true,
+    "POST /polls/{id}/adopt": true,
+    "GET /trips/{id}/comments": true,
+    "POST /trips/{id}/comments": true,
+    "WS /ws/trips/{id}": true
+  },
+  "extended-contract": {
+    "/files": [],
+    "/tasks": [
+      "/api/v1/trips/{trip_id}/tasks"
+    ],
+    "/expenses": [
+      "/api/v1/trips/{trip_id}/expenses"
+    ],
+    "/settlements": [
+      "/api/v1/trips/{trip_id}/settlements"
+    ],
+    "/bookings": [
+      "/api/v1/trips/{trip_id}/bookings"
+    ],
+    "/notifications": [
+      "/api/v1/notifications"
+    ]
+  },
+  "files-api": {
+    "status": 404,
+    "code": "HTTP_ERROR",
+    "message": "Not Found"
+  },
+  "file-feature-probe": {
+    "code": "HTTP_ERROR",
+    "message": "Not Found",
+    "request_id": "db110a31-b47f-4f35-b6f1-dcf1aeb3ac88"
+  },
+  "public-config-http-rejected": "公開部署的 PUBLIC_ORIGIN 必須使用 HTTPS",
+  "missing-database": "缺少 DATABASE_URL，請設定 PostgreSQL 的連線網址",
+  "paid-copy-occurrences": [],
+  "git-sensitive-file-inventory": [],
+  "git-policy": {
+    "reachable_commits": 1,
+    "pr_runs_at_head": 0,
+    "pr_runs_source": "GitHub fetch_commit_workflow_runs PR-only for f398d98; no remote execution for dirty tree."
+  }
+}

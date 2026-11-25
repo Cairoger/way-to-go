@@ -1,0 +1,136 @@
+{
+  "screens": [
+    {
+      "tab": "每日行程",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "候選景點",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "旅程地圖",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "日期協調",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "投票",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "討論",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "行前清單",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "交通與住宿",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "預算與分帳",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "旅伴",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "旅程檔案",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "violations": []
+    },
+    {
+      "tab": "每日行程",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "候選景點",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "旅程地圖",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "日期協調",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "投票",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "討論",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "行前清單",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "交通與住宿",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "預算與分帳",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "旅伴",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    },
+    {
+      "tab": "旅程檔案",
+      "width": 390,
+      "scrollWidth": 390,
+      "violations": []
+    }
+  ]
+}

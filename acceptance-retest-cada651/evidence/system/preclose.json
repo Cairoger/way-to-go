@@ -1,0 +1,12 @@
+{
+  "private_value_scan": "no matches for exact disposable credentials, substantial invite query values or session cookies",
+  "text_files_checked": 192,
+  "ports_checked": [
+    60935,
+    60936,
+    60937
+  ],
+  "listening_after_shutdown": [],
+  "checked_sources_export_vs_worktree": 160,
+  "different_after_line_ending_normalization": []
+}

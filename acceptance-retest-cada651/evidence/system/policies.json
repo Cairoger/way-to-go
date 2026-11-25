@@ -1,0 +1,32 @@
+{
+  "limiter_unit": {
+    "/api/v1/trips/trip/invitations": {
+      "first_limited_at": 46,
+      "earlier_accepted": true
+    },
+    "/api/v1/auth/google": {
+      "first_limited_at": 31,
+      "earlier_accepted": true
+    },
+    "/api/v1/auth/local-test": {
+      "first_limited_at": 16,
+      "earlier_accepted": true
+    },
+    "/api/v1/trips/trip/place-search": {
+      "first_limited_at": 31,
+      "earlier_accepted": true
+    }
+  },
+  "known_secret_pattern_files": {
+    "private-key": [],
+    "google-oauth-secret": [],
+    "aws-access-id": [],
+    "github-token": []
+  },
+  "git_commits_checked": [
+    "cada651b990923166e8efa6ee20f72885a9c2b92",
+    "172c86e4f3e53296692b146c9f8ca21087389f78",
+    "f398d983b5a2769ca2d06285cbece4fbabc176ab"
+  ],
+  "secret_audit_limit": "Read-only inventory and four recognizable key formats. Cannot attest to all possible arbitrary strings."
+}

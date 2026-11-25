@@ -1,0 +1,652 @@
+{
+  "stack": "loopback nginx / FastAPI / PostgreSQL17 via isolated Docker Compose, no external API or browser repaint in timing",
+  "members": 5,
+  "methodology": "each client runs two ordinary sequential user journeys; five journeys concurrently; warm signed-in clients; nearest rank; json decoding included",
+  "all": {
+    "n": 90,
+    "p95_ms": 75.71,
+    "max_ms": 95.91
+  },
+  "reads": {
+    "n": 60,
+    "p95_ms": 75.45,
+    "max_ms": 95.91
+  },
+  "writes": {
+    "n": 30,
+    "p95_ms": 79.0,
+    "max_ms": 93.49
+  },
+  "observations": [
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 23.26
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 58.36
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 68.91
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 48.76
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 75.45
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 75.71
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 44.75
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 47.45
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 48.88
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 51.18
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 55.41
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 34.37
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 33.78
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 41.87
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 37.8
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 50.3
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 43.59
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 31.37
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 44.82
+    },
+    {
+      "actor": 3,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 29.14
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 48.18
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 42.74
+    },
+    {
+      "actor": 4,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 44.58
+    },
+    {
+      "actor": 1,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 55.94
+    },
+    {
+      "actor": 3,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 44.65
+    },
+    {
+      "actor": 2,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 46.42
+    },
+    {
+      "actor": 0,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 93.49
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 69.47
+    },
+    {
+      "actor": 4,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 79.0
+    },
+    {
+      "actor": 3,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 65.25
+    },
+    {
+      "actor": 2,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 62.42
+    },
+    {
+      "actor": 4,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 40.81
+    },
+    {
+      "actor": 2,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 41.62
+    },
+    {
+      "actor": 0,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 49.11
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 63.66
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 82.05
+    },
+    {
+      "actor": 0,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 38.37
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 44.55
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 43.2
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 31.34
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 30.12
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 41.6
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 44.55
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 55.97
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 44.63
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 32.55
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 40.66
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 46.12
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 52.45
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 56.84
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 56.62
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 54.02
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 68.34
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}",
+      "code": 200,
+      "ms": 50.77
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 56.92
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 65.08
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 41.03
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 56.68
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/days",
+      "code": 200,
+      "ms": 46.58
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 44.76
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 45.84
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 44.34
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 59.21
+    },
+    {
+      "actor": 3,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 47.04
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/places",
+      "code": 200,
+      "ms": 61.08
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 40.1
+    },
+    {
+      "actor": 4,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 33.38
+    },
+    {
+      "actor": 1,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 51.59
+    },
+    {
+      "actor": 3,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 60.53
+    },
+    {
+      "actor": 2,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 63.53
+    },
+    {
+      "actor": 4,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 51.88
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/polls",
+      "code": 200,
+      "ms": 63.89
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 20.35
+    },
+    {
+      "actor": 4,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 59.35
+    },
+    {
+      "actor": 3,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 65.1
+    },
+    {
+      "actor": 2,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 65.09
+    },
+    {
+      "actor": 0,
+      "method": "POST",
+      "endpoint": "/trips/{id}/comments",
+      "code": 201,
+      "ms": 60.8
+    },
+    {
+      "actor": 0,
+      "method": "PATCH",
+      "endpoint": "/comments/{id}",
+      "code": 200,
+      "ms": 39.15
+    },
+    {
+      "actor": 2,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 45.05
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 95.91
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 51.41
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 73.1
+    },
+    {
+      "actor": 0,
+      "method": "POST",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 201,
+      "ms": 42.55
+    },
+    {
+      "actor": 4,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 60.01
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 61.62
+    },
+    {
+      "actor": 3,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 47.49
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 74.94
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 14.66
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/tasks",
+      "code": 200,
+      "ms": 62.09
+    },
+    {
+      "actor": 0,
+      "method": "GET",
+      "endpoint": "/trips/{id}/comments",
+      "code": 200,
+      "ms": 15.67
+    }
+  ]
+}

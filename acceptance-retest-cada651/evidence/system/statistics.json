@@ -1,0 +1,129 @@
+{
+  "全部": {
+    "total": 436,
+    "implementation": {
+      "Implemented": 417,
+      "Partial": 16,
+      "Missing": 0,
+      "Unknown": 3
+    },
+    "result": {
+      "PASS": 407,
+      "FAIL": 14,
+      "BLOCKED": 15,
+      "NOT TESTED": 0
+    }
+  },
+  "功能 FR": {
+    "total": 109,
+    "implementation": {
+      "Implemented": 108,
+      "Partial": 1,
+      "Missing": 0,
+      "Unknown": 0
+    },
+    "result": {
+      "PASS": 105,
+      "FAIL": 1,
+      "BLOCKED": 3,
+      "NOT TESTED": 0
+    }
+  },
+  "P0": {
+    "total": 51,
+    "implementation": {
+      "Implemented": 50,
+      "Partial": 1,
+      "Missing": 0,
+      "Unknown": 0
+    },
+    "result": {
+      "PASS": 49,
+      "FAIL": 1,
+      "BLOCKED": 1,
+      "NOT TESTED": 0
+    }
+  },
+  "P1": {
+    "total": 47,
+    "implementation": {
+      "Implemented": 47,
+      "Partial": 0,
+      "Missing": 0,
+      "Unknown": 0
+    },
+    "result": {
+      "PASS": 45,
+      "FAIL": 0,
+      "BLOCKED": 2,
+      "NOT TESTED": 0
+    }
+  },
+  "P2": {
+    "total": 11,
+    "implementation": {
+      "Implemented": 11,
+      "Partial": 0,
+      "Missing": 0,
+      "Unknown": 0
+    },
+    "result": {
+      "PASS": 11,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT TESTED": 0
+    }
+  },
+  "業務規則 BR": {
+    "total": 14,
+    "implementation": {
+      "Implemented": 14,
+      "Partial": 0,
+      "Missing": 0,
+      "Unknown": 0
+    },
+    "result": {
+      "PASS": 14,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT TESTED": 0
+    }
+  },
+  "核心情境 AC": {
+    "total": 20,
+    "implementation": {
+      "Implemented": 19,
+      "Partial": 1,
+      "Missing": 0,
+      "Unknown": 0
+    },
+    "result": {
+      "PASS": 19,
+      "FAIL": 1,
+      "BLOCKED": 0,
+      "NOT TESTED": 0
+    }
+  },
+  "transitions": {
+    "implementation": {
+      "Implemented → Implemented": 382,
+      "Partial → Implemented": 11,
+      "Implemented → Partial": 5,
+      "Missing → Implemented": 20,
+      "Unknown → Implemented": 4,
+      "Unknown → Unknown": 2,
+      "Partial → Unknown": 1,
+      "Partial → Partial": 11
+    },
+    "result": {
+      "PASS → PASS": 365,
+      "FAIL → PASS": 22,
+      "BLOCKED → BLOCKED": 14,
+      "FAIL → FAIL": 10,
+      "BLOCKED → PASS": 18,
+      "PASS → FAIL": 4,
+      "NOT TESTED → PASS": 2,
+      "FAIL → BLOCKED": 1
+    }
+  }
+}

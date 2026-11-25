@@ -1,0 +1,3 @@
+WARNING: Error loading config file: open C:\Users\a0928\.docker\config.json: Access is denied.
+
+exit=0

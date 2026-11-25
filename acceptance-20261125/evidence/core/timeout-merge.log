@@ -1,0 +1,18 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- D:\WayToGo\.venv\Scripts\python.exe
+rootdir: D:\WayToGo
+plugins: anyio-4.16.0
+collecting ... collected 11 items / 9 deselected / 2 selected
+
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_expiration_after_editor_disappears no renew/release after editor closed; contention=423; granted fresh lease after 90.5 seconds
+PASSED
+acceptance-20261125/evidence/core/test_acceptance_core.py::test_core_merge_comment_ownership mock OIDC callback merges guest comment by ID, content and target author; trip still readable
+PASSED
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  D:\WayToGo\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============ 2 passed, 9 deselected, 1 warning in 91.36s (0:01:31) ============

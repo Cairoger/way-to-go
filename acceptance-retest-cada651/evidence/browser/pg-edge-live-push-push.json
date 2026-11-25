@@ -1,0 +1,11 @@
+{
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36 Edg/158.0.0.0",
+  "secure": true,
+  "permission": "granted",
+  "subscribed": true,
+  "sentAt": "2026-11-25T14:46:36.041Z",
+  "inboxMatched": true,
+  "notificationMatched": true,
+  "browserNotificationObservedAt": "2026-11-25T14:46:37.094Z",
+  "windowsBanner": "no-matching-actionable-banner"
+}
