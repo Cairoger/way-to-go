@@ -1,6 +1,10 @@
+from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
+
+from conftest import browser
 from sqlalchemy import select
 
-from app.core import make_session
+from app.core import COOKIE, make_session
 from app.models import Invitation, User
 
 
@@ -9,22 +13,27 @@ def test_profile_is_self_only_and_creator_survives_transfer(owner, guest, trip):
     original = owner.get(api + "/auth/me").json()
     recipient = guest.get(api + "/auth/me").json()
     before = guest.get(api + "/notifications").json()["preferences"]
-    updated = owner.patch(api + "/auth/me", json={"nickname": " 海邊旅人 "})
+    updated = owner.patch(
+        api + "/auth/me", json={"nickname": " 海邊旅人 ", "version": original["version"]}
+    )
     assert updated.is_success and updated.json()["nickname"] == "海邊旅人"
+    assert updated.json()["version"] == original["version"] + 1
     assert owner.get(api + "/auth/me").json()["nickname"] == "海邊旅人"
     assert (
         guest.patch(
             api + "/auth/me",
-            json={
-                "nickname": " ",
-            },
+            json={"nickname": " ", "version": recipient["version"]},
         ).status_code
         == 422
     )
     assert (
-        guest.patch(api + "/auth/me", json={"nickname": "其他", "id": original["id"]}).status_code
+        guest.patch(
+            api + "/auth/me",
+            json={"nickname": "其他", "id": original["id"], "version": recipient["version"]},
+        ).status_code
         == 422
     )
+    assert owner.patch(api + "/auth/me", json={"nickname": "沒有版本"}).status_code == 422
     assert guest.get(api + "/auth/me").json() == recipient
     assert guest.get(api + "/notifications").json()["preferences"] == before
     path = api + "/trips/" + trip["id"]
@@ -40,6 +49,32 @@ def test_profile_is_self_only_and_creator_survives_transfer(owner, guest, trip):
     )
     with make_session() as db:
         assert db.get(User, original["id"]).nickname == "海邊旅人"
+
+
+def test_concurrent_profile_saves_accept_one_version(owner, guest, trip):
+    profile = "/api/v1/auth/me"
+    original = owner.get(profile).json()
+    session = owner.cookies.get(COOKIE)
+    gate = Barrier(2)
+
+    def save(name):
+        with browser() as tab:
+            tab.cookies.set(COOKIE, session, domain="testserver.local", path="/")
+            gate.wait(timeout=10)
+            return tab.patch(profile, json={"nickname": name, "version": original["version"]})
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        writes = list(pool.map(save, ["名稱甲", "名稱乙"]))
+    success, conflict = sorted(writes, key=lambda r: r.status_code)
+    assert (success.status_code, conflict.status_code) == (200, 409)
+    assert conflict.json()["code"] == "VERSION_CONFLICT"
+    assert success.json() == owner.get(profile).json()
+    assert success.json()["version"] == original["version"] + 1
+    members = guest.get(f"/api/v1/trips/{trip['id']}/members").json()
+    assert (
+        next(m["nickname"] for m in members if m["id"] == original["id"])
+        == success.json()["nickname"]
+    )
 
 
 def test_invitation_retries_preserve_one_working_code(owner, client, trip):

@@ -1,9 +1,10 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './offline-site';
 
-test('真實旅程離線重開、移除已排程景點與讀取封存地址', async ({ page, context }) => {
+test('真實旅程離線重開、移除已排程景點與讀取封存地址', async ({ page, context, offlineSite }) => {
   test.skip(process.env.E2E_DISPOSABLE !== '1', '只能在專用的驗收資料庫建立測試旅程。');
   test.setTimeout(120000);
-  const api = '/api/v1';
+  const api = offlineSite.origin + '/api/v1';
   async function post(path: string, data: unknown) {
     const response = await context.request.post(api + path, {
       data,
@@ -31,7 +32,7 @@ test('真實旅程離線重開、移除已排程景點與讀取封存地址', as
     place_id: place.id,
     notes: '只在連線時查看的活動註記',
   });
-  await page.goto('/?trip=' + trip.id);
+  await page.goto(offlineSite.origin + '/?trip=' + trip.id);
   await expect(page.getByText(/重複的小時採第一次/)).toBeVisible();
   await page.getByRole('button', { name: '候選景點', exact: true }).click();
   await page.getByRole('button', { name: '紐約展館', exact: true }).click();
@@ -45,7 +46,7 @@ test('真實旅程離線重開、移除已排程景點與讀取封存地址', as
   await page.getByRole('button', { name: '儲存離線旅程' }).click();
   await expect(page.getByRole('button', { name: '更新離線旅程' })).toBeVisible();
   const url = page.url();
-  await context.setOffline(true);
+  await offlineSite.disconnect();
   await page.close();
   const reader = await context.newPage();
   await reader.goto(url);

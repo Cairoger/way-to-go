@@ -2,10 +2,11 @@ export type Status = 'planning' | 'confirmed' | 'traveling' | 'completed';
 export type User = {
   id: string;
   nickname: string;
+  version: number;
   email?: string | null;
   account_type: 'google' | 'guest' | 'local_test';
 };
-export type Member = User & { role: 'owner' | 'member' };
+export type Member = Omit<User, 'version'> & { role: 'owner' | 'member' };
 export const accountLabels: Record<User['account_type'], string> = {
   google: 'Google 帳號',
   guest: '訪客帳號',

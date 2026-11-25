@@ -43,6 +43,7 @@ class User(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     account_type: Mapped[str] = mapped_column(String(12))
     nickname: Mapped[str] = mapped_column(String(80))
+    version: Mapped[int] = mapped_column(Integer, server_default="1")
     email: Mapped[str | None] = mapped_column(String(320))
 
 

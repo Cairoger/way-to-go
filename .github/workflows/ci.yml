@@ -141,7 +141,7 @@ jobs:
         working-directory: frontend
       - run: pnpm typecheck && pnpm lint && pnpm format:check && pnpm test
         working-directory: frontend
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
         working-directory: frontend
       - name: Build and start the self-hosted application
         run: |
@@ -164,6 +164,12 @@ jobs:
           echo "E2E_INVITE=$invite" >> "$GITHUB_ENV"
       - run: pnpm e2e
         working-directory: frontend
+      - name: Verify coordination and offline reopening in Firefox and WebKit
+        working-directory: frontend
+        run: |
+          for engine in firefox webkit; do
+            pnpm exec playwright test --browser="$engine" tests/coordination.spec.ts tests/offline-planner.spec.ts tests/live-offline-planner.spec.ts
+          done
       - name: Restore a backup into an empty verification database
         run: |
           set -euo pipefail

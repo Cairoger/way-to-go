@@ -174,6 +174,7 @@ export default function Workspace() {
         previous?.id === me.id &&
         previous.account_type === me.account_type &&
         previous.nickname === me.nickname &&
+        previous.version === me.version &&
         previous.email === me.email
           ? previous
           : me,
@@ -559,7 +560,7 @@ export default function Workspace() {
                     />
                   </label>
                 )}
-                <div className="filters" aria-label="篩選旅程">
+                <div className="filters" role="group" aria-label="篩選旅程">
                   {[['all', '全部'], ...Object.entries(statusLabels)].map(([id, label]) => (
                     <button aria-pressed={filter === id} key={id} onClick={() => setFilter(id)}>
                       {label}
@@ -683,7 +684,7 @@ export default function Workspace() {
         <Modal title="帳號" onClose={closeDialog}>
           <div className="stack">
             <p>{user.email || accountLabels[user.account_type]}</p>
-            <ProfileForm user={user} onSaved={setUser} />
+            <ProfileForm key={user.id} user={user} onSaved={setUser} />
             {user.account_type === 'guest' && (
               <Button onClick={() => setDialog('login')}>
                 <LogIn size={16} />

@@ -572,7 +572,7 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
       )}
       {loaded && section === 'plan' && (
         <>
-          <div className="wp-day-tabs" aria-label="選擇行程日">
+          <div className="wp-day-tabs" role="group" aria-label="選擇行程日">
             {days.map((day) => (
               <button
                 key={day.id}

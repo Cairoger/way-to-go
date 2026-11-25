@@ -1,7 +1,7 @@
 'use client';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 export function Modal({
   title,
   description,
@@ -13,6 +13,7 @@ export function Modal({
   children: ReactNode;
   onClose: () => void;
 }) {
+  const opener = useRef<HTMLElement | null>(null);
   return (
     <Dialog.Root
       open
@@ -24,6 +25,15 @@ export function Modal({
         <Dialog.Overlay className="modal-shade" />
         <Dialog.Content
           {...(description ? {} : { 'aria-describedby': undefined })}
+          onOpenAutoFocus={() => {
+            opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+          }}
+          onCloseAutoFocus={(event) => {
+            if (opener.current?.isConnected && document.activeElement === document.body) {
+              event.preventDefault();
+              opener.current.focus();
+            }
+          }}
           className="modal-panel"
         >
           <Dialog.Title className="modal-title">{title}</Dialog.Title>

@@ -245,7 +245,7 @@ export default function TripDetail({
         className="detail-cover"
         style={{
           backgroundImage:
-            'linear-gradient(90deg,rgba(16,41,33,.87),rgba(16,41,33,.35)),url(' +
+            'linear-gradient(90deg,rgba(16,41,33,.87),rgba(16,41,33,.68)),url(' +
             JSON.stringify(coverFor(trip)) +
             ')',
         }}
@@ -279,10 +279,11 @@ export default function TripDetail({
             </h2>
             <span className="badge neutral">唯讀示範</span>
           </div>
-          <div className="day-tabs">
+          <div className="day-tabs" role="group" aria-label="選擇行程日">
             {demo.days.map((_, i) => (
               <button
                 className={i === sampleDay ? 'on' : ''}
+                aria-pressed={i === sampleDay}
                 key={i}
                 onClick={() => setSampleDay(i)}
               >

@@ -61,6 +61,7 @@ def test_local_auth_is_private_stable_and_can_own_trips(local_config, monkeypatc
         assert user == {
             "id": user["id"],
             "nickname": local_config["username"],
+            "version": 1,
             "account_type": "local_test",
             "email": None,
         }

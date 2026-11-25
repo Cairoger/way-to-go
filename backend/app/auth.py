@@ -32,6 +32,7 @@ def public_user(user: User):
     return {
         "id": user.id,
         "nickname": user.nickname,
+        "version": user.version,
         "account_type": user.account_type,
         "email": user.email,
     }
@@ -67,11 +68,20 @@ def me(user: Actor):
 class ProfileEdit(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     nickname: str = Field(min_length=1, max_length=80)
+    version: int = Field(ge=1)
 
 
 @router.patch("/auth/me")
 async def update_profile(payload: ProfileEdit, db: DB, user: Actor):
-    user.nickname = payload.nickname
+    updated = db.scalar(
+        update(User)
+        .where(User.id == user.id, User.version == payload.version)
+        .values(nickname=payload.nickname, version=User.version + 1)
+        .returning(User)
+        .execution_options(populate_existing=True)
+    )
+    if updated is None:
+        fail(409, "VERSION_CONFLICT", "暱稱已在其他分頁更新。請重新讀取最新暱稱後再儲存。")
     trips = list(
         db.scalars(
             select(Membership.trip_id).where(
@@ -82,7 +92,7 @@ async def update_profile(payload: ProfileEdit, db: DB, user: Actor):
     db.commit()
     for trip_id in trips:
         await hub.publish(trip_id, {"type": "members"})
-    return public_user(user)
+    return public_user(updated)
 
 
 class LocalCredentials(BaseModel):

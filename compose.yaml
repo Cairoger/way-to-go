@@ -72,6 +72,14 @@ services:
       - ${BACKUP_DIR:-./backups}:/backup
       - ./deploy/backup.sh:/scripts/backup.sh:ro
     entrypoint: ["sh","/scripts/backup.sh"]
+  restore-drill:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    network_mode: none
+    volumes:
+      - ${BACKUP_DIR:-./backups}:/backup:ro
+      - ./deploy/restore-drill.sh:/scripts/restore-drill.sh:ro
+    entrypoint: ["sh","/scripts/restore-drill.sh"]
 volumes:
   db-data:
 

@@ -102,12 +102,11 @@ docker compose up -d api
 
 PostgreSQL 使用持久化 Volume。備份服務啟動時及每隔 24 小時產生自訂格式的 `pg_dump`，成功後才清理超過七日的舊備份。備份失敗或剩餘容量低於 512 MiB 時會寫入容器日誌。將 `BACKUP_DIR` 指向另一個裝置或掛載位置，並定期在新的資料庫驗證還原。預設的同機備份無法涵蓋整台主機遺失的情況。
 
-在新的空白資料庫驗證指定備份，以下以 POSIX shell 為例：
+獨立的 `restore-drill` 服務每小時尋找新的每日備份，還原至全新的 PostgreSQL，檢查遷移版本、約束、核心資料筆數及附件大小。它以唯讀模式掛載備份，並使用容器內的 Unix socket。還原資料與暫存日誌在每次驗證後清除。可用下列指令檢視結果，或立即驗證保留中的每份每日備份。
 
 ```sh
-docker compose exec -T db createdb -U waytogo restore_check
-docker compose exec -T db pg_restore --exit-on-error -U waytogo -d restore_check < backups/waytogo-YYYYMMDDTHHMMSSZ.dump
-docker compose exec -T db psql -U waytogo -d restore_check -c 'select count(*) from trips'
+docker compose logs restore-drill
+docker compose run --rm --no-deps restore-drill --all
 ```
 
 ## 開發與驗證

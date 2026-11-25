@@ -502,6 +502,7 @@ legend {
 .hero-copy {
   padding: 24px 32px;
   max-width: 79%;
+  background: linear-gradient(90deg, #e0e9cfd9 calc(100% - 16px), transparent);
 }
 .hero-tag {
   gap: 6px;
@@ -565,7 +566,7 @@ legend {
   font-size: 0.63rem;
   font-weight: 750;
   letter-spacing: 0.15em;
-  background: #29443380;
+  background: #294433e6;
   padding: 3px 7px;
   border-radius: 4px;
 }
@@ -787,7 +788,7 @@ legend {
 }
 .p2 {
   background: #d8dce8;
-  color: #57637c;
+  color: #4e5971;
 }
 .as-list {
   grid-template-columns: 1fr;

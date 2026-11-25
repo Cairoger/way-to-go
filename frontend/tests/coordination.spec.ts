@@ -1,6 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 import type { Trip } from '../lib/trips';
 
+test.use({ serviceWorkers: 'block' });
+
 const ownerId = 'a4b80000-6e6c-4320-a594-938f06b9c001';
 const memberId = 'f4b80000-6e6c-4320-a594-938f06b9c002';
 const account = { id: ownerId, nickname: '小青', email: null, account_type: 'google' };

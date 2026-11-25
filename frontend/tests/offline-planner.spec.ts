@@ -1,4 +1,5 @@
-import { expect, test, type BrowserContext } from '@playwright/test';
+import { expect, type BrowserContext } from '@playwright/test';
+import { test, type OfflineSite } from './offline-site';
 
 const traveler = { id: 'saved-user', nickname: '離線測試旅伴', account_type: 'local_test' };
 const trip = {
@@ -53,18 +54,22 @@ const item = {
   version: 1,
 };
 
-async function fixture(context: BrowserContext) {
+async function fixture(context: BrowserContext, site: OfflineSite) {
   let account: typeof traveler | null = traveler;
   let removed = false;
   await context.routeWebSocket('**/ws/trips/**', (ws) =>
     ws.send(JSON.stringify({ type: 'presence', members: [traveler.id] })),
   );
-  await context.route('**/api/v1/**', async (route) => {
-    const path = new URL(route.request().url()).pathname.slice('/api/v1'.length);
+  site.handleApi(async (req, res) => {
+    const path = new URL(req.url!, site.origin).pathname.slice('/api/v1'.length);
     if (path === '/auth/logout') account = null;
-    if (path === '/auth/me' && !account) return route.fulfill({ status: 401, json: {} });
-    if (path === '/places/museum' && route.request().method() === 'DELETE') {
-      expect(route.request().postDataJSON()).toEqual({ version: 1, lease_id: 'lease' });
+    if (path === '/places/museum' && req.method === 'DELETE') {
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      expect(JSON.parse(Buffer.concat(chunks).toString())).toEqual({
+        version: 1,
+        lease_id: 'lease',
+      });
       removed = true;
     }
     const routes: Record<string, unknown> = {
@@ -88,7 +93,11 @@ async function fixture(context: BrowserContext) {
       '/places/museum': { deleted: true, version: 2 },
       '/notifications': { items: [], preferences: { mentions: false, push: false, version: 1 } },
     };
-    return route.fulfill({ json: routes[path] ?? [] });
+    res.writeHead(path === '/auth/me' && !account ? 401 : 200, {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+    });
+    res.end(JSON.stringify(routes[path] ?? []));
   });
   return {
     switchAccount: () => {
@@ -100,9 +109,10 @@ async function fixture(context: BrowserContext) {
 test('自行儲存之後，關閉原頁、開新頁可離線唯讀；登出清除所有分頁的副本', async ({
   context,
   page,
+  offlineSite,
 }) => {
-  await fixture(context);
-  await page.goto('/?trip=saved-trip');
+  await fixture(context, offlineSite);
+  await page.goto(offlineSite.origin + '/?trip=saved-trip');
   await expect(page.getByText(item.clock_note)).toBeVisible();
   expect(
     await page.evaluate(() =>
@@ -113,7 +123,7 @@ test('自行儲存之後，關閉原頁、開新頁可離線唯讀；登出清�
   await page.getByRole('button', { name: '儲存離線旅程' }).click();
   await expect(page.getByRole('button', { name: '更新離線旅程' })).toBeVisible();
   const url = page.url();
-  await context.setOffline(true);
+  await offlineSite.disconnect();
   await page.close();
   const reader = await context.newPage();
   await reader.goto(url);
@@ -126,27 +136,27 @@ test('自行儲存之後，關閉原頁、開新頁可離線唯讀；登出清�
   const stored = await reader.evaluate(() => JSON.stringify(localStorage));
   for (const secret of ['私人訂位代碼', '秘密註記', '不儲存描述'])
     expect(stored).not.toContain(secret);
-  await context.setOffline(false);
+  await offlineSite.reconnect();
   const online = await context.newPage();
-  await online.goto('/');
+  await online.goto(offlineSite.origin);
   await online.getByRole('button', { name: /離線測試旅伴.*本機測試帳號/ }).click();
   await online.getByRole('button', { name: '登出', exact: true }).click();
   await expect(reader.getByRole('heading', { name: '此旅程尚未儲存在裝置上' })).toBeVisible();
-  await context.setOffline(true);
+  await offlineSite.disconnect();
   const cleared = await context.newPage();
   await cleared.goto(url);
   await expect(cleared.getByRole('heading', { name: '此旅程尚未儲存在裝置上' })).toBeVisible();
   await expect(cleared.getByText('清晨參觀')).toHaveCount(0);
 });
 
-test('切換帳號後移除上一個帳號的離線旅程', async ({ context, page }) => {
-  const session = await fixture(context);
-  await page.goto('/?trip=saved-trip');
+test('切換帳號後移除上一個帳號的離線旅程', async ({ context, page, offlineSite }) => {
+  const session = await fixture(context, offlineSite);
+  await page.goto(offlineSite.origin + '/?trip=saved-trip');
   await page.getByText('離線閱讀', { exact: true }).click();
   await page.getByRole('button', { name: '儲存離線旅程' }).click();
   await expect(page.getByRole('button', { name: '更新離線旅程' })).toBeVisible();
   session.switchAccount();
-  await page.goto('/');
+  await page.goto(offlineSite.origin);
   await expect(page.getByRole('button', { name: /其他旅伴.*本機測試帳號/ })).toBeVisible();
   expect(
     await page.evaluate(() =>
@@ -155,9 +165,13 @@ test('切換帳號後移除上一個帳號的離線旅程', async ({ context, pa
   ).toEqual([]);
 });
 
-test('從景點詳情移除原始景點；地圖顯示付費提示與免費導航', async ({ context, page }) => {
-  await fixture(context);
-  await page.goto('/?trip=saved-trip');
+test('從景點詳情移除原始景點；地圖顯示付費提示與免費導航', async ({
+  context,
+  page,
+  offlineSite,
+}) => {
+  await fixture(context, offlineSite);
+  await page.goto(offlineSite.origin + '/?trip=saved-trip');
   await page.getByRole('button', { name: '旅程地圖' }).click();
   await expect(page.getByText(/付費功能開發中/)).toBeVisible();
   await expect(page.getByRole('link', { name: '導航至市立展館' })).toHaveAttribute(
