@@ -1,0 +1,56 @@
+:root {
+  color-scheme: light;
+  font:
+    1rem/1.7 system-ui,
+    sans-serif;
+  color: #21382c;
+  background: #f5f5ed;
+}
+body {
+  margin: 0;
+}
+main {
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  overflow-wrap: anywhere;
+}
+header {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  font-weight: 700;
+}
+header span {
+  margin-left: auto;
+  padding: 0.15rem 0.65rem;
+  border-radius: 1rem;
+  background: #deebda;
+  font-size: 0.9rem;
+}
+h1 {
+  line-height: 1.2;
+}
+h2 {
+  font-size: 1.12rem;
+  margin-top: 1.7rem;
+}
+h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+section {
+  margin: 0.5rem 0;
+  padding: 0.7rem 1rem;
+  border-left: 0.22rem solid #639379;
+  background: white;
+}
+p {
+  margin: 0.3rem 0;
+}
+footer {
+  margin: 2rem 0;
+}
+a {
+  color: #215f42;
+}

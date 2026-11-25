@@ -14,6 +14,7 @@ from app import auth
 from app.core import COOKIE, digest, make_session
 from app.main import app
 from app.models import Invitation, LoginSession, utcnow
+from app.realtime import hub
 
 
 def test_guest_invite_lifecycle(owner, guest, client, trip, invitation):
@@ -166,6 +167,27 @@ def test_google_oidc_cookie_rotation_and_state_binding(client, guest, monkeypatc
     )
 
 
+def test_first_google_login_can_create_trip_and_invite(client, monkeypatch):
+    monkeypatch.setenv("GOOGLE_CLIENT_ID", "test-client")
+    monkeypatch.setenv("GOOGLE_CLIENT_SECRET", "test-secret")
+    authorization = client.post("/api/v1/auth/google", json={})
+    assert authorization.status_code == 200
+    query = parse_qs(urlsplit(authorization.json()["url"]).query)
+    monkeypatch.setattr(
+        auth,
+        "exchange_code",
+        lambda *_: {"sub": "first-test-user", "name": "初次登入", "nonce": query["nonce"][0]},
+    )
+    callback = client.get(auth.OAUTH_PATH, params={"state": query["state"][0], "code": "local"})
+    assert callback.status_code == 303
+    profile = client.get("/api/v1/auth/me").json()
+    assert (profile["account_type"], profile["nickname"]) == ("google", "初次登入")
+    created = client.post("/api/v1/trips", json={"title": "首登驗收"})
+    assert created.status_code == 201
+    invitation = client.post(f"/api/v1/trips/{created.json()['id']}/invitations", json={})
+    assert invitation.status_code == 201 and invitation.json()["code"]
+
+
 def test_missing_oidc_settings_and_request_origin(client, monkeypatch):
     monkeypatch.delenv("GOOGLE_CLIENT_ID", raising=False)
     response = client.post("/api/v1/auth/google")
@@ -235,3 +257,4 @@ def test_five_connected_clients_receive_committed_edits_and_revocation(
             sockets[-1].receive_json()
         assert disconnected.value.code == 4403
         assert owner.get(path, headers=headers[-1]).status_code == 403
+    assert trip["id"] not in hub.connections

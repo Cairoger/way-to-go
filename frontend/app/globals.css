@@ -6,7 +6,7 @@
   --pine: #245746;
   --pine-dark: #193e32;
   --ink: #242f29;
-  --muted: #667069;
+  --muted: #566258;
   --line: #dfe2d9;
   --paper: #f8f8f4;
   --white: #fff;
@@ -142,7 +142,7 @@ legend {
 .nav-heading {
   font-size: 0.74rem;
   font-weight: 700;
-  color: #727c71;
+  color: var(--muted);
   letter-spacing: 0.11em;
   padding: 0 13px 12px;
   display: flex;
@@ -345,7 +345,7 @@ legend {
 }
 .breadcrumbs {
   gap: 12px;
-  color: #798278;
+  color: var(--muted);
   font-size: 0.81rem;
 }
 .breadcrumbs b {
@@ -832,7 +832,7 @@ legend {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #758072;
+  color: var(--muted);
   font-size: 0.72rem;
 }
 .main-footer span {

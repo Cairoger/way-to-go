@@ -14,6 +14,12 @@ import {
   ListChecks,
   Wifi,
   Navigation,
+  CalendarCheck,
+  ClipboardList,
+  Plane,
+  Wallet,
+  Paperclip,
+  Copy,
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { api, ApiError } from '../lib/api';
@@ -21,6 +27,7 @@ import {
   type Trip,
   type User,
   type Member,
+  canCreateTrip,
   coverFor,
   statusLabels,
   formatDates,
@@ -29,6 +36,8 @@ import {
 import { samples } from '../lib/samples';
 import { Button } from './ui/button';
 import Members from './Members';
+import OfflineTrip from './OfflineTrip';
+import { forgetOfflineTrip } from '../lib/offlineTrips';
 const Planner = dynamic(() => import('./Planner'), {
   ssr: false,
   loading: () => <p role="status">讀取行程中…</p>,
@@ -37,12 +46,21 @@ const Decisions = dynamic(() => import('./Decisions'), {
   ssr: false,
   loading: () => <p role="status">讀取討論中…</p>,
 });
+const Availability = dynamic(() => import('./Availability'));
+const Finance = dynamic(() => import('./Finance'));
+const Preparation = dynamic(() => import('./Preparation'));
+const AttachmentLibrary = dynamic(() => import('./Attachments'));
 const tabs = [
   ['plan', '每日行程', CalendarDays],
   ['places', '候選景點', MapPin],
   ['map', '旅程地圖', MapPinned],
+  ['dates', '日期協調', CalendarCheck],
   ['polls', '投票', Vote],
   ['comments', '討論', MessageCircle],
+  ['tasks', '行前清單', ClipboardList],
+  ['bookings', '交通與住宿', Plane],
+  ['finance', '預算與分帳', Wallet],
+  ['files', '旅程檔案', Paperclip],
   ['members', '旅伴', Users],
 ] as const;
 type Section = (typeof tabs)[number][0];
@@ -55,6 +73,8 @@ type Props = {
   update: (t: Trip) => void;
   setError: (s: string) => void;
   onExit: () => void;
+  onCopy: (t: Trip) => void;
+  initialSection?: 'comments';
 };
 export default function TripDetail({
   trip,
@@ -65,15 +85,21 @@ export default function TripDetail({
   update,
   setError,
   onExit,
+  onCopy,
+  initialSection,
 }: Props) {
-  const [section, setSection] = useState<Section>('plan'),
+  const [section, setSection] = useState<Section>(initialSection ?? 'plan'),
+    [copying, setCopying] = useState(false),
     [refresh, setRefresh] = useState(0),
+    [metadataVersion, setMetadataVersion] = useState(0),
+    [discussionVersion, setDiscussionVersion] = useState(0),
     [members, setMembers] = useState<Member[]>([]),
     [online, setOnline] = useState<string[]>([]),
     [net, setNet] = useState('連線中'),
     [sampleDay, setSampleDay] = useState(0);
   const demo = sample ? samples.find((s) => s.trip.id === trip.id) : undefined;
   const changed = useCallback(() => setRefresh((n) => n + 1), []);
+  const metadataChanged = useCallback(() => setMetadataVersion((n) => n + 1), []);
   const owner = user?.id === trip.owner_id;
   useEffect(() => {
     if (sample || !user) return;
@@ -88,18 +114,35 @@ export default function TripDetail({
       .catch((e) => {
         if (!live) return;
         setError(errorText(e));
-        if (e instanceof ApiError && [401, 403, 404, 410].includes(e.status)) onExit();
+        if (e instanceof ApiError && [401, 403, 404, 410].includes(e.status)) {
+          forgetOfflineTrip(trip.id);
+          onExit();
+        }
       });
     return () => {
       live = false;
     };
-  }, [trip.id, refresh, sample, user, update, setError, onExit]);
+  }, [trip.id, metadataVersion, sample, user, update, setError, onExit]);
   useEffect(() => {
     if (sample || !user) return;
     let active = true,
       socket: WebSocket | undefined,
       timer: ReturnType<typeof setTimeout>,
+      refreshTimer: ReturnType<typeof setTimeout> | undefined,
       delay = 700;
+    const pending = new Set<string>();
+    const invalidate = (type: string) => {
+      pending.add(type);
+      if (refreshTimer !== undefined) return;
+      refreshTimer = setTimeout(() => {
+        refreshTimer = undefined;
+        const types = [...pending];
+        pending.clear();
+        if (types.some((kind) => /^(resync|members|trip|day|place)/.test(kind))) metadataChanged();
+        if (types.some((kind) => !kind.startsWith('comment.'))) changed();
+        else setDiscussionVersion((n) => n + 1);
+      }, 30);
+    };
     const connect = () => {
       if (!active) return;
       socket = new WebSocket(
@@ -112,7 +155,7 @@ export default function TripDetail({
         if (active) {
           delay = 700;
           setNet('即時同步');
-          changed();
+          invalidate('resync');
         }
       };
       socket.onmessage = (e) => {
@@ -120,13 +163,16 @@ export default function TripDetail({
         try {
           const data = JSON.parse(e.data);
           if (data.type === 'presence') setOnline(data.members);
-          else if (data.type !== 'heartbeat' && data.type !== 'pong') changed();
+          else if (data.type === 'notifications.changed')
+            window.dispatchEvent(new Event('waytogo-notices'));
+          else if (data.type !== 'heartbeat' && data.type !== 'pong') invalidate(data.type);
         } catch {}
       };
       socket.onclose = (e) => {
         if (!active) return;
         setOnline([]);
         if ([4401, 4403, 4404, 1008].includes(e.code)) {
+          forgetOfflineTrip(trip.id);
           setError('此旅程的存取權已結束。');
           onExit();
           return;
@@ -140,12 +186,13 @@ export default function TripDetail({
     return () => {
       active = false;
       clearTimeout(timer);
+      clearTimeout(refreshTimer);
       if (socket) {
         socket.onclose = null;
         socket.close();
       }
     };
-  }, [trip.id, sample, user, changed, onExit, setError]);
+  }, [trip.id, sample, user, changed, metadataChanged, onExit, setError]);
   async function lifecycle(action: 'archive' | 'delete') {
     if (
       !window.confirm(
@@ -169,6 +216,17 @@ export default function TripDetail({
       setError(errorText(e));
     }
   }
+  async function copyTrip() {
+    setCopying(true);
+    try {
+      onCopy(await api<Trip>('/trips/' + trip.id + '/copy', 'POST', {}));
+    } catch (e) {
+      setError(errorText(e));
+    } finally {
+      setCopying(false);
+    }
+  }
+  const shared = { trip, userId: user?.id ?? '', members, refresh, onChange: changed, setError };
   return (
     <>
       <div className="detail-top">
@@ -259,6 +317,7 @@ export default function TripDetail({
       ) : (
         user && (
           <>
+            <OfflineTrip key={trip.id + user.id} tripId={trip.id} userId={user.id} />
             <nav aria-label="旅程功能" className="trip-tabs">
               {tabs.map(([id, label, Icon]) => (
                 <button
@@ -287,9 +346,10 @@ export default function TripDetail({
               <Decisions
                 tripId={trip.id}
                 userId={user.id}
+                members={members}
                 isOwner={owner}
                 section={section}
-                refresh={refresh}
+                refresh={refresh + (section === 'comments' ? discussionVersion : 0)}
                 onChange={changed}
                 setError={setError}
               />
@@ -300,25 +360,49 @@ export default function TripDetail({
                 userId={user.id}
                 members={members}
                 online={online}
-                onChange={changed}
+                onChange={metadataChanged}
                 onExit={onExit}
                 setError={setError}
               />
             )}
-            {owner && (
+            {section === 'dates' && <Availability {...shared} />}
+            {section === 'finance' && <Finance {...shared} />}
+            {section === 'files' && (
+              <AttachmentLibrary
+                tripId={trip.id}
+                userId={user.id}
+                members={members}
+                refresh={refresh}
+                onChange={changed}
+              />
+            )}
+            {(section === 'tasks' || section === 'bookings') && (
+              <Preparation key={section} {...shared} section={section} />
+            )}
+            {(owner || canCreateTrip(user)) && (
               <div className="lifecycle">
-                <Button variant="ghost" onClick={settings}>
-                  <Settings2 size={16} />
-                  旅程設定
-                </Button>
-                <Button variant="ghost" onClick={() => lifecycle('archive')}>
-                  <Archive size={16} />
-                  {trip.archived ? '取消封存' : '封存旅程'}
-                </Button>
-                <Button variant="ghost" onClick={() => lifecycle('delete')}>
-                  <Trash2 size={16} />
-                  移到回收區
-                </Button>
+                {canCreateTrip(user) && (
+                  <Button variant="ghost" disabled={copying} onClick={copyTrip}>
+                    <Copy size={16} />
+                    {copying ? '複製中…' : '複製旅程'}
+                  </Button>
+                )}
+                {owner && (
+                  <>
+                    <Button variant="ghost" onClick={settings}>
+                      <Settings2 size={16} />
+                      旅程設定
+                    </Button>
+                    <Button variant="ghost" onClick={() => lifecycle('archive')}>
+                      <Archive size={16} />
+                      {trip.archived ? '取消封存' : '封存旅程'}
+                    </Button>
+                    <Button variant="ghost" onClick={() => lifecycle('delete')}>
+                      <Trash2 size={16} />
+                      移到回收區
+                    </Button>
+                  </>
+                )}
               </div>
             )}
           </>

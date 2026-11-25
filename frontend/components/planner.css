@@ -513,3 +513,41 @@
     padding: 1rem;
   }
 }
+.wp-tools,
+.wp-weather {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  font-size: 0.82rem;
+  color: #49624e;
+}
+.wp-tools {
+  margin: 0 0 0.75rem;
+}
+.wp-weather {
+  padding: 0.5rem 1.15rem;
+  background: #f3f6ef;
+}
+.wp-weather a {
+  text-decoration: underline;
+}
+.wp-map-route {
+  padding: 0.8rem 0.85rem 0;
+}
+.wp-map-route select {
+  border: 1px solid #cbd5c9;
+  border-radius: 0.4rem;
+  padding: 0.45rem;
+}
+.wp-form .wp-choice {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+}
+.wp-form .wp-choice input {
+  width: 1.1rem;
+  min-height: 1.1rem;
+}

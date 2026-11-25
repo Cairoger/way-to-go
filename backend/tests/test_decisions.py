@@ -132,3 +132,94 @@ def test_retried_comment_request(owner, trip):
     assert first.json() == second.json()
     assert len(owner.get(url).json()) == 1
     assert owner.post(url, headers=key, json={"content": "不同內容"}).status_code == 409
+
+
+def test_rating_ballot_requirements_privacy_review_and_result(owner, guest, trip):
+    poll = create_poll(owner, trip, mode="rating")
+    url = "/api/v1/polls/" + poll["id"]
+    a, b, c = [o["id"] for o in poll["rounds"][0]["options"]]
+    base = {"version": 1, "ballot_version": 0}
+    for ratings in ({a: 3, b: 5}, {a: 6, b: 3, c: 4}, {a: True, b: 3, c: 4}):
+        assert guest.put(url + "/ballot", json=base | {"ratings": ratings}).status_code == 422
+    ballot_body = base | {"ratings": {a: 4, b: 3, c: 1}}
+    assert guest.put(url + "/ballot", json=ballot_body).is_success
+    assert guest.put(url + "/ballot", json=ballot_body).status_code == 409
+    listing = f"/api/v1/trips/{trip['id']}/polls"
+    view = owner.get(listing).json()[0]["rounds"][0]
+    assert view["my_ratings"] == {} and "results" not in view
+    assert (
+        owner.patch(url, json={"version": 1, "title": "改規則", "mode": "single"}).status_code
+        == 409
+    )
+    changed = owner.post(url + "/options", json={"version": 1, "text": "花園"}).json()
+    d = changed["rounds"][0]["options"][-1]["id"]
+    assert guest.get(listing).json()[0]["rounds"][0]["review_needed"]
+    voted = owner.put(
+        url + "/ballot",
+        json={
+            "version": changed["version"],
+            "ballot_version": 0,
+            "ratings": {a: 1, b: 5, c: 2, d: 5},
+        },
+    )
+    assert voted.is_success, voted.text
+    closed = owner.post(url + "/close", json={"version": changed["version"]}).json()
+    result = closed["rounds"][0]["results"]
+    assert result["counts"] == {a: 5, b: 8, c: 3, d: 5}
+    assert result["winners"] == [b]
+    assert result["ballots"][0]["ratings"] == ballot_body["ratings"]
+    history = owner.post(url + "/reopen", json={"version": closed["version"]}).json()["rounds"]
+    assert history[1]["results"] == result and history[0]["mode"] == "rating"
+    assert not history[0]["my_ratings"]
+
+
+def test_ranked_ballots_and_tie_round(owner, guest, trip):
+    poll = create_poll(owner, trip, mode="ranked")
+    a, b, c = [o["id"] for o in poll["rounds"][0]["options"]]
+    assert ballot(guest, poll, 1, 0).status_code == 422
+    assert ballot(guest, poll, 2, 0, 2).status_code == 422
+    assert ballot(guest, poll, 0, 2, 1).is_success
+    assert ballot(guest, poll, 1, 0, 2, ballot_version=1).json()["rounds"][0]["my_choices"] == [
+        b,
+        a,
+        c,
+    ]
+    round_ = owner.get(f"/api/v1/trips/{trip['id']}/polls").json()[0]["rounds"][0]
+    assert round_["my_choices"] == [] and "results" not in round_
+    assert ballot(owner, poll, 0, 1, 2).is_success
+    path = "/api/v1/polls/" + poll["id"]
+    closed = owner.post(path + "/close", json={"version": 1}).json()
+    result = closed["rounds"][0]["results"]
+    assert result["counts"] == {a: 5, b: 5, c: 2}
+    assert set(result["winners"]) == {a, b}
+    assert result["ballots"][0]["option_ids"] == [b, a, c]
+    new = owner.post(path + "/reopen", json={"version": closed["version"]}).json()
+    assert len(new["rounds"][0]["options"]) == 2
+    assert new["rounds"][1]["results"] == result
+
+
+def test_structured_and_plain_mentions_on_create_edit(owner, guest, trip, monkeypatch):
+    from app import decisions
+
+    deliveries = []
+
+    async def failing_push(ids):
+        deliveries.extend(ids)
+        raise RuntimeError("provider offline")
+
+    monkeypatch.setattr(decisions, "deliver_mentions", failing_push)
+    member = guest.get("/api/v1/auth/me").json()
+    url = f"/api/v1/trips/{trip['id']}/comments"
+    text = f"請 @[{member['nickname']}]({member['id']}) 看行程"
+    first = owner.post(url, json={"content": text})
+    assert first.is_success, first.text
+    assert len(guest.get("/api/v1/notifications").json()["items"]) == 1
+    edit = "/api/v1/comments/" + first.json()["id"]
+    assert owner.patch(edit, json={"version": 1, "content": text + "，謝謝"}).is_success
+    assert len(deliveries) == 1
+    second = owner.post(url, json={"content": "再確認"}).json()
+    assert owner.patch(
+        "/api/v1/comments/" + second["id"],
+        json={"version": 1, "content": "@" + member["nickname"] + " 請確認"},
+    ).is_success
+    assert len(guest.get("/api/v1/notifications").json()["items"]) == 2

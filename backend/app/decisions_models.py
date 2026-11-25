@@ -30,7 +30,9 @@ class PollRound(Base):
     __table_args__ = (
         UniqueConstraint("poll_id", "number"),
         CheckConstraint("kind IN ('place', 'date')"),
-        CheckConstraint("mode IN ('single', 'multiple')"),
+        CheckConstraint(
+            "mode IN ('single','multiple','rating','ranked')", name="ck_poll_round_mode"
+        ),
     )
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     poll_id: Mapped[str] = mapped_column(ForeignKey("polls.id", ondelete="CASCADE"))
@@ -67,10 +69,16 @@ class Ballot(Base):
 
 class BallotChoice(Base):
     __tablename__ = "ballot_choices"
-    __table_args__ = (UniqueConstraint("ballot_id", "option_id"),)
+    __table_args__ = (
+        UniqueConstraint("ballot_id", "option_id"),
+        CheckConstraint("value BETWEEN 1 AND 5", name="ck_ballot_choice_value"),
+        CheckConstraint("rank BETWEEN 1 AND 60", name="ck_ballot_choice_rank"),
+    )
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     ballot_id: Mapped[str] = mapped_column(ForeignKey("ballots.id", ondelete="CASCADE"))
     option_id: Mapped[str] = mapped_column(ForeignKey("poll_options.id", ondelete="CASCADE"))
+    value: Mapped[int | None]
+    rank: Mapped[int | None]
 
 
 class PollAdoption(Base):

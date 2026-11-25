@@ -8,8 +8,10 @@ export default defineConfig({
     baseURL: process.env.E2E_ORIGIN || 'http://localhost:3000',
     locale: 'zh-TW',
     trace: 'retain-on-failure',
-    launchOptions: process.env.CHROME_EXECUTABLE
-      ? { executablePath: process.env.CHROME_EXECUTABLE }
-      : {},
+    launchOptions:
+      process.env.CHROME_EXECUTABLE &&
+      (!process.env.E2E_BROWSER || process.env.E2E_BROWSER === 'chromium')
+        ? { executablePath: process.env.CHROME_EXECUTABLE }
+        : {},
   },
 });

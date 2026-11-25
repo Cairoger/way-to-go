@@ -1,0 +1,23 @@
+.offline-trip {
+  margin: 0.75rem 0;
+  padding: 0.65rem 0.9rem;
+  color: var(--ink, #26392e);
+  background: var(--paper, #fafaf6);
+  border: 1px solid #d9e2d9;
+  border-radius: 0.65rem;
+  font-size: 0.9rem;
+}
+.offline-trip summary {
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 600;
+}
+.offline-trip p {
+  margin: 0.5rem 0;
+}
+.offline-trip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
+  ArrowDown,
+  ArrowUp,
   Check,
   ChevronDown,
   CirclePlus,
@@ -16,24 +18,44 @@ import {
   Vote,
 } from 'lucide-react';
 import { api } from '../lib/api';
+import type { Member } from '../lib/trips';
+import { uploadFiles, type FileInfo } from './Attachments';
 import './decisions.css';
 
 type Option = { id: string; text: string; place_id: string | null };
+const modeLabels = { single: '單選', multiple: '多選', rating: '評分', ranked: '排序' };
+type Mode = keyof typeof modeLabels;
+const modeOptions = Object.entries(modeLabels).map(([value, name]) => (
+  <option key={value} value={value}>
+    {name}
+  </option>
+));
+const scoringNotes = {
+  rating: '每個選項評 1 到 5 分，總分最高者勝出。新增選項在補評前得 0 分。',
+  ranked:
+    '將所有選項依喜好排序。第一名得選項總數的分數，每下一名少 1 分。新增選項在補排前得 0 分，總分最高者勝出。',
+};
 type Result = {
   counts: Record<string, number>;
   winners: string[];
-  ballots: { user_id: string; nickname: string; option_ids: string[] }[];
+  ballots: {
+    user_id: string;
+    nickname: string;
+    option_ids: string[];
+    ratings: Record<string, number>;
+  }[];
 };
 type Round = {
   id: string;
   number: number;
   title: string;
   kind: 'date' | 'place';
-  mode: 'single' | 'multiple';
+  mode: Mode;
   closed: boolean;
   deadline: string | null;
   options: Option[];
   my_choices: string[];
+  my_ratings: Record<string, number>;
   ballot_version: number;
   review_needed: boolean;
   results?: Result;
@@ -46,6 +68,7 @@ type Poll = {
   rounds: Round[];
 };
 type Comment = {
+  attachments?: Pick<FileInfo, 'id' | 'filename'>[];
   id: string;
   author_id: string;
   nickname: string;
@@ -60,6 +83,7 @@ type Day = { id: string; day_number: number; title: string };
 type Place = { id: string; name: string; candidate: boolean };
 type Props = {
   tripId: string;
+  members: Member[];
   userId: string;
   isOwner: boolean;
   section: 'polls' | 'comments';
@@ -95,6 +119,8 @@ function Results({ round }: { round: Round }) {
   if (!results) return null;
   if (!results.ballots.length) return <p className="dc-note">無結果，本輪未收到選票。</p>;
   const nameOf = (id: string) => round.options.find((o) => o.id === id)?.text;
+  const scored = round.mode === 'ranked' || round.mode === 'rating';
+  const maxScore = round.mode === 'rating' ? 5 : round.mode === 'ranked' ? round.options.length : 1;
   return (
     <div className="dc-results">
       <p className="dc-result-title">
@@ -104,10 +130,12 @@ function Results({ round }: { round: Round }) {
       {round.options.map((o) => (
         <div className="dc-result-line" key={o.id}>
           <span>{o.text}</span>
-          <b>{results.counts[o.id]} 票</b>
+          <b>
+            {results.counts[o.id]} {scored ? '分' : '票'}
+          </b>
           <progress
-            aria-label={o.text + ' 得票'}
-            max={results.ballots.length}
+            aria-label={o.text + (scored ? ' 總分' : ' 得票')}
+            max={results.ballots.length * maxScore}
             value={results.counts[o.id]}
           />
         </div>
@@ -119,7 +147,16 @@ function Results({ round }: { round: Round }) {
         <ul>
           {results.ballots.map((b) => (
             <li key={b.user_id}>
-              <strong>{b.nickname}</strong>　{b.option_ids.map(nameOf).join('、')}
+              <strong>{b.nickname}</strong>　
+              {b.option_ids
+                .map((id, index) =>
+                  round.mode === 'rating'
+                    ? nameOf(id) + ' ' + b.ratings[id] + ' 分'
+                    : round.mode === 'ranked'
+                      ? index + 1 + '. ' + nameOf(id)
+                      : nameOf(id),
+                )
+                .join('、')}
             </li>
           ))}
         </ul>
@@ -194,10 +231,7 @@ function CreatePoll({
         </label>
         <label>
           選票方式
-          <select name="mode">
-            <option value="single">單選</option>
-            <option value="multiple">多選</option>
-          </select>
+          <select name="mode">{modeOptions}</select>
         </label>
       </div>
       <label>
@@ -256,6 +290,47 @@ function CreatePoll({
   );
 }
 
+function RankedChoices({ round }: { round: Round }) {
+  const [order, setOrder] = useState(round.my_choices);
+  const ids = [...order, ...round.options.map((o) => o.id).filter((id) => !order.includes(id))];
+  function move(from: number, to: number) {
+    const next = [...ids];
+    [next[from], next[to]] = [next[to], next[from]];
+    setOrder(next);
+  }
+  return (
+    <ol className="dc-ranked">
+      {ids.map((id, index) => {
+        const text = round.options.find((o) => o.id === id)?.text;
+        return (
+          <li key={id}>
+            <input type="hidden" name="choice" value={id} />
+            <span>
+              {index + 1}. {text}
+            </span>
+            <button
+              type="button"
+              aria-label={'將' + text + '往前移'}
+              disabled={index === 0}
+              onClick={() => move(index, index - 1)}
+            >
+              <ArrowUp size={16} />
+            </button>
+            <button
+              type="button"
+              aria-label={'將' + text + '往後移'}
+              disabled={index === ids.length - 1}
+              onClick={() => move(index, index + 1)}
+            >
+              <ArrowDown size={16} />
+            </button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 function PollCard({
   poll,
   userId,
@@ -278,7 +353,17 @@ function PollCard({
     await save(
       path + '/ballot',
       'PUT',
-      { version, ballot_version: round.ballot_version, option_ids: data.getAll('choice') },
+      {
+        version,
+        ballot_version: round.ballot_version,
+        ...(round.mode === 'rating'
+          ? {
+              ratings: Object.fromEntries(
+                round.options.map((o) => [o.id, Number(data.get('rating-' + o.id))]),
+              ),
+            }
+          : { option_ids: data.getAll('choice') }),
+      },
       '已儲存你的選票',
     );
   }
@@ -309,10 +394,13 @@ function PollCard({
         </span>
         <small>
           第 {round.number} 輪 · {round.kind === 'date' ? '日期' : '景點'} ·{' '}
-          {round.mode === 'single' ? '單選' : '多選'}
+          {modeLabels[round.mode]}
         </small>
       </div>
       <h3>{round.title}</h3>
+      {(round.mode === 'rating' || round.mode === 'ranked') && (
+        <p className="dc-note">{scoringNotes[round.mode]}</p>
+      )}
       {round.deadline && <small>截止於 {localTime(round.deadline)}</small>}
       {round.review_needed && (
         <p role="status" className="dc-alert">
@@ -321,23 +409,47 @@ function PollCard({
       )}
       {!round.closed && (
         <form key={round.id + '-' + round.ballot_version} onSubmit={submitVote}>
-          <fieldset className="dc-choices">
-            <legend className="dc-sr">
-              選擇{round.mode === 'single' ? '一個' : '一個或多個'}選項
-            </legend>
-            {round.options.map((o) => (
-              <label className="dc-choice" key={o.id}>
-                <input
-                  name="choice"
-                  value={o.id}
-                  type={round.mode === 'single' ? 'radio' : 'checkbox'}
-                  defaultChecked={round.my_choices.includes(o.id)}
-                  required={round.mode === 'single'}
-                />
-                <span>{o.text}</span>
-              </label>
-            ))}
-          </fieldset>
+          {round.mode === 'ranked' ? (
+            <RankedChoices round={round} />
+          ) : round.mode === 'rating' ? (
+            <div className="dc-choices">
+              {round.options.map((o) => (
+                <label className="dc-rating" key={o.id}>
+                  {o.text}
+                  <select
+                    name={'rating-' + o.id}
+                    required
+                    defaultValue={round.my_ratings[o.id] ?? ''}
+                  >
+                    <option value="">選擇分數</option>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <option value={n} key={n}>
+                        {n} 分
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ))}
+            </div>
+          ) : (
+            <fieldset className="dc-choices">
+              <legend className="dc-sr">
+                選擇{round.mode === 'single' ? '一個' : '一個或多個'}選項
+              </legend>
+              {round.options.map((o) => (
+                <label className="dc-choice" key={o.id}>
+                  <input
+                    name="choice"
+                    value={o.id}
+                    type={round.mode === 'single' ? 'radio' : 'checkbox'}
+                    defaultChecked={round.my_choices.includes(o.id)}
+                    required={round.mode === 'single'}
+                  />
+                  <span>{o.text}</span>
+                </label>
+              ))}
+            </fieldset>
+          )}
           <div className="dc-vote-footer">
             <small>
               <LockKeyhole size={13} /> 截止後公開選票
@@ -456,8 +568,7 @@ function PollCard({
             <label>
               選票方式
               <select name="mode" defaultValue={editing.round.mode}>
-                <option value="single">單選</option>
-                <option value="multiple">多選</option>
+                {modeOptions}
               </select>
             </label>
             <label>
@@ -498,12 +609,14 @@ function PollCard({
 
 function Discussion({
   comments,
+  members,
   userId,
   isOwner,
   tripId,
   save,
 }: {
   comments: Comment[];
+  members: Member[];
   userId: string;
   isOwner: boolean;
   tripId: string;
@@ -511,32 +624,86 @@ function Discussion({
 }) {
   const [target, setTarget] = useState<{ comment: Comment; type: 'edit' | 'reply' } | null>(null);
   const [draft, setDraft] = useState('');
+  const [images, setImages] = useState<Pick<FileInfo, 'id' | 'filename'>[]>([]);
+  const [selected, setSelected] = useState<File[]>([]);
+  const [sending, setSending] = useState(false);
+  const [imageError, setImageError] = useState('');
   const input = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const id = location.hash.match(/^#comment-([a-f0-9-]{36})$/i)?.[1];
+    if (id) document.getElementById('comment-' + id)?.focus();
+  }, []);
+  function renderMentions(content: string) {
+    return content.replace(
+      /@\[([^\]\n]{1,100})\]\(([\da-f-]{36})\)/gi,
+      (_, name, id) => '@' + (members.find((m) => m.id === id)?.nickname ?? name),
+    );
+  }
+  function addMention(id: string) {
+    const member = members.find((m) => m.id === id);
+    if (!member || !input.current) return;
+    const start = input.current.selectionStart;
+    const end = input.current.selectionEnd;
+    const token =
+      '@[' + member.nickname.replaceAll(']', '］').replace(/[\r\n]/g, ' ') + '](' + id + ') ';
+    const next = draft.slice(0, start) + token + draft.slice(end);
+    if (next.length > 5000) return;
+    setDraft(next);
+    requestAnimationFrame(() => {
+      input.current?.focus();
+      input.current?.setSelectionRange(start + token.length, start + token.length);
+    });
+  }
   function start(comment: Comment, type: 'edit' | 'reply') {
     setTarget({ comment, type });
+    setImages(type === 'edit' ? comment.attachments || [] : []);
+    setSelected([]);
+    setImageError('');
     setDraft(type === 'edit' ? comment.content : '');
     input.current?.focus();
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const content = draft.trim();
-    const ok =
-      target?.type === 'edit'
-        ? await save(
-            '/comments/' + target.comment.id,
-            'PATCH',
-            { content, version: target.comment.version },
-            '已更新留言',
-          )
-        : await save(
-            '/trips/' + tripId + '/comments',
-            'POST',
-            { content, parent_id: target?.comment.id },
-            '已送出留言',
-          );
-    if (ok) {
-      setTarget(null);
-      setDraft('');
+    if (sending) return;
+    setSending(true);
+    setImageError('');
+    try {
+      let attached = images;
+      if (selected.length) {
+        const form = new FormData();
+        selected.forEach((image) => form.append('files', image));
+        form.set('category', '留言圖片');
+        form.set('kind', 'draft');
+        form.set('target_id', userId);
+        attached = [...images, ...(await uploadFiles(tripId, form))];
+        setImages(attached);
+        setSelected([]);
+      }
+      const attachment_ids = attached.map((image) => image.id);
+      const ok =
+        target?.type === 'edit'
+          ? await save(
+              '/comments/' + target.comment.id,
+              'PATCH',
+              { content, attachment_ids, version: target.comment.version },
+              '已更新留言',
+            )
+          : await save(
+              '/trips/' + tripId + '/comments',
+              'POST',
+              { content, attachment_ids, parent_id: target?.comment.id },
+              '已送出留言',
+            );
+      if (ok) {
+        setTarget(null);
+        setDraft('');
+        setImages([]);
+      }
+    } catch (e) {
+      setImageError(e instanceof Error ? e.message : '圖片上傳失敗。');
+    } finally {
+      setSending(false);
     }
   }
   const threads = new Map(comments.map((c) => [c.id, c]));
@@ -563,8 +730,66 @@ function Discussion({
             onChange={(e) => setDraft(e.target.value)}
           />
         </label>
+        <label>
+          留言圖片
+          <input
+            type="file"
+            multiple
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            disabled={sending}
+            onChange={(e) => {
+              const files = Array.from(e.target.files || []);
+              if (files.length + images.length + selected.length > 10) {
+                setImageError('每則留言最多 10 張圖片。');
+              } else {
+                setSelected([...selected, ...files]);
+                setImageError('');
+              }
+              e.target.value = '';
+            }}
+          />
+        </label>
+        {images.map((img) => (
+          <button
+            type="button"
+            disabled={sending}
+            key={img.id}
+            onClick={() => setImages(images.filter((i) => i.id !== img.id))}
+          >
+            移除 {img.filename}
+          </button>
+        ))}
+        {selected.map((file, index) => (
+          <button
+            type="button"
+            disabled={sending}
+            key={index}
+            onClick={() => setSelected(selected.filter((_, i) => i !== index))}
+          >
+            移除 {file.name}
+          </button>
+        ))}
+        {imageError && <p role="alert">{imageError}</p>}
+        {members.some((m) => m.id !== userId) && (
+          <label>
+            提及旅伴
+            <select value="" onChange={(event) => addMention(event.target.value)}>
+              <option value="">選擇 @旅伴</option>
+              {members
+                .filter((m) => m.id !== userId)
+                .map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.nickname}
+                    {members.some((other) => other.id !== m.id && other.nickname === m.nickname)
+                      ? ' · ' + m.id.slice(0, 8)
+                      : ''}
+                  </option>
+                ))}
+            </select>
+          </label>
+        )}
         <div className="dc-actions">
-          <button className="dc-primary" disabled={!draft.trim()}>
+          <button className="dc-primary" disabled={!draft.trim() || sending}>
             <Send size={15} /> {target?.type === 'edit' ? '儲存修改' : '送出留言'}
           </button>
           {target && (
@@ -573,6 +798,9 @@ function Discussion({
               onClick={() => {
                 setTarget(null);
                 setDraft('');
+                setImages([]);
+                setSelected([]);
+                setImageError('');
               }}
             >
               取消
@@ -589,7 +817,7 @@ function Discussion({
       {comments.map((c) => {
         const parent = c.parent_id ? threads.get(c.parent_id) : undefined;
         return (
-          <article className="dc-panel dc-comment" key={c.id}>
+          <article className="dc-panel dc-comment" key={c.id} id={'comment-' + c.id} tabIndex={-1}>
             <div className="dc-author">
               <span className="dc-avatar" aria-hidden>
                 {Array.from(c.nickname)[0]}
@@ -604,10 +832,22 @@ function Discussion({
             </div>
             {parent && (
               <blockquote>
-                回覆 {parent.nickname} · {parent.deleted ? '留言已刪除' : parent.content}
+                回覆 {parent.nickname} ·{' '}
+                {parent.deleted ? '留言已刪除' : renderMentions(parent.content)}
               </blockquote>
             )}
-            <p>{c.deleted ? '此留言已刪除' : c.content}</p>
+            <p>{c.deleted ? '此留言已刪除' : renderMentions(c.content)}</p>
+            {!c.deleted &&
+              c.attachments?.map((img) => (
+                <a key={img.id} href={'/api/v1/files/' + img.id + '/download'} download>
+                  <img
+                    className="af-comment-image"
+                    alt={img.filename}
+                    src={'/api/v1/files/' + img.id + '/preview'}
+                    loading="lazy"
+                  />
+                </a>
+              ))}
             {!c.deleted && (
               <div className="dc-actions">
                 <button onClick={() => start(c, 'reply')}>
@@ -645,7 +885,16 @@ function Discussion({
 
 type Data = { polls: Poll[]; comments: Comment[]; days: Day[]; places: Place[] };
 
-function DecisionsView({ tripId, section, userId, isOwner, refresh, onChange, setError }: Props) {
+function DecisionsView({
+  tripId,
+  section,
+  userId,
+  isOwner,
+  members,
+  refresh,
+  onChange,
+  setError,
+}: Props) {
   const [data, setData] = useState<Data | null>(null);
   const [creating, setCreating] = useState(false);
   const [notice, setNotice] = useState('');
@@ -702,7 +951,6 @@ function DecisionsView({ tripId, section, userId, isOwner, refresh, onChange, se
     try {
       await api(url, method, body);
       setNotice(message);
-      setRevision((n) => n + 1);
       onChange();
       return true;
     } catch (e) {
@@ -734,6 +982,7 @@ function DecisionsView({ tripId, section, userId, isOwner, refresh, onChange, se
           {section === 'comments' ? (
             <Discussion
               comments={data.comments}
+              members={members}
               tripId={tripId}
               userId={userId}
               isOwner={isOwner}

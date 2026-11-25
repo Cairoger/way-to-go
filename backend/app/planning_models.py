@@ -53,6 +53,7 @@ class Place(Base):
     version: Mapped[int] = mapped_column(default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class Candidate(Base):
@@ -81,6 +82,21 @@ class ItineraryItem(Base):
     duration: Mapped[int | None]
     notes: Mapped[str] = mapped_column(default="")
     version: Mapped[int] = mapped_column(default=1)
+    timezone: Mapped[str | None] = mapped_column(String(64))
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class EntityRevision(Base):
+    __tablename__ = "entity_revisions"
+    __table_args__ = (UniqueConstraint("kind", "resource_id", "version"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    trip_id: Mapped[str] = mapped_column(ForeignKey("trips.id", ondelete="CASCADE"), index=True)
+    actor_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    kind: Mapped[str] = mapped_column(String(12))
+    resource_id: Mapped[str] = mapped_column(String(36))
+    version: Mapped[int]
+    snapshot: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
 class EditLease(Base):

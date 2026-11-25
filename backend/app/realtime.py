@@ -2,9 +2,11 @@ import asyncio
 from collections import defaultdict
 from dataclasses import dataclass, field
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+import anyio
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from starlette.concurrency import run_in_threadpool
 
-from .core import COOKIE, make_session, public_origin, require_member, valid_session
+from .core import COOKIE, make_session, public_origin, valid_session
 
 
 @dataclass(eq=False)
@@ -35,6 +37,11 @@ class Hub:
         members = sorted({connection.user_id for connection in self.connections.get(trip_id, ())})
         await self.publish(trip_id, {"type": "presence", "members": members})
 
+    async def publish_to(self, trip_id: str, user_id: str, event: dict):
+        for connection in tuple(self.connections.get(trip_id, ())):
+            if connection.user_id == user_id:
+                connection.loop.call_soon_threadsafe(connection.notify, event)
+
     def revalidate(self, session_id: str):
         for group in tuple(self.connections.values()):
             for connection in tuple(group):
@@ -48,12 +55,8 @@ router = APIRouter()
 
 def identify(token: str | None, trip_id: str):
     with make_session() as db:
-        login = valid_session(db, token)
+        login = valid_session(db, token, trip_id=trip_id)
         if not login:
-            return None
-        try:
-            require_member(db, trip_id, login.user_id)
-        except HTTPException:
             return None
         return login.user_id, login.id
 
@@ -64,7 +67,7 @@ async def subscribe(socket: WebSocket, trip_id: str):
         await socket.close(code=4403)
         return
     token = socket.cookies.get(COOKIE)
-    identity = identify(token, trip_id)
+    identity = await run_in_threadpool(identify, token, trip_id)
     if not identity:
         await socket.close(code=4403)
         return
@@ -79,7 +82,7 @@ async def subscribe(socket: WebSocket, trip_id: str):
                 event = await asyncio.wait_for(connection.updates.get(), timeout=15)
             except TimeoutError:
                 event = {"type": "heartbeat"}
-            if not identify(token, trip_id):
+            if not await run_in_threadpool(identify, token, trip_id):
                 await socket.close(code=4403)
                 return
             await asyncio.wait_for(socket.send_json(event), timeout=10)
@@ -89,25 +92,27 @@ async def subscribe(socket: WebSocket, trip_id: str):
             message = await socket.receive()
             if message["type"] == "websocket.disconnect":
                 return
-            if not identify(token, trip_id):
-                await socket.close(code=4403)
-                return
             # The server only accepts a heartbeat. Edits go through the REST API.
             if message.get("text") != "ping":
                 await socket.close(code=1008)
                 return
+            if not await run_in_threadpool(identify, token, trip_id):
+                await socket.close(code=4403)
+                return
 
-    workers = [asyncio.create_task(send_updates()), asyncio.create_task(receive())]
+    async def until_closed(run, group):
+        try:
+            await run()
+        except (TimeoutError, WebSocketDisconnect, OSError):
+            pass
+        finally:
+            group.cancel_scope.cancel()
+
     try:
-        finished, _ = await asyncio.wait(workers, return_when=asyncio.FIRST_COMPLETED)
-        for task in finished:
-            task.result()
-    except (TimeoutError, WebSocketDisconnect, RuntimeError):
-        pass
+        async with anyio.create_task_group() as workers:
+            workers.start_soon(until_closed, send_updates, workers)
+            workers.start_soon(until_closed, receive, workers)
     finally:
-        for task in workers:
-            task.cancel()
-        await asyncio.gather(*workers, return_exceptions=True)
         group = hub.connections.get(trip_id)
         if group is not None:
             group.discard(connection)

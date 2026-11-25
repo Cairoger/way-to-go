@@ -1,5 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 
+// Keep the mocked API in control across navigation. Live tests exercise the service worker.
+test.use({ serviceWorkers: 'block' });
+
 async function mockLocalAuth(page: Page, enabled: boolean) {
   let signedIn = false;
   const member = {
@@ -79,7 +82,8 @@ test('從側欄登入顯示自己的工作空間與帳號', async ({ page }) => 
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: /我的旅程/ })).toBeVisible();
   await page.getByRole('button', { name: '測試旅人 本機測試帳號' }).click();
-  await expect(page.getByRole('dialog')).toContainText('測試旅人 · 本機測試帳號');
+  await expect(page.getByRole('dialog')).toContainText('本機測試帳號');
+  await expect(page.getByLabel('顯示暱稱')).toHaveValue('測試旅人');
   await page.getByRole('button', { name: '登出' }).click();
   await expect(page.getByRole('button', { name: /登入你的帳號/ })).toBeVisible();
 });

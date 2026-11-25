@@ -27,16 +27,96 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - run: pip install -r requirements-dev.txt
+      - name: Set an ephemeral invitation key for the PostgreSQL test service
+        run: python -c 'import secrets; print("INVITATION_SIGNING_KEY=" + secrets.token_hex(32))' >> "$GITHUB_ENV"
       - run: ruff check . && ruff format --check .
       - run: alembic upgrade head && alembic check
       - run: pytest -q
+      - name: Verify the SQLite-specific attachment backup
+        env:
+          TEST_DATABASE_URL: ""
+        run: pytest -q tests/test_files_recurrence.py::test_sqlite_file_backup_preserves_content_reader_and_links
+      - name: Restore a PostgreSQL custom archive and compare all table checksums
+        env:
+          PG_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          db=(docker exec -i "$PG_CONTAINER")
+          "${db[@]}" psql -Xq -U waytogo -d test < ../deploy/verify-restore-seed.sql
+          "${db[@]}" psql -XqAt -U waytogo -d test < ../deploy/verify-restore-manifest.sql > "$RUNNER_TEMP/before.tsv"
+          "${db[@]}" pg_dump -Fc -U waytogo test > "$RUNNER_TEMP/verify.dump"
+          "${db[@]}" createdb -U waytogo -T template0 restore_check
+          "${db[@]}" pg_restore --exit-on-error --single-transaction -U waytogo -d restore_check < "$RUNNER_TEMP/verify.dump"
+          "${db[@]}" psql -XqAt -U waytogo -d restore_check < ../deploy/verify-restore-manifest.sql > "$RUNNER_TEMP/after.tsv"
+          diff -u "$RUNNER_TEMP/before.tsv" "$RUNNER_TEMP/after.tsv"
+      - name: Verify restored file content, links, permissions and recycle state through the API
+        env:
+          DATABASE_URL: postgresql+psycopg://waytogo:test-only@localhost:5432/restore_check
+        run: |
+          python - <<'PY'
+          import hashlib
+          import secrets
+          from datetime import timedelta
+          from fastapi.testclient import TestClient
+          from app.core import COOKIE, digest, make_session
+          from app.main import app
+          from app.models import LoginSession, utcnow
+
+          def fixture(n):
+              return f"70570000-0000-4000-8000-{n:012d}"
+
+          def signin(client, identity):
+              token = secrets.token_urlsafe(32)
+              with make_session() as db:
+                  db.add(LoginSession(user_id=fixture(identity), token_hash=digest(token),
+                                      expires_at=utcnow() + timedelta(minutes=5)))
+                  db.commit()
+              client.cookies.set(COOKIE, token, domain="testserver.local", path="/")
+
+          trip, item, active, recycled = map(fixture, (10, 21, 31, 32))
+          listing = f"/api/v1/trips/{trip}/files"
+          private = f"/api/v1/files/{active}"
+          bin_file = f"/api/v1/files/{recycled}"
+          expected = "36dd469d6f06cf5201a0b398ce1ab5886a213a9f8185e3b6dfe750a7ab5119fa"
+          with TestClient(app, headers={"X-Requested-With": "WayToGo"}) as client:
+              assert client.get(private + "/download").status_code == 401
+              signin(client, 1)  # Trip organizer without a grant.
+              assert client.get(private + "/download").status_code == 403
+              assert client.get(private + "/preview").status_code == 403
+              assert client.get(listing).json() == []
+              for identity in (3, 2):  # Authorized reader, then the attachment author.
+                  signin(client, identity)
+                  response = client.get(private + "/download")
+                  assert response.status_code == 200 and response.headers["content-type"] == "image/png"
+                  assert len(response.content) == 68 and hashlib.sha256(response.content).hexdigest() == expected
+                  assert client.get(private + "/preview").content == response.content
+                  cards = client.get(listing, params={"kind": "item", "target_id": item}).json()
+                  assert [c["id"] for c in cards] == [active]
+                  card = cards[0]
+                  assert card["private"] and card["editable"] == (identity == 2)
+                  assert set(card["reader_ids"]) == ({fixture(3)} if identity == 2 else set())
+                  assert {(x["kind"], x["target_id"]) for x in card["links"]} == {("trip", trip), ("item", item)}
+                  assert client.get(bin_file + "/download").status_code == 404
+                  trash = client.get(listing, params={"recycled": "true"}).json()
+                  assert [c["id"] for c in trash] == ([recycled] if identity == 2 else [])
+              assert trash[0]["removed"] and trash[0]["version"] == 2
+              assert client.post(bin_file + "/restore", json={"version": 2}).status_code == 200
+              assert client.get(bin_file + "/download").content == b"recycled fixture\n"
+              assert client.get(listing, params={"recycled": "true"}).json() == []
+          print("Restored PNG bytes, SHA-256, two links, owner/reader/organizer ACL, and recycle recovery verified.")
+          PY
 
   browser:
     runs-on: ubuntu-latest
+    env:
+      E2E_PYTHON: python
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 24}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: python -m pip install pypdf==7.1.1
       - uses: pnpm/action-setup@v4
         with: {version: 11.25.0}
       - run: pnpm install --frozen-lockfile
@@ -48,6 +128,15 @@ jobs:
       - name: Build and start the self-hosted application
         run: |
           python deploy/init_env.py
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from deploy.create_test_login import provision
+          password = provision(Path(".env"))
+          print(f"::add-mask::{password}")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"E2E_DISPOSABLE=1\nE2E_LOCAL_USERNAME=tester\nE2E_LOCAL_PASSWORD={password}\n")
+          PY
           docker compose config --quiet
           docker compose up -d --build --wait --wait-timeout 150
       - name: Prepare isolated travel group
@@ -59,9 +148,15 @@ jobs:
         working-directory: frontend
       - name: Restore a backup into an empty verification database
         run: |
-          docker compose exec -T db createdb -U waytogo restore_check
-          docker compose exec -T db pg_dump -Fc -U waytogo waytogo | docker compose exec -T db pg_restore --exit-on-error -U waytogo -d restore_check
-          docker compose exec -T db psql -U waytogo -d restore_check -c 'select count(*) from trips'
+          set -euo pipefail
+          docker compose stop api
+          db=(docker compose exec -T db)
+          "${db[@]}" psql -XqAt -U waytogo -d waytogo < deploy/verify-restore-manifest.sql > "$RUNNER_TEMP/browser-before.tsv"
+          "${db[@]}" createdb -U waytogo -T template0 restore_check
+          "${db[@]}" pg_dump -Fc -U waytogo waytogo | "${db[@]}" pg_restore --exit-on-error --single-transaction -U waytogo -d restore_check
+          "${db[@]}" psql -XqAt -U waytogo -d restore_check < deploy/verify-restore-manifest.sql > "$RUNNER_TEMP/browser-after.tsv"
+          diff -u "$RUNNER_TEMP/browser-before.tsv" "$RUNNER_TEMP/browser-after.tsv"
+          "${db[@]}" psql -Xq -U waytogo -d restore_check < deploy/verify-restore-browser.sql
       - if: always()
         run: docker compose down --volumes
 

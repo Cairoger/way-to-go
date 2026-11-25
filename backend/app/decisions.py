@@ -1,10 +1,13 @@
+import logging
 from collections import Counter, defaultdict
 from datetime import date, datetime
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, Header
-from pydantic import BaseModel, Field, StringConstraints
+from fastapi import APIRouter, BackgroundTasks, Depends, Header
+from httpx import HTTPError
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from sqlalchemy import delete, select, update
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from .core import audit, current_user, digest, fail, get_db, require_member
@@ -17,7 +20,9 @@ from .decisions_models import (
     PollOption,
     PollRound,
 )
+from .file_access import bind_files, bound_files
 from .models import CreationKey, User, as_utc, uid, utcnow
+from .notices import deliver_mentions, queue_mentions
 from .realtime import hub
 
 router = APIRouter(tags=["投票與討論"])
@@ -27,6 +32,8 @@ Label = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, ma
 CommentText = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=5000)
 ]
+PollMode = Literal["single", "multiple", "rating", "ranked"]
+Rating = Annotated[int, Field(strict=True, ge=1, le=5)]
 
 
 class Version(BaseModel):
@@ -41,14 +48,14 @@ class OptionInput(BaseModel):
 class NewPoll(BaseModel):
     title: Label
     kind: Literal["place", "date"]
-    mode: Literal["single", "multiple"]
+    mode: PollMode
     options: list[OptionInput] = Field(min_length=2, max_length=60)
     deadline: datetime | None = None
 
 
 class PollEdit(Version):
     title: Label
-    mode: Literal["single", "multiple"]
+    mode: PollMode
     deadline: datetime | None = None
 
 
@@ -58,7 +65,8 @@ class NewOption(Version, OptionInput):
 
 class Vote(Version):
     ballot_version: int = Field(ge=0)
-    option_ids: list[str] = Field(min_length=1, max_length=60)
+    option_ids: list[str] = Field(default_factory=list, max_length=60)
+    ratings: dict[str, Rating] = Field(default_factory=dict, max_length=60)
 
 
 class Adopt(Version):
@@ -67,12 +75,16 @@ class Adopt(Version):
 
 
 class NewComment(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     content: CommentText
     parent_id: str | None = None
+    attachment_ids: list[str] = Field(default_factory=list, max_length=10)
 
 
 class CommentEdit(Version):
+    model_config = ConfigDict(extra="forbid")
     content: CommentText
+    attachment_ids: list[str] | None = Field(None, max_length=10)
 
 
 def validate_deadline(deadline: datetime | None):
@@ -128,7 +140,9 @@ def validate_option(db: Session, trip_id: str, kind: str, option: OptionInput):
         from .planning_models import Place
 
         if kind != "place" or not db.scalar(
-            select(Place.id).where(Place.id == option.place_id, Place.trip_id == trip_id)
+            select(Place.id).where(
+                Place.id == option.place_id, Place.trip_id == trip_id, Place.deleted_at.is_(None)
+            )
         ):
             fail(422, "invalid_place", "請選擇這個旅程中的景點。")
     if kind == "date":
@@ -154,14 +168,26 @@ def round_view(db: Session, round_: PollRound, viewer: str):
         ballots_query = ballots_query.where(Ballot.user_id == viewer)
     ballots = list(db.execute(ballots_query.order_by(Ballot.submitted_at, Ballot.id)))
     choices = defaultdict(list)
+    ratings = defaultdict(dict)
+    counts = Counter()
     if ballots:
         ids = [ballot.id for ballot, _ in ballots]
-        for ballot_id, option_id in db.execute(
-            select(BallotChoice.ballot_id, BallotChoice.option_id).where(
-                BallotChoice.ballot_id.in_(ids)
-            )
+        for choice in db.scalars(
+            select(BallotChoice)
+            .join(PollOption, PollOption.id == BallotChoice.option_id)
+            .where(BallotChoice.ballot_id.in_(ids))
+            .order_by(BallotChoice.rank, PollOption.ordinal)
         ):
-            choices[ballot_id].append(option_id)
+            choices[choice.ballot_id].append(choice.option_id)
+            if choice.value is not None:
+                ratings[choice.ballot_id][choice.option_id] = choice.value
+            if closed:
+                points = 1
+                if round_.mode == "rating":
+                    points = choice.value
+                elif round_.mode == "ranked":
+                    points = len(options) - choice.rank + 1
+                counts[choice.option_id] += points
     mine = next((b for b, _ in ballots if b.user_id == viewer), None)
     result = {
         "id": round_.id,
@@ -173,19 +199,24 @@ def round_view(db: Session, round_: PollRound, viewer: str):
         "closed": closed,
         "options": [{"id": o.id, "text": o.option_text, "place_id": o.place_id} for o in options],
         "my_choices": choices[mine.id] if mine else [],
+        "my_ratings": ratings[mine.id] if mine else {},
         "ballot_version": mine.version if mine else 0,
         "review_needed": bool(
             mine and not closed and mine.options_version != round_.options_version
         ),
     }
     if closed:
-        counts = Counter(option for selections in choices.values() for option in selections)
         high = max(counts.values(), default=0)
         result["results"] = {
             "counts": {o.id: counts[o.id] for o in options},
             "winners": [o.id for o in options if high and counts[o.id] == high],
             "ballots": [
-                {"user_id": b.user_id, "nickname": nickname, "option_ids": choices[b.id]}
+                {
+                    "user_id": b.user_id,
+                    "nickname": nickname,
+                    "option_ids": choices[b.id],
+                    "ratings": ratings[b.id],
+                }
                 for b, nickname in ballots
             ],
         }
@@ -334,13 +365,30 @@ async def add_option(poll_id: str, body: NewOption, db: Db, actor: Actor):
 def cast_vote(poll_id: str, body: Vote, db: Db, actor: Actor):
     poll, round_ = poll_for_write(db, poll_id, actor, body)
     require_open(round_)
-    selected = set(body.option_ids)
-    if (
-        len(selected) != len(body.option_ids)
-        or (round_.mode == "single" and len(selected) != 1)
-        or not selected.issubset({o.id for o in get_options(db, round_)})
-    ):
-        fail(422, "invalid_ballot", "請依照本輪投票方式選擇有效選項。")
+    options = {o.id for o in get_options(db, round_)}
+    if round_.mode == "rating":
+        if set(body.ratings) != options or body.option_ids:
+            fail(422, "invalid_rating", "請為本輪每個選項評定 1 到 5 分。")
+        choices = [BallotChoice(option_id=oid, value=score) for oid, score in body.ratings.items()]
+    else:
+        selected = set(body.option_ids)
+        if (
+            body.ratings
+            or not selected
+            or len(selected) != len(body.option_ids)
+            or not selected.issubset(options)
+            or (round_.mode == "single" and len(selected) != 1)
+            or (round_.mode == "ranked" and selected != options)
+        ):
+            fail(
+                422,
+                "invalid_ballot",
+                "請依照本輪投票方式選擇有效選項，排序時每個選項都要有唯一名次。",
+            )
+        choices = [
+            BallotChoice(option_id=oid, rank=i if round_.mode == "ranked" else None)
+            for i, oid in enumerate(body.option_ids, 1)
+        ]
     ballot = db.scalar(
         select(Ballot).where(Ballot.round_id == round_.id, Ballot.user_id == actor.id)
     )
@@ -354,7 +402,9 @@ def cast_vote(poll_id: str, body: Vote, db: Db, actor: Actor):
         db.add(ballot)
     ballot.options_version = round_.options_version
     db.flush()
-    db.add_all([BallotChoice(ballot_id=ballot.id, option_id=oid) for oid in selected])
+    for choice in choices:
+        choice.ballot_id = ballot.id
+    db.add_all(choices)
     # Publishing submissions or incrementing the shared version would leak participation.
     db.commit()
     return poll_view(db, poll, actor.id)
@@ -456,13 +506,14 @@ def transfer_poll_edits(db: Session, trip_id: str, departed_id: str, owner_id: s
     )
 
 
-def serialize_comment(comment, nickname):
+def serialize_comment(comment, nickname, images=()):
     return {
         "id": comment.id,
         "author_id": comment.author_id,
         "nickname": nickname,
         "parent_id": comment.parent_id,
         "content": comment.content,
+        "attachments": [] if comment.deleted else images,
         "deleted": comment.deleted,
         "version": comment.version,
         "created_at": as_utc(comment.created_at),
@@ -479,22 +530,43 @@ def list_comments(trip_id: str, db: Db, actor: Actor):
         .where(Comment.trip_id == trip_id)
         .order_by(Comment.created_at, Comment.id)
     )
-    return [serialize_comment(c, name) for c, name in rows]
+    images = bound_files(db, trip_id, "comment", actor.id)
+    return [serialize_comment(c, name, images[c.id]) for c, name in rows]
 
 
-async def save_comment(db, comment, actor, action):
+async def notify_comment(ids):
+    try:
+        await deliver_mentions(ids)
+    except (HTTPError, SQLAlchemyError, OSError, RuntimeError, ValueError):
+        logging.getLogger(__name__).warning("Mention delivery unavailable; inbox records retained")
+
+
+def save_comment(db, comment, actor, action, background, previous_text="", attachment_ids=None):
     db.flush()
     trip_id, comment_id = comment.trip_id, comment.id
     audit(db, trip_id, actor.id, "comment", comment_id, action)
+    notices = queue_mentions(db, comment, actor, previous_text) if not comment.deleted else []
+    if attachment_ids is not None:
+        bind_files(db, trip_id, "comment", comment_id, attachment_ids, actor.id)
+        db.flush()
+    images = (
+        bound_files(db, trip_id, "comment", actor.id, [comment_id]) if not comment.deleted else {}
+    )
+    result = serialize_comment(
+        comment, db.get(User, comment.author_id).nickname, images.get(comment_id, [])
+    )
     db.commit()
-    await hub.publish(trip_id, {"type": action, "id": comment_id})
-    return serialize_comment(comment, db.get(User, comment.author_id).nickname)
+    background.add_task(hub.publish, trip_id, {"type": action, "id": comment_id})
+    if notices:
+        background.add_task(notify_comment, notices)
+    return result
 
 
 @router.post("/trips/{trip_id}/comments", status_code=201)
-async def post_comment(
+def post_comment(
     trip_id: str,
     body: NewComment,
+    background: BackgroundTasks,
     db: Db,
     actor: Actor,
     idempotency_key: Annotated[str | None, Header(max_length=128)] = None,
@@ -502,7 +574,11 @@ async def post_comment(
     require_member(db, trip_id, actor.id, lock=True)
     comment_id, existing = creation_id(db, Comment, actor, trip_id, body, idempotency_key)
     if existing:
-        return serialize_comment(existing, actor.nickname)
+        return serialize_comment(
+            existing,
+            actor.nickname,
+            bound_files(db, trip_id, "comment", actor.id, [existing.id])[existing.id],
+        )
     if body.parent_id:
         parent = db.get(Comment, body.parent_id)
         if not parent or parent.trip_id != trip_id or parent.deleted:
@@ -515,7 +591,9 @@ async def post_comment(
         parent_id=body.parent_id,
     )
     db.add(comment)
-    return await save_comment(db, comment, actor, "comment.created")
+    return save_comment(
+        db, comment, actor, "comment.created", background, attachment_ids=body.attachment_ids
+    )
 
 
 def comment_for_write(db, comment_id, actor, body, *, removing=False):
@@ -533,16 +611,23 @@ def comment_for_write(db, comment_id, actor, body, *, removing=False):
 
 
 @router.patch("/comments/{comment_id}")
-async def edit_comment(comment_id: str, body: CommentEdit, db: Db, actor: Actor):
+def edit_comment(
+    comment_id: str, body: CommentEdit, db: Db, actor: Actor, background: BackgroundTasks
+):
     comment = comment_for_write(db, comment_id, actor, body)
+    previous = comment.content
     comment.content, comment.updated_at = body.content, utcnow()
     comment.version += 1
-    return await save_comment(db, comment, actor, "comment.updated")
+    return save_comment(
+        db, comment, actor, "comment.updated", background, previous, body.attachment_ids
+    )
 
 
 @router.delete("/comments/{comment_id}")
-async def delete_comment(comment_id: str, body: Version, db: Db, actor: Actor):
+def delete_comment(
+    comment_id: str, body: Version, db: Db, actor: Actor, background: BackgroundTasks
+):
     comment = comment_for_write(db, comment_id, actor, body, removing=True)
     comment.deleted, comment.content, comment.updated_at = True, "", utcnow()
     comment.version += 1
-    return await save_comment(db, comment, actor, "comment.deleted")
+    return save_comment(db, comment, actor, "comment.deleted", background)

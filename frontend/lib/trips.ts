@@ -28,6 +28,8 @@ export type Trip = {
   deleted_at: string | null;
   version: number;
   owner_id: string;
+  created_by?: string;
+  creator_name?: string;
   member_count: number;
   day_count: number;
   place_count: number;

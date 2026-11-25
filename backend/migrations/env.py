@@ -1,6 +1,15 @@
 from alembic import context
 
-from app import decisions_models, planning_models  # noqa: F401 — register the domain tables
+from app import (  # noqa: F401
+    availability_models,
+    decisions_models,
+    file_models,
+    finance_models,
+    merge_models,
+    notice_models,
+    planning_models,
+    preparation_models,
+)
 from app.core import get_engine
 from app.models import Base
 

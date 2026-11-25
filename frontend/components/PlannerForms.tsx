@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react';
 import { api } from '../lib/api';
 import {
   categories,
+  parseGooglePlaceLink,
   statusNames,
   type Category,
   type Place,
@@ -84,6 +85,19 @@ export function PlaceForm({
   const [message, setMessage] = useState('');
   async function search(event: FormEvent) {
     event.preventDefault();
+    if (/^https?:\/\//i.test(query.trim())) {
+      const parsed = parseGooglePlaceLink(query.trim());
+      setResults([]);
+      if (parsed) {
+        if (parsed.name) setName(parsed.name);
+        if (parsed.latitude != null) {
+          setLat(String(parsed.latitude));
+          setLng(String(parsed.longitude));
+        }
+        setMessage('已帶入連結中的資料，請確認並補充欄位。');
+      } else setMessage('連結未包含可辨識的地點，請手動填寫名稱與座標。');
+      return;
+    }
     setLooking(true);
     setMessage('');
     try {
@@ -122,8 +136,8 @@ export function PlaceForm({
             <input
               id="wp-search"
               type="search"
-              maxLength={120}
-              placeholder="輸入景點名稱"
+              maxLength={2048}
+              placeholder="景點名稱或 Google Maps 連結"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -304,6 +318,7 @@ export function ItemForm({
   const [kind, setKind] = useState<Category>(item?.item_type ?? initialPlace?.category ?? 'custom');
   const [placeId, setPlaceId] = useState(item?.place_id ?? initialPlace?.id ?? '');
   const [day, setDay] = useState(dayId);
+  const [zone, setZone] = useState(item?.timezone || '');
   const [start, setStart] = useState(item?.start_time ?? '');
   const [end, setEnd] = useState(item?.end_time ?? '');
   const [duration, setDuration] = useState(String(item?.duration ?? ''));
@@ -314,7 +329,8 @@ export function ItemForm({
     days
       .find((d) => d.id === day)
       ?.items.some((other) => {
-        if (!other.start_time || other.id === item?.id) return false;
+        if (!other.start_time || other.id === item?.id || (other.timezone || '') !== zone)
+          return false;
         const otherStart = clockMinute(other.start_time);
         const otherEnd = other.end_time
           ? clockMinute(other.end_time)
@@ -329,6 +345,7 @@ export function ItemForm({
         void save({
           ...v,
           day_id: day,
+          timezone: zone.trim() || null,
           place_id: placeId || null,
           start_time: start || null,
           end_time: end || null,
@@ -363,6 +380,9 @@ export function ItemForm({
           }}
         >
           <option value="">自行填寫</option>
+          {item?.archived_place && item.place_id === placeId && (
+            <option value={placeId || ''}>{item.archived_place.name}（已移除）</option>
+          )}
           {places
             .filter((p) => p.candidate || p.id === placeId)
             .map((p) => (
@@ -387,6 +407,16 @@ export function ItemForm({
         <select name="item_type" value={kind} onChange={(e) => setKind(e.target.value as Category)}>
           {options(categories)}
         </select>
+      </label>
+      <label>
+        活動時區
+        <input
+          maxLength={64}
+          value={zone}
+          onChange={(e) => setZone(e.target.value)}
+          placeholder={days.find((d) => d.id === day)?.timezone || 'Asia/Taipei'}
+        />
+        <small>遇到時鐘回撥時，重複的小時採第一次出現的時間。</small>
       </label>
       <div className="wp-form-pair">
         <label>

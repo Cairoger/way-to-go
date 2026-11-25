@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Map as LeafletMap } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ExternalLink, Navigation } from 'lucide-react';
-import { CategoryIcon, categories, mapLink, type Place } from './plannerTypes';
+import { CategoryIcon, categories, mapLink, type Place, type TripDay } from './plannerTypes';
 
 const colors = {
   place: '#228264',
@@ -15,10 +15,21 @@ const colors = {
   custom: '#74654b',
 };
 
-export default function PlannerMap({ places }: { places: Place[] }) {
+export default function PlannerMap({ places, days }: { places: Place[]; days: TripDay[] }) {
   const host = useRef<HTMLDivElement>(null);
   const map = useRef<LeafletMap | null>(null);
   const [tileError, setTileError] = useState(false);
+  const [routeDay, setRouteDay] = useState('');
+  const ordered =
+    days
+      .find((d) => d.id === routeDay)
+      ?.items.flatMap((item) => {
+        const place = places.find((p) => p.id === item.place_id);
+        return place?.latitude != null && place.longitude != null
+          ? [[place.latitude, place.longitude]]
+          : [];
+      }) || [];
+  const line = JSON.stringify(ordered);
   const points = places.filter((p) => p.latitude !== null && p.longitude !== null);
   // Skip map recreation on unrelated collaboration events.
   const markers = JSON.stringify(
@@ -56,7 +67,12 @@ export default function PlannerMap({ places }: { places: Place[] }) {
           });
           L.marker([lat, lon], { icon, alt: name }).addTo(instance).bindPopup(label);
         }
-        if (coords.length)
+        const route: [number, number][] = JSON.parse(line);
+        if (route.length > 1)
+          L.polyline(route, { color: '#316b53', weight: 3, dashArray: '6 8' }).addTo(instance);
+        if (route.length)
+          instance.fitBounds(L.latLngBounds(route), { padding: [38, 38], maxZoom: 15 });
+        else if (coords.length)
           instance.fitBounds(L.latLngBounds(coords), { padding: [38, 38], maxZoom: 15 });
       })
       .catch(() => !cancelled && setTileError(true));
@@ -65,10 +81,29 @@ export default function PlannerMap({ places }: { places: Place[] }) {
       map.current?.remove();
       map.current = null;
     };
-  }, [markers]);
+  }, [markers, line]);
 
   return (
     <div className="wp-map-panel">
+      <label className="wp-filter wp-map-route">
+        行程序列連線
+        <select value={routeDay} onChange={(e) => setRouteDay(e.target.value)}>
+          <option value="">只顯示地點</option>
+          {days.map((day) => (
+            <option key={day.id} value={day.id}>
+              Day {day.day_number} · 景點順序
+            </option>
+          ))}
+        </select>
+      </label>
+      <p className="wp-hint">自動規劃道路路線：付費功能開發中。可使用景點旁的免費導航。</p>
+      {routeDay && (
+        <p className="wp-hint">
+          {ordered.length >= 2
+            ? '虛線依行程順序連接地點，實際道路請參考導航。'
+            : '當天需要兩個以上有座標的地點才能連線。'}
+        </p>
+      )}
       <div ref={host} className="wp-map" aria-label="旅程景點地圖" />
       {tileError && (
         <p className="wp-notice" role="status">

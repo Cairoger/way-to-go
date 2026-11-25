@@ -1,7 +1,9 @@
 .env
+.waytogo-invite.key
 .env.*.tmp
 .venv/
 .local/
+.waytogo-acceptance-*/
 __pycache__/
 *.py[cod]
 .pytest_cache/

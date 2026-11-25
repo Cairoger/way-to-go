@@ -10,7 +10,19 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 
-from . import auth, decisions, planning, realtime, trips
+from . import (
+    auth,
+    availability,
+    decisions,
+    files,
+    finance,
+    notices,
+    planning,
+    preparations,
+    realtime,
+    trip_copy,
+    trips,
+)
 from .core import get_engine, public_origin
 
 
@@ -23,7 +35,18 @@ async def lifespan(app):
 
 
 app = FastAPI(title="WayToGo 旅程協作 API", version="1.0", lifespan=lifespan)
-for module in (auth, trips, planning, decisions):
+for module in (
+    auth,
+    trips,
+    trip_copy,
+    planning,
+    decisions,
+    availability,
+    finance,
+    files,
+    preparations,
+    notices,
+):
     app.include_router(module.router, prefix="/api/v1")
 app.include_router(realtime.router)
 
@@ -72,6 +95,8 @@ def rate_limited(request: Request):
     path = request.url.path
     if path.endswith("/place-search"):
         category, limit = "search", 30
+    elif path.endswith("/files") and request.method == "POST":
+        category, limit = "upload", 30
     elif path == "/api/v1/auth/local-test" and request.method == "POST":
         category, limit = "local-login", 15
     elif path.startswith("/api/v1/auth/google"):

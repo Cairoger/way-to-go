@@ -96,10 +96,12 @@ def fail(status: int, code: str, message: str) -> NoReturn:
     raise HTTPException(status, {"code": code, "message": message})
 
 
-def valid_session(db: Session, token: str | None) -> LoginSession | None:
+def valid_session(
+    db: Session, token: str | None, *, trip_id: str | None = None
+) -> LoginSession | None:
     if not token or len(token) > 256:
         return None
-    result = db.execute(
+    query = (
         select(LoginSession, User.account_type)
         .join(User)
         .where(
@@ -107,7 +109,18 @@ def valid_session(db: Session, token: str | None) -> LoginSession | None:
             LoginSession.revoked_at.is_(None),
             LoginSession.expires_at > utcnow(),
         )
-    ).first()
+    )
+    if trip_id is not None:
+        query = (
+            query.join(Membership, Membership.user_id == User.id)
+            .join(Trip, Trip.id == Membership.trip_id)
+            .where(
+                Membership.trip_id == trip_id,
+                Membership.left_at.is_(None),
+                Trip.deleted_at.is_(None),
+            )
+        )
+    result = db.execute(query).first()
     if not result:
         return None
     login, account_type = result

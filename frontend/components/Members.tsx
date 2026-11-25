@@ -1,7 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { Copy, Link2, UserRound, Users, ShieldCheck } from 'lucide-react';
-import { api } from '../lib/api';
+import { useEffect, useRef, useState } from 'react';
+import { Copy, Link2, UserRound, Users, ShieldCheck, Mail } from 'lucide-react';
+import { api, ApiError } from '../lib/api';
 import { type Trip, type Member, errorText } from '../lib/trips';
 import { Button } from './ui/button';
 type Invite = {
@@ -36,6 +36,7 @@ export default function Members({
     [pending, setPending] = useState(false),
     [notice, setNotice] = useState('');
   const path = '/trips/' + trip.id;
+  const inviteAttempt = useRef<{ key: string; days: number } | null>(null);
   useEffect(() => {
     let live = true;
     if (owner)
@@ -77,6 +78,12 @@ export default function Members({
         旅程成員 <small>{members.length}</small>
       </h2>
       <div className="card member-list">
+        {trip.creator_name && (
+          <p className="muted">
+            旅程建立者　{trip.creator_name} ·{' '}
+            {new Date(trip.created_at).toLocaleDateString('zh-TW')}
+          </p>
+        )}
         {members.map((m) => (
           <div key={m.id} className="member-row">
             <span className="avatar">
@@ -165,9 +172,24 @@ export default function Members({
                 disabled={pending}
                 onClick={() =>
                   run(async () => {
-                    const i = await api<Invite>(path + '/invitations', 'POST', { days });
+                    if (!inviteAttempt.current || inviteAttempt.current.days !== days)
+                      inviteAttempt.current = { key: crypto.randomUUID(), days };
+                    let i: Invite;
+                    try {
+                      i = await api<Invite>(
+                        path + '/invitations',
+                        'POST',
+                        { days },
+                        inviteAttempt.current.key,
+                      );
+                    } catch (error) {
+                      if (error instanceof ApiError && [403, 409, 410, 422].includes(error.status))
+                        inviteAttempt.current = null;
+                      throw error;
+                    }
+                    inviteAttempt.current = null;
                     setIssued(i);
-                    setInvites(await api(path + '/invitations'));
+                    setInvites((all) => [i, ...all.filter((previous) => previous.id !== i.id)]);
                   })
                 }
               >
@@ -195,6 +217,26 @@ export default function Members({
                     <Copy size={15} />
                     複製連結
                   </Button>
+                  {issued.url && (
+                    <a
+                      className="text-btn"
+                      href={
+                        'mailto:?subject=' +
+                        encodeURIComponent('一起規劃「' + trip.title + '」') +
+                        '&body=' +
+                        encodeURIComponent(
+                          '邀請你加入「' +
+                            trip.title +
+                            '」。\n\n開啟邀請連結：' +
+                            issued.url +
+                            '\n邀請碼：' +
+                            issued.code,
+                        )
+                      }
+                    >
+                      <Mail size={15} />用 Email 邀請
+                    </a>
+                  )}
                 </div>
               </div>
             )}

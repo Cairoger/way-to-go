@@ -9,6 +9,7 @@ import qrcode.image.svg
 from fastapi import APIRouter, Header, Query, Request, Response
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 from sqlalchemy import func, or_, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .auth import issue_session
@@ -25,8 +26,10 @@ from .core import (
     require_owner,
     valid_session,
 )
-from .models import CreationKey, Invitation, Membership, Trip, User, utcnow
+from .invite_codes import reusable_code
+from .models import AuditLog, CreationKey, Invitation, Membership, Trip, User, as_utc, uid, utcnow
 from .planning_models import Candidate, TripDay
+from .planning_time import validate_trip_clocks
 from .realtime import hub
 
 router = APIRouter(tags=["旅程及邀請"])
@@ -97,6 +100,27 @@ class Guest(Accept):
 
 
 def summary(db: Session, trip: Trip):
+    first_actor = (
+        select(AuditLog.actor_id)
+        .where(
+            AuditLog.trip_id == trip.id,
+            AuditLog.entity_type == "trip",
+            AuditLog.action.in_(("create", "trip.copied", "owner_transfer")),
+        )
+        .order_by(AuditLog.created_at, AuditLog.id)
+        .limit(1)
+        .scalar_subquery()
+    )
+    founder = (
+        select(Membership.user_id)
+        .where(Membership.trip_id == trip.id)
+        .order_by(Membership.joined_at, Membership.id)
+        .limit(1)
+        .scalar_subquery()
+    )
+    creator = db.scalars(
+        select(User).where(User.id == func.coalesce(first_actor, founder, trip.owner_id))
+    ).one()
     members = db.scalar(
         select(func.count())
         .select_from(Membership)
@@ -119,13 +143,15 @@ def summary(db: Session, trip: Trip):
         "currency",
         "status",
         "cover",
-        "created_at",
-        "deleted_at",
         "archived",
         "version",
     )
     return {
         **{key: getattr(trip, key) for key in fields},
+        "created_at": as_utc(trip.created_at),
+        "deleted_at": as_utc(trip.deleted_at) if trip.deleted_at else None,
+        "created_by": creator.id,
+        "creator_name": creator.nickname,
         "member_count": members,
         "place_count": places,
         "day_count": days,
@@ -231,12 +257,15 @@ async def save_trip(db: Session, trip: Trip, user: User, action: str):
 async def edit_trip(trip_id: str, payload: EditTrip, db: DB, user: Actor):
     trip = require_owner(db, trip_id, user.id, lock=True)
     check_version(trip, payload.version)
+    original_start = trip.start_date
     for key, value in payload.model_dump(
         exclude_unset=True, exclude={"version", "day_count"}
     ).items():
         setattr(trip, key, value)
     if trip.start_date and trip.end_date and trip.start_date > trip.end_date:
         fail(422, "INVALID_DATE_RANGE", "結束日期必須在開始日期之後或同日。")
+    if trip.start_date and trip.start_date != original_start:
+        validate_trip_clocks(db, trip)
     extend_days(db, trip, payload.day_count)
     return await save_trip(db, trip, user, "update")
 
@@ -338,8 +367,8 @@ async def remove_member(trip_id: str, member_id: str, db: DB, user: Actor):
 def invite_metadata(invite: Invitation):
     return {
         "id": invite.id,
-        "expires_at": invite.expires_at,
-        "revoked_at": invite.revoked_at,
+        "expires_at": as_utc(invite.expires_at),
+        "revoked_at": as_utc(invite.revoked_at) if invite.revoked_at else None,
     }
 
 
@@ -357,21 +386,61 @@ def invitations(trip_id: str, db: DB, user: Actor):
 
 
 @router.post("/trips/{trip_id}/invitations", status_code=201)
-def invite(trip_id: str, db: DB, user: Actor, payload: NewInvite | None = None):
+def invite(
+    trip_id: str,
+    db: DB,
+    user: Actor,
+    payload: NewInvite | None = None,
+    idempotency_key: Annotated[str | None, Header(min_length=1, max_length=128)] = None,
+):
     require_owner(db, trip_id, user.id, lock=True)
-    code = "".join(secrets.choice("23456789ABCDEFGHJKLMNPQRSTUVWXYZ") for _ in range(12))
+    from .planning import creation_request, record_creation
+
+    payload = payload or NewInvite()
+    existing, receipt = creation_request(db, Invitation, user.id, trip_id, idempotency_key, payload)
+    if existing:
+        return replay_invitation(db, existing)
+    invitation_id = uid()
+    code = (
+        reusable_code(db, invitation_id)
+        if idempotency_key
+        else "".join(secrets.choice("23456789ABCDEFGHJKLMNPQRSTUVWXYZ") for _ in range(12))
+    )
     invitation = Invitation(
+        id=invitation_id,
         trip_id=trip_id,
         token_hash=digest(code),
-        expires_at=utcnow() + timedelta(days=payload.days if payload else 7),
+        expires_at=utcnow() + timedelta(days=payload.days),
     )
     db.add(invitation)
     db.flush()
+    record_creation(db, receipt, invitation.id)
     audit(db, trip_id, user.id, "invitation", invitation.id, "create")
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        require_owner(db, trip_id, user.id)
+        winner, _ = creation_request(db, Invitation, user.id, trip_id, idempotency_key, payload)
+        if winner is None:
+            raise
+        return replay_invitation(db, winner)
+    return issued_invitation(invitation, code)
+
+
+def replay_invitation(db, invitation):
+    if invitation.revoked_at or as_utc(invitation.expires_at) <= utcnow():
+        fail(410, "INVITATION_ENDED", "這次邀請已失效，請建立新的邀請。")
+    code = reusable_code(db, invitation.id)
+    if digest(code) != invitation.token_hash:
+        fail(409, "INVITE_KEY_CHANGED", "站台邀請金鑰已變更，請建立新的邀請。")
+    return issued_invitation(invitation, code)
+
+
+def issued_invitation(invitation, code):
     url = public_origin() + "/?invite=" + code
     buf = io.BytesIO()
     qrcode.make(url, image_factory=qrcode.image.svg.SvgPathImage).save(buf)
-    db.commit()
     return {
         **invite_metadata(invitation),
         "code": code,
@@ -438,11 +507,11 @@ def join(db: Session, trip: Trip, user: User):
 
 @router.post("/auth/guest")
 async def guest(payload: Guest, request: Request, response: Response, db: DB):
-    trip = invited_trip(db, payload.code)
     login = valid_session(db, request.cookies.get(COOKIE))
     if login:
-        user = db.get(User, login.user_id)
-    else:
+        user = locked_joiner(db, login.user_id, request)
+    trip = invited_trip(db, payload.code)
+    if not login:
         user = User(account_type="guest", nickname=payload.nickname)
         db.add(user)
         db.flush()
@@ -454,9 +523,18 @@ async def guest(payload: Guest, request: Request, response: Response, db: DB):
 
 
 @router.post("/invitations/accept")
-async def accept(payload: Accept, db: DB, user: Actor):
+async def accept(payload: Accept, request: Request, db: DB, user: Actor):
+    user = locked_joiner(db, user.id, request)
     trip = invited_trip(db, payload.code)
     join(db, trip, user)
     db.commit()
     await hub.publish(trip.id, {"type": "members"})
     return summary(db, trip)
+
+
+def locked_joiner(db: Session, user_id: str, request: Request):
+    # Match the user → trip lock order used for an authenticated guest account merge.
+    user = db.scalar(select(User).where(User.id == user_id).with_for_update())
+    if not valid_session(db, request.cookies.get(COOKIE)):
+        fail(401, "SESSION_REQUIRED", "原本的瀏覽器身分已失效，請重新加入。")
+    return user

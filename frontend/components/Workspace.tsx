@@ -31,6 +31,7 @@ import {
   X,
 } from 'lucide-react';
 import { api, ApiError } from '../lib/api';
+import { syncOfflineAccount } from '../lib/offlineTrips';
 import {
   accountLabels,
   canCreateTrip,
@@ -45,12 +46,14 @@ import {
 import { samples } from '../lib/samples';
 import TripForm from './TripForm';
 import TripDetail from './TripDetail';
+import NoticeCenter from './NoticeCenter';
+import ProfileForm from './ProfileForm';
 import AccessDialog from './AccessDialog';
 import { Button } from './ui/button';
 import { Modal } from './ui/dialog';
 
 type Area = 'home' | 'archive' | 'trash' | 'examples';
-type Route = { area: Area; trip: string; sample: boolean };
+type Route = { area: Area; trip: string; sample: boolean; section?: 'comments'; comment?: string };
 type Dialog = 'login' | 'login-create' | 'join' | 'create' | 'settings' | 'help' | 'account' | null;
 const initialRoute: Route = { area: 'home', trip: '', sample: false };
 const areas = { home: '旅程總覽', archive: '已封存', trash: '回收區', examples: '示範旅程' };
@@ -61,6 +64,8 @@ const readRoute = (): Route => {
     area: Object.hasOwn(areas, view) ? (view as Area) : 'home',
     trip: p.get('example') || p.get('trip') || '',
     sample: p.has('example'),
+    section: p.get('section') === 'comments' ? 'comments' : undefined,
+    comment: location.hash.match(/^#comment-([a-f0-9-]{36})$/i)?.[1],
   };
 };
 const exampleTrips = samples.map((s) => s.trip);
@@ -88,11 +93,7 @@ function TripCard({
   const people = sample ? samples.find((s) => s.trip.id === trip.id)?.travellers : undefined;
   return (
     <article className={'trip-card' + (list ? ' list-card' : '')}>
-      <button
-        className="card-open"
-        onClick={trip.deleted_at ? restore : open}
-        aria-label={(trip.deleted_at ? '復原' : '開啟') + trip.title}
-      >
+      <button className="card-open" onClick={trip.deleted_at ? restore : open}>
         <div className="card-art">
           <img src={coverFor(trip)} alt="" loading="lazy" />
           <StatusBadge trip={trip} />
@@ -102,7 +103,10 @@ function TripCard({
             <MapPin size={14} />
             {trip.destinations.join(' · ') || '目的地待定'}
           </div>
-          <h3>{trip.title}</h3>
+          <h3>
+            <span className="sr-only">{trip.deleted_at ? '復原' : '開啟'}</span>
+            {trip.title}
+          </h3>
           <div className="card-date">
             <CalendarDays size={15} />
             {formatDates(trip.start_date, trip.end_date)}
@@ -161,8 +165,11 @@ export default function Workspace() {
     const request = ++reloadId.current;
     try {
       const me = await api<User>('/auth/me');
+      if (request !== reloadId.current) return null;
+      syncOfflineAccount(me.id);
       const all = await api<Trip[]>('/trips');
       if (request !== reloadId.current) return null;
+      syncOfflineAccount(me.id, all);
       setUser((previous) =>
         previous?.id === me.id &&
         previous.account_type === me.account_type &&
@@ -176,6 +183,7 @@ export default function Workspace() {
     } catch (e) {
       if (request !== reloadId.current) return null;
       if (e instanceof ApiError && e.status === 401) {
+        syncOfflineAccount(null);
         setUser(null);
         setTrips([]);
       } else setError(errorText(e));
@@ -188,7 +196,12 @@ export default function Workspace() {
     const p = new URLSearchParams();
     if (r.area !== 'home') p.set('view', r.area);
     if (r.trip) p.set(r.sample ? 'example' : 'trip', r.trip);
-    history.pushState(null, '', location.pathname + (p.size ? '?' + p : ''));
+    if (r.trip && r.section) p.set('section', r.section);
+    history.pushState(
+      null,
+      '',
+      location.pathname + (p.size ? '?' + p : '') + (r.comment ? '#comment-' + r.comment : ''),
+    );
     setRoute(r);
     setQuery('');
     setFilter('all');
@@ -387,6 +400,14 @@ export default function Workspace() {
             <b>{trip ? '旅程手札' : areas[route.area]}</b>
           </div>
           <div className="top-tools">
+            {user && (
+              <NoticeCenter
+                key={user.id}
+                openTrip={(id, comment) =>
+                  navigate({ area: 'home', trip: id, sample: false, section: 'comments', comment })
+                }
+              />
+            )}
             <span className="today">
               <CalendarDays size={15} />
               {date}
@@ -407,7 +428,13 @@ export default function Workspace() {
           )}
           {route.trip && trip ? (
             <TripDetail
-              key={trip.id}
+              key={trip.id + (route.section ?? '') + (route.comment ?? '')}
+              initialSection={route.section}
+              onCopy={(t) => {
+                update(t);
+                navigate({ area: 'home', trip: t.id, sample: false });
+                setNotice('已複製旅程與每日行程。');
+              }}
               trip={trip}
               user={user}
               sample={route.sample}
@@ -655,9 +682,8 @@ export default function Workspace() {
       {dialog === 'account' && user && (
         <Modal title="帳號" onClose={closeDialog}>
           <div className="stack">
-            <p>
-              {user.nickname} · {user.email || accountLabels[user.account_type]}
-            </p>
+            <p>{user.email || accountLabels[user.account_type]}</p>
+            <ProfileForm user={user} onSaved={setUser} />
             {user.account_type === 'guest' && (
               <Button onClick={() => setDialog('login')}>
                 <LogIn size={16} />
@@ -674,6 +700,7 @@ export default function Workspace() {
                   return;
                 try {
                   await api('/auth/logout', 'POST', {});
+                  syncOfflineAccount(null);
                   ++reloadId.current;
                   setTrips([]);
                   setUser(null);

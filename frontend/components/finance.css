@@ -1,0 +1,200 @@
+.fn-root,
+.fn-form {
+  display: grid;
+  gap: 1rem;
+  color: #263d36;
+  min-width: 0;
+}
+.fn-head,
+.fn-row,
+.fn-actions,
+.fn-net,
+.fn-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.fn-root h2,
+.fn-root h3,
+.fn-root p,
+.fn-form p {
+  margin: 0;
+}
+.fn-root h4 {
+  margin: 1.2rem 0 0.35rem;
+}
+.fn-root h2 {
+  font-size: 1.5rem;
+}
+.fn-root h3 {
+  font-size: 1.12rem;
+}
+.fn-head p,
+.fn-row p,
+.fn-entry small {
+  font-size: 0.85rem;
+  color: #586b62;
+}
+.fn-totals,
+.fn-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.fn-totals > div,
+.fn-panel {
+  background: #fff;
+  border: 1px solid #d6e1d9;
+  border-radius: 15px;
+  padding: clamp(15px, 3vw, 26px);
+  min-width: 0;
+}
+.fn-totals > div {
+  background: #eff5ed;
+}
+.fn-totals span,
+.fn-root button,
+.fn-form button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.fn-totals strong,
+.fn-entry small {
+  display: block;
+}
+.fn-totals strong {
+  font-size: clamp(1.05rem, 3vw, 1.6rem);
+  overflow-wrap: anywhere;
+  margin-top: 0.4rem;
+}
+.fn-panel > p,
+.fn-entry p {
+  margin-top: 0.65rem;
+  color: #586b62;
+}
+.fn-row,
+.fn-entry {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e4eae5;
+  overflow-wrap: anywhere;
+}
+.fn-row:last-child,
+.fn-entry:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.fn-entry summary {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  align-items: center;
+}
+.fn-entry summary::before {
+  content: '▸';
+}
+.fn-entry[open] summary::before {
+  content: '▾';
+}
+.fn-entry summary > span {
+  flex: 1;
+}
+.fn-entry .fn-actions {
+  margin-top: 0.65rem;
+}
+.fn-actions,
+.fn-net {
+  justify-content: start;
+}
+.fn-row svg {
+  display: inline;
+  vertical-align: middle;
+}
+.fn-root button,
+.fn-form button {
+  color: #244c3f;
+  background: #fff;
+  border: 1px solid #bfcec3;
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  min-height: 40px;
+  justify-content: center;
+}
+.fn-primary,
+.fn-root button.fn-primary,
+.fn-form button.fn-primary {
+  background: #245642;
+  color: #fff;
+  border-color: #245642;
+}
+.fn-root button:disabled,
+.fn-form button:disabled {
+  opacity: 0.55;
+}
+.fn-form {
+  margin-top: 1rem;
+}
+.fn-form label,
+.fn-form fieldset {
+  display: grid;
+  gap: 0.4rem;
+}
+.fn-form input:not([type='checkbox']),
+.fn-form select {
+  width: 100%;
+  min-width: 0;
+  background: #fff;
+  border: 1px solid #adbdaf;
+  border-radius: 7px;
+  padding: 0.55rem 0.7rem;
+  color: #263d36;
+}
+.fn-form fieldset {
+  border: 1px solid #c6d2c9;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  min-width: 0;
+}
+.fn-form legend {
+  padding: 0 0.3rem;
+  font-weight: 650;
+}
+.fn-member {
+  flex-wrap: nowrap;
+}
+.fn-member label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-wrap: anywhere;
+}
+.fn-member input:not([type='checkbox']) {
+  max-width: 40%;
+}
+.fn-warning {
+  color: #8a3c1f;
+  background: #fff2df;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
+}
+.fn-status {
+  color: #315943;
+  font-weight: 600;
+}
+@media (max-width: 580px) {
+  .fn-fields {
+    grid-template-columns: 1fr;
+  }
+  .fn-entry summary {
+    flex-wrap: wrap;
+  }
+  .fn-totals > div {
+    padding: 12px;
+  }
+  .fn-totals {
+    gap: 8px;
+  }
+}

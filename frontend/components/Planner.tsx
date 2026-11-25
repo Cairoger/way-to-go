@@ -1,5 +1,7 @@
 'use client';
 
+import { AttachmentButton } from './Attachments';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ArrowDownUp,
@@ -17,6 +19,7 @@ import {
 } from 'lucide-react';
 import { api } from '../lib/api';
 import PlannerMap from './PlannerMap';
+import { DayWeather, PlannerTools } from './PlannerTools';
 import { ItemForm, PlaceForm, PlanningDialog } from './PlannerForms';
 import {
   CategoryIcon,
@@ -47,7 +50,7 @@ type Dialog =
   | { type: 'detail'; place: Place }
   | { type: 'item'; dayId: string; initialPlace?: Place; item?: PlanItem; lease?: Lease }
   | { type: 'move'; item: PlanItem; lease: Lease }
-  | { type: 'remove'; target: Place | PlanItem; lease: Lease };
+  | { type: 'remove'; target: Place | PlanItem; lease: Lease; original?: boolean };
 type Revision = {
   actor: string;
   action: string;
@@ -57,10 +60,13 @@ type Revision = {
 const actions: Record<string, string> = {
   'place.created': '新增景點',
   'place.updated': '更新景點',
+  'place.deleted': '移除原始景點',
+  'place.restored': '復原版本',
   'candidate.removed': '移出候選',
   'candidate.restored': '復原候選',
 };
 const fieldNames: Record<string, string> = {
+  restored_version: '復原版本',
   name: '名稱',
   address: '地址',
   latitude: '緯度',
@@ -308,12 +314,13 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
     }
     return lock;
   }
-  async function edit(target: Place | PlanItem, action: 'edit' | 'remove' | 'move') {
+  async function edit(target: Place | PlanItem, action: 'edit' | 'remove' | 'original' | 'move') {
     if (busy) return;
     setBusy(true);
     try {
       const lock = await acquire(target, 'candidate' in target ? 'place' : 'item');
-      if (action === 'remove') open({ type: 'remove', target, lease: lock });
+      if (action === 'remove' || action === 'original')
+        open({ type: 'remove', target, lease: lock, original: action === 'original' });
       else if ('candidate' in target) open({ type: 'place', place: target, lease: lock });
       else if (action === 'move') open({ type: 'move', item: target, lease: lock });
       else open({ type: 'item', item: target, dayId: target.day_id, lease: lock });
@@ -418,6 +425,15 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
           </button>
         )}
       </header>
+      {section === 'plan' && loaded && (
+        <PlannerTools
+          tripId={tripId}
+          days={days}
+          places={places}
+          refresh={refresh}
+          onChange={onChange}
+        />
+      )}
       {loadError && (
         <p className="wp-notice" role="alert">
           {loadError}{' '}
@@ -428,7 +444,10 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
       )}
       {!loaded && !loadError && <p role="status">載入旅程資料中…</p>}
       {loaded && section === 'map' && (
-        <PlannerMap places={places.filter((p) => p.candidate || referenced.has(p.id))} />
+        <PlannerMap
+          days={days}
+          places={places.filter((p) => p.candidate || referenced.has(p.id))}
+        />
       )}
       {loaded && section === 'places' && (
         <>
@@ -507,7 +526,7 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
                         <button
                           className="wp-icon"
                           disabled={busy || !!p.editing_by}
-                          aria-label={`移除${p.name}`}
+                          aria-label={`將${p.name}移出候選`}
                           onClick={() => void edit(p, 'remove')}
                         >
                           <Trash2 size={15} />
@@ -533,6 +552,22 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
             !candidates.some((p) =>
               [p.name, p.city, ...p.tags].join(' ').toLowerCase().includes(filter.toLowerCase()),
             ) && <p>找不到符合條件的景點。</p>}
+          {places.some((p) => !p.candidate) && (
+            <details>
+              <summary>已移出候選的景點</summary>
+              {places
+                .filter((p) => !p.candidate)
+                .map((p) => (
+                  <button
+                    key={p.id}
+                    className="wp-text"
+                    onClick={() => open({ type: 'detail', place: p })}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+            </details>
+          )}
         </>
       )}
       {loaded && section === 'plan' && (
@@ -573,13 +608,16 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
                   <CalendarDays size={22} />
                   <div>
                     <h3>{activeDay.title || `第 ${activeDay.day_number} 天`}</h3>
-                    {activeDay.date && <small>{activeDay.date}</small>}
+                    <small>
+                      {[activeDay.date, activeDay.timezone].filter(Boolean).join(' · ')}
+                    </small>
                   </div>
                 </div>
                 <button className="btn btn-secondary" onClick={() => schedule()}>
                   <Plus size={15} /> 新增活動
                 </button>
               </div>
+              <DayWeather day={activeDay} places={places} />
               {!activeDay.items.length && (
                 <div className="wp-empty">
                   <CalendarDays />
@@ -611,7 +649,8 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
                       }}
                     >
                       <div className="wp-time">
-                        {i.start_time || '未定'}
+                        {i.start_time || i.suggested_time || '未定'}
+                        {i.suggested_time && <small>建議</small>}
                         {i.end_time && <small>{i.end_time}</small>}
                       </div>
                       <span className={`wp-symbol wp-${i.item_type}`}>
@@ -620,9 +659,27 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
                       <div className="wp-item-body">
                         <small>
                           {categories[i.item_type]}
+                          {' · '}
+                          {i.local_timezone || activeDay.timezone}
                           {i.duration ? ` · ${i.duration} 分鐘` : ''}
                         </small>
                         <h4>{i.title}</h4>
+                        <AttachmentButton tripId={tripId} kind="item" targetId={i.id} />
+                        {i.clock_note && <small>{i.clock_note}</small>}
+                        {i.start_instant &&
+                          i.local_timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone && (
+                            <small>
+                              裝置時間 ·{' '}
+                              {new Date(i.start_instant).toLocaleString('zh-TW', {
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hourCycle: 'h23',
+                                timeZoneName: 'short',
+                              })}
+                            </small>
+                          )}
                         {place && (
                           <button
                             className="wp-text wp-address"
@@ -634,6 +691,14 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
                           </button>
                         )}
                         {i.notes && <p>{i.notes}</p>}
+                        {i.archived_place && (
+                          <small>
+                            已移除景點 ·{' '}
+                            {[i.archived_place.name, i.archived_place.address]
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </small>
+                        )}
                         {i.overlap && (
                           <span className="wp-overlap">
                             <Clock3 size={12} />
@@ -723,7 +788,20 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
               </button>
             </form>
           )}
-          {dialog.type === 'detail' && <PlaceDetails place={dialog.place} currency={currency} />}
+          {dialog.type === 'detail' && (
+            <>
+              <PlaceDetails place={dialog.place} currency={currency} />
+              {dialog.place.editable_by === userId && (
+                <button
+                  className="btn btn-secondary"
+                  disabled={busy || !!dialog.place.editing_by}
+                  onClick={() => void edit(dialog.place, 'original')}
+                >
+                  移除原始景點
+                </button>
+              )}
+            </>
+          )}
           {dialog.type === 'place' && (
             <PlaceForm
               tripId={tripId}
@@ -779,7 +857,9 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
             <div className="wp-form">
               <p>
                 {'candidate' in dialog.target
-                  ? `將「${dialog.target.name}」移出候選景點？已排入的行程會保留。`
+                  ? dialog.original
+                    ? `移除原始景點「${dialog.target.name}」？已排入的活動會保留地點名稱與地址，可從變更紀錄復原。`
+                    : `將「${dialog.target.name}」移出候選景點？已排入的行程會保留。`
                   : `刪除活動「${dialog.target.title}」？`}
               </p>
               <div className="wp-actions">
@@ -792,7 +872,9 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
                   onClick={() =>
                     void write(
                       'candidate' in dialog.target
-                        ? `/trips/${tripId}/candidates/${dialog.target.candidate_id}`
+                        ? dialog.original
+                          ? `/places/${dialog.target.id}`
+                          : `/trips/${tripId}/candidates/${dialog.target.candidate_id}`
                         : `/itinerary-items/${dialog.target.id}`,
                       'DELETE',
                       { version: dialog.target.version, lease_id: dialog.lease.id },

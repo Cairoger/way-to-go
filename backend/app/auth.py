@@ -12,13 +12,14 @@ from fastapi.responses import RedirectResponse
 from google.auth.exceptions import GoogleAuthError
 from google.auth.transport.requests import Request as GoogleRequest
 from google.oauth2.id_token import verify_oauth2_token
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from starlette.concurrency import run_in_threadpool
 
 from .core import COOKIE, DB, Actor, digest, fail, local_test_config, public_origin, valid_session
-from .models import AuthIdentity, LoginSession, OAuthAttempt, User, as_utc, utcnow
+from .models import AuthIdentity, LoginSession, Membership, OAuthAttempt, User, as_utc, utcnow
 from .realtime import hub
 
 router = APIRouter(tags=["身分驗證"])
@@ -60,6 +61,27 @@ def issue_session(db: Session, response: Response, user: User, previous=None):
 
 @router.get("/auth/me")
 def me(user: Actor):
+    return public_user(user)
+
+
+class ProfileEdit(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    nickname: str = Field(min_length=1, max_length=80)
+
+
+@router.patch("/auth/me")
+async def update_profile(payload: ProfileEdit, db: DB, user: Actor):
+    user.nickname = payload.nickname
+    trips = list(
+        db.scalars(
+            select(Membership.trip_id).where(
+                Membership.user_id == user.id, Membership.left_at.is_(None)
+            )
+        )
+    )
+    db.commit()
+    for trip_id in trips:
+        await hub.publish(trip_id, {"type": "members"})
     return public_user(user)
 
 
@@ -236,7 +258,7 @@ def exchange_code(code: str, verifier: str, client_id: str, client_secret: str):
 
 
 @router.get("/auth/google/callback")
-def google_callback(request: Request, db: DB, state: str = "", code: str = ""):
+async def google_callback(request: Request, db: DB, state: str = "", code: str = ""):
     client_id, client_secret = credentials()
     attempt = db.scalar(
         select(OAuthAttempt).where(OAuthAttempt.state_hash == digest(state)).with_for_update()
@@ -252,7 +274,7 @@ def google_callback(request: Request, db: DB, state: str = "", code: str = ""):
     nonce, verifier, return_to = attempt.nonce, attempt.verifier, attempt.return_to
     db.delete(attempt)
     db.commit()
-    claims = exchange_code(code, verifier, client_id, client_secret)
+    claims = await run_in_threadpool(exchange_code, code, verifier, client_id, client_secret)
     if not claims.get("sub") or not hmac.compare_digest(claims.get("nonce", ""), nonce):
         fail(401, "INVALID_OIDC_NONCE", "Google 身分驗證結果不符合此次登入。")
     identity = db.scalar(
@@ -267,15 +289,16 @@ def google_callback(request: Request, db: DB, state: str = "", code: str = ""):
         if previous
         else None
     )
+    if previous and not valid_session(db, request.cookies.get(COOKIE)):
+        fail(401, "SESSION_REQUIRED", "原本的瀏覽器身分已失效，請重新登入。")
     email = claims.get("email") if claims.get("email_verified") is True else None
+    merged_trips = []
     if identity:
-        if existing and existing.account_type == "guest" and existing.id != identity.user_id:
-            fail(
-                409,
-                "ACCOUNT_MERGE_REQUIRED",
-                "這個 Google 帳號已有資料，目前仍保留你的訪客身分。請使用未登入訪客的瀏覽器開啟既有帳號。",
-            )
         user = db.get(User, identity.user_id)
+        if existing and existing.account_type == "guest" and existing.id != identity.user_id:
+            from .merge import merge_guest
+
+            merged_trips = merge_guest(db, existing, user)
     else:
         if existing and existing.account_type == "guest":
             db.execute(
@@ -305,4 +328,8 @@ def google_callback(request: Request, db: DB, state: str = "", code: str = ""):
     )
     issue_session(db, response, user, previous)
     db.commit()
+    if previous:
+        hub.revalidate(previous.id)
+    for trip_id in merged_trips:
+        await hub.publish(trip_id, {"type": "members"})
     return response

@@ -1,7 +1,6 @@
 from datetime import timedelta
 from decimal import Decimal
 from typing import Annotated, Literal
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import APIRouter, Header, Query, Request
 from pydantic import (
@@ -18,9 +17,11 @@ from pydantic import (
 from sqlalchemy import delete, func, select, update
 
 from app.core import DB, Actor, audit, digest, fail, require_member
-from app.models import AuditLog, CreationKey, User, as_utc, utcnow
+from app.models import AuditLog, CreationKey, Trip, User, as_utc, utcnow
 from app.place_search import search_public_places
-from app.planning_models import Candidate, EditLease, ItineraryItem, Place, TripDay
+from app.planning_models import Candidate, EditLease, EntityRevision, ItineraryItem, Place, TripDay
+from app.planning_time import annotate_schedule, validate_item_clocks, validate_zone
+from app.planning_weather import forecast
 from app.realtime import hub
 
 router = APIRouter(tags=["行程與景點"])
@@ -43,11 +44,7 @@ class DayInput(Input):
     @field_validator("timezone")
     @classmethod
     def valid_zone(cls, value):
-        try:
-            ZoneInfo(value)
-        except (ZoneInfoNotFoundError, ValueError):
-            raise ValueError("請使用有效的 IANA 時區。")
-        return value
+        return validate_zone(value)
 
 
 class PlaceFields(Input):
@@ -100,6 +97,8 @@ class CandidateRestore(Mutation):
 
 
 class ItemFields(Input):
+    timezone: str | None = Field(None, max_length=64)
+    _valid_zone = field_validator("timezone")(validate_zone)
     item_type: ItemType = "custom"
     place_id: str | None = None
     start_time: Clock | None = None
@@ -185,7 +184,7 @@ def creation_request(db, model, user_id, parent_id, key, payload):
         if previous.request_hash != fingerprint:
             fail(409, "idempotency_conflict", "相同請求識別碼已用於其他資料。")
         row = db.get(model, previous.resource_id)
-        if row is None:
+        if row is None or getattr(row, "deleted_at", None):
             fail(409, "resource_removed", "該請求建立的資料已被移除。")
         return row, None
     return None, CreationKey(
@@ -224,7 +223,7 @@ def active(lease):
     return lease is not None and as_utc(lease.expires_at) > utcnow()
 
 
-def authorize_write(db, request, row, kind, user_id, mutation):
+def authorize_write(db, request, row, kind, user_id, mutation, *, restoring=False):
     require_editor(row, user_id)
     if row.version != mutation.version:
         fail(409, "stale_version", "資料已更新，請重新開啟最新內容。")
@@ -236,6 +235,32 @@ def authorize_write(db, request, row, kind, user_id, mutation):
     ):
         fail(423, "lease_required", "編輯鎖定已失效，請重新開啟編輯。")
     db.delete(lease)
+    if isinstance(row, ItineraryItem) and row.deleted_at and not restoring:
+        fail(409, "item_removed", "這個活動已移除，請先復原。")
+    if kind == "place":
+        if row.deleted_at and not restoring:
+            fail(409, "place_removed", "原始景點已移除，請先從變更紀錄復原。")
+        candidate = db.scalar(select(Candidate).where(Candidate.place_id == row.id))
+        data = fields(row, set(PlaceInput.model_fields) - {"status"}) | {"status": candidate.status}
+        snapshot = PlaceInput.model_validate(data).model_dump(mode="json") | {
+            "candidate": not candidate.removed_at,
+            "removed": bool(row.deleted_at),
+        }
+    else:
+        snapshot = ItemInput.model_validate(fields(row, ItemInput.model_fields)).model_dump(
+            mode="json"
+        )
+        snapshot.update(day_id=row.day_id, position=row.position, removed=bool(row.deleted_at))
+    db.add(
+        EntityRevision(
+            trip_id=row.trip_id,
+            actor_id=user_id,
+            resource_id=row.id,
+            kind=kind,
+            version=row.version,
+            snapshot=snapshot,
+        )
+    )
 
 
 @router.post("/edit-leases")
@@ -334,7 +359,7 @@ def list_places(trip_id: str, db: DB, user: Actor):
     rows = db.execute(
         select(Place, Candidate)
         .join(Candidate, Candidate.place_id == Place.id)
-        .where(Place.trip_id == trip_id)
+        .where(Place.trip_id == trip_id, Place.deleted_at.is_(None))
         .order_by(Place.created_at, Place.id)
     )
     return [place_dict(place, candidate, editing.get(place.id)) for place, candidate in rows]
@@ -393,6 +418,18 @@ async def create_place(trip_id: str, payload: PlaceInput, db: DB, user: Actor, k
     record_creation(db, record, place.id)
     await finish(db, trip_id, "place.created", user.id, "place", place.id)
     return place_dict(place, candidate)
+
+
+@router.delete("/places/{place_id}")
+async def delete_place(place_id: str, payload: Mutation, request: Request, db: DB, user: Actor):
+    place = access(db, Place, place_id, user.id, lock=True)
+    authorize_write(db, request, place, "place", user.id, payload)
+    candidate = db.scalar(select(Candidate).where(Candidate.place_id == place.id))
+    place.deleted_at = place.updated_at = utcnow()
+    candidate.removed_at = candidate.removed_at or place.deleted_at
+    place.version += 1
+    await finish(db, place.trip_id, "place.deleted", user.id, "place", place.id)
+    return {"deleted": True, "version": place.version}
 
 
 @router.patch("/places/{place_id}")
@@ -497,15 +534,22 @@ def list_days(trip_id: str, db: DB, user: Actor):
     )
     editing = editors(db, trip_id)
     grouped = {}
-    for item in db.scalars(
-        select(ItineraryItem)
-        .where(ItineraryItem.trip_id == trip_id)
+    for item, place in db.execute(
+        select(ItineraryItem, Place)
+        .outerjoin(Place, Place.id == ItineraryItem.place_id)
+        .where(ItineraryItem.trip_id == trip_id, ItineraryItem.deleted_at.is_(None))
         .order_by(ItineraryItem.position, ItineraryItem.id)
     ):
-        grouped.setdefault(item.day_id, []).append(item_dict(item, editing.get(item.id)))
-    for items in grouped.values():
-        mark_overlaps(items)
-    return [day_dict(day, trip, grouped.get(day.id, [])) for day in days]
+        data = item_dict(item, editing.get(item.id))
+        if place and place.deleted_at:
+            data["archived_place"] = {"name": place.name, "address": place.address}
+        grouped.setdefault(item.day_id, []).append(data)
+    result = [day_dict(day, trip, grouped.get(day.id, [])) for day in days]
+    durations = dict(
+        db.execute(select(Place.id, Place.duration).where(Place.trip_id == trip_id)).all()
+    )
+    annotate_schedule(result, durations)
+    return result
 
 
 @router.post("/trips/{trip_id}/days", status_code=201)
@@ -525,10 +569,10 @@ async def add_day(trip_id: str, payload: DayInput, db: DB, user: Actor, key: Key
     return day_dict(day, trip, [])
 
 
-def validate_place(db, trip_id, place_id):
+def validate_place(db, trip_id, place_id, *, historical=False):
     if place_id:
         place = db.get(Place, place_id)
-        if not place or place.trip_id != trip_id:
+        if not place or place.trip_id != trip_id or (place.deleted_at and not historical):
             fail(404, "not_found", "找不到旅程中的景點。")
 
 
@@ -538,7 +582,11 @@ def append_item(db, trip_id, user_id, day_id, title, item_type="custom", place_i
     if not day or day.trip_id != trip_id:
         fail(404, "not_found", "找不到旅程中的日期。")
     validate_place(db, trip_id, place_id)
-    last = db.scalar(select(func.max(ItineraryItem.position)).where(ItineraryItem.day_id == day_id))
+    last = db.scalar(
+        select(func.max(ItineraryItem.position)).where(
+            ItineraryItem.day_id == day_id, ItineraryItem.deleted_at.is_(None)
+        )
+    )
     item = ItineraryItem(
         trip_id=trip_id,
         day_id=day_id,
@@ -560,11 +608,19 @@ async def add_item(day_id: str, payload: ItemInput, db: DB, user: Actor, key: Ke
     previous, record = creation_request(db, ItineraryItem, user.id, day_id, key, payload)
     if previous:
         return item_dict(previous)
+    validate_item_clocks(
+        db.get(Trip, day.trip_id).start_date,
+        day,
+        payload.timezone,
+        payload.start_time,
+        payload.end_time,
+        payload.title,
+    )
     item = append_item(
         db, day.trip_id, user.id, day_id, payload.title, payload.item_type, payload.place_id
     )
     record_creation(db, record, item.id)
-    for field in ("start_time", "end_time", "duration", "notes"):
+    for field in ("start_time", "end_time", "duration", "notes", "timezone"):
         setattr(item, field, getattr(payload, field))
     await finish(db, day.trip_id, "item.created", user.id, "item", item.id)
     return item_dict(item)
@@ -575,7 +631,17 @@ async def edit_item(item_id: str, payload: ItemEdit, request: Request, db: DB, u
     item = access(db, ItineraryItem, item_id, user.id, lock=True)
     authorize_write(db, request, item, "item", user.id, payload)
     merged = merge_patch(ItemInput, fields(item, ItemInput.model_fields), payload)
-    validate_place(db, item.trip_id, merged["place_id"])
+    validate_place(
+        db, item.trip_id, merged["place_id"], historical=item.place_id == merged["place_id"]
+    )
+    validate_item_clocks(
+        db.get(Trip, item.trip_id).start_date,
+        db.get(TripDay, item.day_id),
+        merged["timezone"],
+        merged["start_time"],
+        merged["end_time"],
+        merged["title"],
+    )
     for key, value in merged.items():
         setattr(item, key, value)
     item.version += 1
@@ -587,7 +653,11 @@ def day_items(db, day_id, exclude_id):
     return list(
         db.scalars(
             select(ItineraryItem)
-            .where(ItineraryItem.day_id == day_id, ItineraryItem.id != exclude_id)
+            .where(
+                ItineraryItem.day_id == day_id,
+                ItineraryItem.id != exclude_id,
+                ItineraryItem.deleted_at.is_(None),
+            )
             .order_by(ItineraryItem.position, ItineraryItem.id)
         )
     )
@@ -605,6 +675,14 @@ async def move_item(item_id: str, payload: ItemMove, request: Request, db: DB, u
     destination = db.get(TripDay, payload.day_id)
     if not destination or destination.trip_id != item.trip_id:
         fail(404, "not_found", "目的日期不在這趟旅程中。")
+    validate_item_clocks(
+        db.get(Trip, item.trip_id).start_date,
+        destination,
+        item.timezone,
+        item.start_time,
+        item.end_time,
+        item.title,
+    )
     if item.day_id != destination.id:
         renumber(day_items(db, item.day_id, item.id))
     ordered = day_items(db, destination.id, item.id)
@@ -621,6 +699,132 @@ async def delete_item(item_id: str, payload: Mutation, request: Request, db: DB,
     item = access(db, ItineraryItem, item_id, user.id, lock=True)
     authorize_write(db, request, item, "item", user.id, payload)
     renumber(day_items(db, item.day_id, item.id))
-    db.delete(item)
+    item.deleted_at = utcnow()
+    item.version += 1
     await finish(db, item.trip_id, "item.deleted", user.id, "item", item_id)
     return {"deleted": True}
+
+
+class RestoreVersion(Mutation):
+    restore_version: int = Field(ge=1)
+
+
+@router.get("/trips/{trip_id}/planner-history")
+def planner_history(trip_id: str, db: DB, user: Actor):
+    require_member(db, trip_id, user.id)
+    rows = db.execute(
+        select(EntityRevision, User.nickname)
+        .join(User, User.id == EntityRevision.actor_id)
+        .where(EntityRevision.trip_id == trip_id)
+        .order_by(EntityRevision.created_at.desc())
+    )
+    history = []
+    for revision, nickname in rows:
+        model = Place if revision.kind == "place" else ItineraryItem
+        resource = db.get(model, revision.resource_id)
+        if resource:
+            history.append(
+                {
+                    "id": revision.id,
+                    "resource_id": resource.id,
+                    "kind": revision.kind,
+                    "title": revision.snapshot.get("name") or revision.snapshot.get("title"),
+                    "version": revision.version,
+                    "current_version": resource.version,
+                    "editable": resource.editable_by == user.id,
+                    "actor": nickname,
+                    "at": as_utc(revision.created_at),
+                }
+            )
+    return history
+
+
+@router.post("/planner-history/{kind}/{resource_id}/restore")
+async def restore_version(
+    kind: Literal["place", "item"],
+    resource_id: str,
+    payload: RestoreVersion,
+    request: Request,
+    db: DB,
+    user: Actor,
+):
+    model = Place if kind == "place" else ItineraryItem
+    row = access(db, model, resource_id, user.id, lock=True)
+    revision = db.scalar(
+        select(EntityRevision).where(
+            EntityRevision.kind == kind,
+            EntityRevision.resource_id == resource_id,
+            EntityRevision.trip_id == row.trip_id,
+            EntityRevision.version == payload.restore_version,
+        )
+    )
+    if not revision:
+        fail(404, "no_revision", "找不到這個歷史版本。")
+    authorize_write(db, request, row, kind, user.id, payload, restoring=True)
+    snapshot = dict(revision.snapshot)
+    if kind == "place":
+        candidate = db.scalar(select(Candidate).where(Candidate.place_id == row.id))
+        row.deleted_at = utcnow() if snapshot.pop("removed", False) else None
+        candidate.removed_at = None if snapshot.pop("candidate") else utcnow()
+        values = PlaceInput.model_validate(snapshot).model_dump()
+        candidate.status = values.pop("status")
+        row.updated_at = utcnow()
+    else:
+        previous_day = snapshot.pop("day_id")
+        previous_position = snapshot.pop("position")
+        removed = snapshot.pop("removed")
+        if previous_day != row.day_id and not row.deleted_at:
+            renumber(day_items(db, row.day_id, row.id))
+        ordered = day_items(db, previous_day, row.id)
+        if not removed:
+            ordered.insert(min(previous_position, len(ordered)), row)
+        renumber(ordered)
+        row.day_id, row.deleted_at = previous_day, utcnow() if removed else None
+        values = ItemInput.model_validate(snapshot).model_dump()
+        validate_place(db, row.trip_id, values["place_id"], historical=True)
+        if not removed:
+            validate_item_clocks(
+                db.get(Trip, row.trip_id).start_date,
+                db.get(TripDay, previous_day),
+                values["timezone"],
+                values["start_time"],
+                values["end_time"],
+                values["title"],
+            )
+    for key, value in values.items():
+        setattr(row, key, value)
+    row.version += 1
+    await finish(
+        db,
+        row.trip_id,
+        f"{kind}.restored",
+        user.id,
+        kind,
+        row.id,
+        {"restored_version": {"before": payload.version, "after": payload.restore_version}},
+    )
+    return {"id": row.id, "version": row.version}
+
+
+@router.get("/days/{day_id}/weather")
+async def day_weather(day_id: str, db: DB, user: Actor):
+    day = access(db, TripDay, day_id, user.id)
+    trip = require_member(db, day.trip_id, user.id)
+    date = day_dict(day, trip, [])["date"]
+    location = db.execute(
+        select(Place.name, Place.latitude, Place.longitude, ItineraryItem.timezone)
+        .join(ItineraryItem, ItineraryItem.place_id == Place.id)
+        .where(
+            ItineraryItem.day_id == day_id,
+            ItineraryItem.deleted_at.is_(None),
+            Place.latitude.is_not(None),
+        )
+        .order_by(ItineraryItem.position)
+        .limit(1)
+    ).first()
+    if location is None:
+        return {"available": False, "message": "尚無可用天氣預報"}
+    result = await forecast(
+        date, location.latitude, location.longitude, location.timezone or day.timezone
+    )
+    return {**result, "place": location.name}

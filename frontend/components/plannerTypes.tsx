@@ -47,6 +47,12 @@ export type Place = Editable & {
   candidate_id: string;
 };
 export type PlanItem = Editable & {
+  archived_place?: { name: string; address: string };
+  clock_note?: string;
+  timezone: string | null;
+  local_timezone: string;
+  start_instant: string | null;
+  suggested_time: string | null;
   title: string;
   item_type: Category;
   day_id: string;
@@ -58,6 +64,37 @@ export type PlanItem = Editable & {
   notes: string;
   overlap: boolean;
 };
+
+export function parseGooglePlaceLink(raw: string) {
+  try {
+    const url = new URL(raw);
+    if (
+      url.protocol !== 'https:' ||
+      url.username ||
+      url.password ||
+      !/^(?:(?:www|maps)\.)?google\.(?:com|com\.tw|co\.jp|co\.uk|com\.hk|fr|de)$/.test(url.hostname)
+    )
+      return null;
+    if (!url.pathname.startsWith('/maps') && !url.hostname.startsWith('maps.')) return null;
+    const path = decodeURIComponent(url.pathname);
+    const query = url.searchParams.get('query') || url.searchParams.get('q') || '';
+    const point =
+      /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/.exec(query) ||
+      /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/.exec(path);
+    // @lat,lng is the camera center. A place link can center its map well away from the pin.
+    const label =
+      /\/maps\/place\/([^/]+)/.exec(path)?.[1]?.replace(/\+/g, ' ') ||
+      (query && !/^\s*-?\d+[\d.]*\s*,\s*-?\d/.test(query) ? query : '');
+    const latitude =
+      point && Math.abs(Number(point[1])) <= 90 && Math.abs(Number(point[2])) <= 180
+        ? Number(point[1])
+        : null;
+    const longitude = latitude !== null && point ? Number(point[2]) : null;
+    return label || latitude !== null ? { name: label.slice(0, 150), latitude, longitude } : null;
+  } catch {
+    return null;
+  }
+}
 export type TripDay = {
   id: string;
   day_number: number;

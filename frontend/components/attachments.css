@@ -1,0 +1,94 @@
+.af-library {
+  color: #273d30;
+}
+.af-heading,
+.af-toolbar,
+.af-list li,
+.af-actions,
+.af-heading h2,
+.af-link,
+.af-readers {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+.af-heading,
+.af-list li {
+  justify-content: space-between;
+}
+.af-heading h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.af-toolbar {
+  margin: 0.85rem 0;
+}
+.af-toolbar select {
+  border: 1px solid #cbd5c9;
+  border-radius: 0.5rem;
+  padding: 0.4rem;
+  background: white;
+}
+.af-list {
+  list-style: none;
+  padding: 0;
+}
+.af-list li {
+  border-bottom: 1px solid #dae2d9;
+  padding: 0.8rem 0.25rem;
+}
+.af-list strong,
+.af-list small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.af-list small,
+.af-empty {
+  font-size: 0.85rem;
+  color: #536356;
+}
+.af-actions button,
+.af-actions a,
+.af-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.84rem;
+  color: #24543d;
+  padding: 0.35rem;
+}
+.af-preview {
+  max-width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+}
+.af-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 55vh;
+  overflow: auto;
+}
+.af-readers label {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+.af-comment-images {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.af-comment-images img {
+  max-width: 10rem;
+  max-height: 9rem;
+  object-fit: contain;
+}
+.af-comment-image {
+  max-width: min(20rem, 100%);
+  height: auto;
+  max-height: 18rem;
+  object-fit: contain;
+  margin: 0.35rem 0.5rem 0.35rem 0;
+  border-radius: 0.5rem;
+}

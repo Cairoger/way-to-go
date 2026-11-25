@@ -25,8 +25,15 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       LOCAL_TEST_USERNAME: ${LOCAL_TEST_USERNAME:-}
+      INVITATION_SIGNING_KEY: ${INVITATION_SIGNING_KEY:-${POSTGRES_PASSWORD}}
+      FILE_MAX_BYTES: ${FILE_MAX_BYTES:-10485760}
+      TRIP_FILE_QUOTA_BYTES: ${TRIP_FILE_QUOTA_BYTES:-524288000}
       LOCAL_TEST_PASSWORD_HASH: ${LOCAL_TEST_PASSWORD_HASH:-}
       WIKI_API_URL: ${WIKI_API_URL-https://zh.wikipedia.org/w/api.php}
+      OPEN_METEO_URL: ${OPEN_METEO_URL-https://api.open-meteo.com/v1/forecast}
+      FRANKFURTER_URL: ${FRANKFURTER_URL-https://api.frankfurter.dev/v2}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
       interval: 10s
