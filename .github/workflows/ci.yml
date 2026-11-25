@@ -157,6 +157,6 @@ jobs:
           "${db[@]}" psql -XqAt -U waytogo -d restore_check < deploy/verify-restore-manifest.sql > "$RUNNER_TEMP/browser-after.tsv"
           diff -u "$RUNNER_TEMP/browser-before.tsv" "$RUNNER_TEMP/browser-after.tsv"
           "${db[@]}" psql -Xq -U waytogo -d restore_check < deploy/verify-restore-browser.sql
-      - if: always()
+      - if: always() && hashFiles('.env') != ''
         run: docker compose down --volumes
 

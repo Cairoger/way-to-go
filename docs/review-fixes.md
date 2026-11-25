@@ -5,7 +5,7 @@
 | 項目 | 結果與回歸方式 |
 | --- | --- |
 | D01 五人討論 | 五個獨立 Chrome 身分同時留言後，作者編輯 20 次，其餘四頁自動顯示。SQLite 與 PostgreSQL 17.12 各取得 80 筆 DOM 觀測，皆 0 逾時。P95 分別為 195 ms 和 193 ms。兩人斷線期間錯過的編輯也在重連後補上。[測試](../frontend/tests/live-collaboration.spec.ts) |
-| D02 展示版本 | 本分支含日期協調、分帳、任務、交通與住宿、通知、天氣、版本歷史與旅程複製，並含遷移及鎖版套件清單。[從空目錄啟動](../README.md#在本機啟動) · [CI 工作流程](../.github/workflows/ci.yml) |
+| D02 展示版本 | 從 GitHub 分支另行乾淨下載後，空庫升至 `0009`，取得 42 張表及 93 個 API 操作。實際登入後讀取日期協調、財務、任務、預訂、通知、天氣、規劃歷史及附件均回 200，複製旅程及建立評分投票均回 201。[草稿 PR](https://github.com/Cairoger/way-to-go/pull/1) · [從空目錄啟動](../README.md#在本機啟動) |
 | D03 Google 登入 | FastAPI 與資料庫測試涵蓋 Google 回應、訪客升級、資料合併及 Session 輪替。外部同意畫面與實際 Google 回呼待取得測試用 OAuth 用戶端後驗證。[身分測試](../backend/tests/test_core.py) · [訪客合併](../backend/tests/test_guest_merge.py) |
 | D04 夏令時間 | 拒絕當地不存在的時間。秋季重複時段採第一次出現的 UTC 位移；測試覆蓋紐約跳時、重複小時及一般跨時區日期。[測試](../backend/tests/test_planning_extensions.py) |
 | D05 移除原始景點 | 現任編輯者經版本與租約檢查可封存景點。移出候選是另一項操作，歷史行程、任務與討論仍能辨識原景點。正式版瀏覽器測試透過 UI 封存後重載。[操作驗收](../frontend/tests/live-offline-planner.spec.ts) |

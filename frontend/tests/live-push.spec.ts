@@ -6,7 +6,10 @@ import { promisify } from 'node:util';
 
 const headers = { 'X-Requested-With': 'WayToGo' };
 test.beforeEach(({ browserName }) => {
-  test.skip(browserName !== 'chromium', '背景通知探測使用 Chromium 一般設定檔及 DevTools Protocol。');
+  test.skip(
+    browserName !== 'chromium',
+    '背景通知探測使用 Chromium 一般設定檔及 DevTools Protocol。',
+  );
   test.skip(
     process.env.E2E_DISPOSABLE !== '1' || process.env.E2E_PUSH_PROBE !== '1',
     'Run against a disposable instance using --production --push',

@@ -23,6 +23,7 @@ import urllib.error
 import urllib.request
 from contextlib import ExitStack, contextmanager
 from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
 
 from sqlalchemy import create_engine
@@ -203,6 +204,18 @@ def main():
         subprocess.run(
             [sys.executable, "-m", "alembic", "upgrade", "head"], cwd=BACKEND, env=env, check=True
         )
+        # Run the existing seeder against this run's database, keeping its private URL off stdout.
+        seeded_url = subprocess.check_output(
+            [
+                sys.executable,
+                "-c",
+                "from seed_demo import seed_demo; print(seed_demo(hours=1)['url'])",
+            ],
+            cwd=BACKEND,
+            env=env,
+            encoding="utf-8",
+        ).strip()
+        invite = parse_qs(urlsplit(seeded_url).query)["invite"][0]
         server(
             stack,
             [
@@ -254,6 +267,8 @@ def main():
             env=os.environ
             | {
                 "E2E_ORIGIN": origin,
+                "E2E_INVITE": invite,
+                "E2E_PYTHON": os.environ.get("E2E_PYTHON") or sys.executable,
                 "E2E_LOCAL_USERNAME": login,
                 "E2E_LOCAL_PASSWORD": password,
                 "E2E_DISPOSABLE": "1",
@@ -264,7 +279,10 @@ def main():
         )
         if result.returncode:
             for report in (root / "results").rglob("error-context.md"):
-                print(report.read_text(encoding="utf-8", errors="replace")[-3500:], file=sys.stderr)
+                context = report.read_text(encoding="utf-8", errors="replace").replace(
+                    invite, "[invite]"
+                )
+                print(context[-3500:], file=sys.stderr)
         return result.returncode
 
 

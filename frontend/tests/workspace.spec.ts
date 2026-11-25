@@ -6,7 +6,7 @@ test('在桌面探索旅程、篩選、切換清單與分日查看', async ({ pa
   await expect(page.locator('.trip-card')).toHaveCount(1);
   await page.getByRole('button', { name: '清單檢視' }).click();
   await expect(page.locator('.list-card')).toHaveCount(1);
-  await page.getByRole('button', { name: '開啟多洛米蒂山間漫遊' }).click();
+  await page.getByRole('button', { name: /開啟\s*多洛米蒂山間漫遊/ }).click();
   await page.getByRole('button', { name: 'Day 3', exact: true }).click();
   await expect(page.getByText('塞切達山', { exact: true })).toBeVisible();
 });
