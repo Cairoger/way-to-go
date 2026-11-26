@@ -36,6 +36,7 @@ export type Booking = {
   website: string;
   reference?: string;
   segments: Leg[];
+  departed_passenger_names?: Record<string, string>;
   stay: Stay | null;
   item_id: string | null;
   created_by: string;
@@ -105,11 +106,44 @@ function Timestamp({
     </div>
   );
 }
+function flightPassengerLabels(
+  members: Member[],
+  passengers: Passenger[],
+  departedNames?: Record<string, string>,
+) {
+  const labels = new Map(members.map((member) => [member.id, member.nickname]));
+  const active = new Set(labels.keys());
+  for (const { user_id } of passengers) {
+    if (!labels.has(user_id)) labels.set(user_id, departedNames?.[user_id] ?? '');
+  }
+
+  const counts = new Map<string, number>();
+  for (const name of labels.values()) counts.set(name, (counts.get(name) ?? 0) + 1);
+  const ids = Array.from(labels.keys());
+  for (const [id, nickname] of labels) {
+    let label = nickname || '已退出的旅客';
+    if (!nickname || (counts.get(nickname) ?? 0) > 1) {
+      let length = 8;
+      while (
+        length < id.length &&
+        ids.some((other) => other !== id && other.startsWith(id.slice(0, length)))
+      ) {
+        length += 1;
+      }
+      label += ' · ' + id.slice(0, length);
+    }
+    if (nickname && !active.has(id)) label += '（已退出）';
+    labels.set(id, label);
+  }
+  return labels;
+}
+
 function LegFields({
   leg,
   change,
   members,
   index,
+  departedNames,
   remove,
   publicOnly,
 }: {
@@ -117,9 +151,17 @@ function LegFields({
   change: (leg: Leg) => void;
   members: Member[];
   index: number;
+  departedNames?: Record<string, string>;
   remove?: () => void;
   publicOnly: boolean;
 }) {
+  const [originalPassengers] = useState(leg.passengers);
+  const choices = flightPassengerLabels(
+    members,
+    [...originalPassengers, ...leg.passengers],
+    departedNames,
+  );
+  const selected = new Map(leg.passengers.map((p) => [p.user_id, p]));
   function field(key: keyof Omit<Leg, 'passengers'>, label: string, required = false) {
     return (
       <label className="field">
@@ -162,10 +204,10 @@ function LegFields({
         {!publicOnly && (
           <fieldset>
             <legend>此航段的旅客</legend>
-            {members.map((m) => {
-              const p = leg.passengers.find((p) => p.user_id === m.id);
+            {Array.from(choices, ([id, nickname]) => {
+              const p = selected.get(id);
               return (
-                <div key={m.id} className="prep-passenger">
+                <div key={id} className="prep-passenger" role="group" aria-label={nickname}>
                   <label>
                     <input
                       type="checkbox"
@@ -174,12 +216,19 @@ function LegFields({
                         change({
                           ...leg,
                           passengers: e.target.checked
-                            ? [...leg.passengers, { user_id: m.id, seat: '', baggage: '' }]
-                            : leg.passengers.filter((p) => p.user_id !== m.id),
+                            ? [
+                                ...leg.passengers,
+                                originalPassengers.find((person) => person.user_id === id) ?? {
+                                  user_id: id,
+                                  seat: '',
+                                  baggage: '',
+                                },
+                              ]
+                            : leg.passengers.filter((person) => person.user_id !== id),
                         })
                       }
                     />
-                    {m.nickname}
+                    {nickname}
                   </label>
                   {p && (
                     <div className="form-row">
@@ -192,7 +241,7 @@ function LegFields({
                               change({
                                 ...leg,
                                 passengers: leg.passengers.map((person) =>
-                                  person.user_id === m.id
+                                  person.user_id === id
                                     ? { ...person, [k]: e.target.value }
                                     : person,
                                 ),
@@ -321,6 +370,7 @@ function BookingEditor({
                 index={i}
                 leg={leg}
                 members={members}
+                departedNames={initial?.departed_passenger_names}
                 publicOnly={publicOnly}
                 change={(v) =>
                   setLegs((rows) => rows.map((r) => (r.key === key ? { key, leg: v } : r)))
@@ -508,26 +558,36 @@ export default function Bookings({
               <h3>{b.title}</h3>
               <span className="badge neutral">{statuses[b.status]}</span>
             </div>
-            {b.segments.map((s, i) => (
-              <div className="prep-leg" key={i}>
-                <b>
-                  {s.airline} {s.number} · {s.origin} 至 {s.destination}
-                </b>
-                <p>
-                  起飛 {s.departure.replace('T', ' ')} {s.departure_terminal}
-                </p>
-                <p>
-                  抵達 {s.arrival.replace('T', ' ')} {s.arrival_terminal}
-                </p>
-                {s.passengers.length > 0 && (
-                  <small>
-                    {s.passengers
-                      .map((p) => [name(p.user_id), p.seat, p.baggage].filter(Boolean).join(' / '))
-                      .join('、')}
-                  </small>
-                )}
-              </div>
-            ))}
+            {b.segments.map((s, i) => {
+              const labels =
+                b.created_by === userId
+                  ? flightPassengerLabels(members, s.passengers, b.departed_passenger_names)
+                  : undefined;
+              return (
+                <div className="prep-leg" key={i}>
+                  <b>
+                    {s.airline} {s.number} · {s.origin} 至 {s.destination}
+                  </b>
+                  <p>
+                    起飛 {s.departure.replace('T', ' ')} {s.departure_terminal}
+                  </p>
+                  <p>
+                    抵達 {s.arrival.replace('T', ' ')} {s.arrival_terminal}
+                  </p>
+                  {s.passengers.length > 0 && (
+                    <small>
+                      {s.passengers
+                        .map((p) =>
+                          [labels?.get(p.user_id) || name(p.user_id), p.seat, p.baggage]
+                            .filter(Boolean)
+                            .join(' / '),
+                        )
+                        .join('、')}
+                    </small>
+                  )}
+                </div>
+              );
+            })}
             {b.stay && (
               <div className="prep-leg">
                 <b>

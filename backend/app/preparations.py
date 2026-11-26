@@ -416,7 +416,30 @@ def traveller_ids(segments, stay):
     )
 
 
-def booking_json(row, user_id, *, public_editor=False):
+def departed_passenger_names(db, trip_id, bookings, viewer_id):
+    ids = {
+        passenger["user_id"]
+        for row in bookings
+        if row.created_by == viewer_id
+        for leg in row.segments
+        for passenger in leg["passengers"]
+    }
+    if not ids:
+        return {}
+    return dict(
+        db.execute(
+            select(User.id, User.nickname)
+            .join(Membership, Membership.user_id == User.id)
+            .where(
+                Membership.trip_id == trip_id,
+                Membership.left_at.is_not(None),
+                User.id.in_(ids),
+            )
+        ).all()
+    )
+
+
+def booking_json(db, row, user_id, *, public_editor=False, departed_names=None):
     authorized = user_id == row.created_by or user_id in traveller_ids(row.segments, row.stay)
     segments = []
     for leg in row.segments:
@@ -447,6 +470,15 @@ def booking_json(row, user_id, *, public_editor=False):
         "can_edit_public": public_editor,
         "price": str(row.price) if row.price is not None else None,
     }
+    if user_id == row.created_by and row.segments:
+        if departed_names is None:
+            departed_names = departed_passenger_names(db, row.trip_id, [row], user_id)
+        result["departed_passenger_names"] = {
+            p["user_id"]: departed_names[p["user_id"]]
+            for leg in row.segments
+            for p in leg["passengers"]
+            if p["user_id"] in departed_names
+        }
     if authorized:
         result["reference"] = row.reference
     return result
@@ -464,13 +496,21 @@ def list_bookings(trip_id: str, db: DB, user: Actor):
         )
         .exists()
     )
+    rows = db.execute(
+        select(Booking, author_active)
+        .where(Booking.trip_id == trip_id)
+        .order_by(Booking.created_at, Booking.id)
+    ).all()
+    names = departed_passenger_names(db, trip_id, (row for row, _ in rows), user.id)
     return [
-        booking_json(row, user.id, public_editor=user.id == trip.owner_id and not active)
-        for row, active in db.execute(
-            select(Booking, author_active)
-            .where(Booking.trip_id == trip_id)
-            .order_by(Booking.created_at, Booking.id)
+        booking_json(
+            db,
+            row,
+            user.id,
+            public_editor=user.id == trip.owner_id and not active,
+            departed_names=names,
         )
+        for row, active in rows
     ]
 
 
@@ -515,14 +555,14 @@ async def create_booking(trip_id: str, body: BookingInput, db: DB, user: Actor, 
     require_member(db, trip_id, user.id, lock=True)
     existing, record = creation_request(db, Booking, user.id, trip_id, key, body)
     if existing:
-        return booking_json(existing, user.id)
+        return booking_json(db, existing, user.id)
     row = Booking(trip_id=trip_id, created_by=user.id)
     set_booking(db, row, body)
     db.add(row)
     db.flush()
     record_creation(db, record, row.id)
     await finish_booking(db, row, user, "create")
-    return booking_json(row, user.id)
+    return booking_json(db, row, user.id)
 
 
 @router.put("/trips/{trip_id}/bookings/{booking_id}")
@@ -531,7 +571,7 @@ async def edit_booking(trip_id: str, booking_id: str, body: BookingEdit, db: DB,
     set_booking(db, row, body)
     row.version += 1
     await finish_booking(db, row, user, "update")
-    return booking_json(row, user.id)
+    return booking_json(db, row, user.id)
 
 
 @router.delete("/trips/{trip_id}/bookings/{booking_id}", status_code=204)
@@ -560,4 +600,4 @@ async def update_public_booking(
         row.stay = row.stay | body.stay.model_dump(mode="json")
     row.version += 1
     await finish_booking(db, row, user, "update_public")
-    return booking_json(row, user.id, public_editor=True)
+    return booking_json(db, row, user.id, public_editor=True)

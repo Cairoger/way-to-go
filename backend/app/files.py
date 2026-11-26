@@ -9,7 +9,16 @@ from sqlalchemy import delete, func, select
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import UploadFile
 
-from .core import DB, Actor, audit, check_version, current_user, fail, require_member
+from .core import (
+    DB,
+    Actor,
+    audit,
+    begin_sqlite_write,
+    check_version,
+    current_user,
+    fail,
+    require_member,
+)
 from .file_access import allowed, check_target, file_card, links_for
 from .file_formats import inspect_file
 from .file_models import FileLink, FilePermission, TripFile
@@ -178,8 +187,7 @@ async def upload(trip_id: str, request: Request, db: DB, user: Actor):
     per_file, total = quotas()
     batch, category, private, ids, kind, target = await parse_upload(request, per_file)
     # SQLite has no row-level FOR UPDATE. Reserve the writer before measuring the quota.
-    if db.get_bind().dialect.name == "sqlite":
-        db.connection().exec_driver_sql("BEGIN IMMEDIATE")
+    begin_sqlite_write(db)
     actor = current_user(request, db)
     require_member(db, trip_id, actor.id, lock=True)
     check_target(db, trip_id, kind, target or trip_id, actor.id, writing=True)

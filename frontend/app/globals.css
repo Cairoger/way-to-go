@@ -1304,6 +1304,13 @@ legend {
   }
   .sidebar.opened {
     transform: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .sidebar-close {
+    position: absolute;
+    top: 14px;
+    right: 10px;
   }
   .mobile-shade {
     display: block;

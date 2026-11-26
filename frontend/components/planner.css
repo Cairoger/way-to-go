@@ -195,9 +195,32 @@
   flex-wrap: wrap;
   gap: 0.12rem;
 }
+.wp-planner [data-touch-over] {
+  outline: 2px solid #316b53;
+  outline-offset: -2px;
+}
 .wp-grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  user-select: none;
+  -webkit-touch-callout: none;
   color: #697970;
   cursor: grab;
+}
+@media (any-pointer: coarse) {
+  .wp-timeline li[draggable='true'] {
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  .wp-timeline [data-touch-dragging] {
+    opacity: 0.65;
+  }
+  .wp-grip {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 .wp-icon {
   display: inline-flex;
@@ -502,9 +525,6 @@
   }
   .wp-timeline .wp-item-actions {
     grid-column: 3;
-  }
-  .wp-grip {
-    display: none;
   }
   .wp-day-heading {
     padding: 0.85rem;

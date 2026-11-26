@@ -1,10 +1,12 @@
 'use client';
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Check, Compass } from 'lucide-react';
-import { api } from '../lib/api';
+import { api, ApiError } from '../lib/api';
 import { covers, errorText, statusLabels, type Trip, type Status } from '../lib/trips';
 import { Modal } from './ui/dialog';
 import { Button } from './ui/button';
+
+const uncertainCreate = '尚未確認旅程是否已建立。可保留原內容再試一次，系統會確認同一筆旅程。';
 
 export default function TripForm({
   trip: initialTrip,
@@ -17,6 +19,7 @@ export default function TripForm({
 }) {
   // Keep the version that belongs to the draft, even if a WebSocket refresh arrives.
   const [trip] = useState(initialTrip);
+  const createAttempt = useRef<{ body: string; key: string; uncertain: boolean } | null>(null);
   const [cover, setCover] = useState(trip?.cover || 'valley');
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('');
@@ -49,11 +52,35 @@ export default function TripForm({
         cover,
         ...(trip ? { version: trip.version } : {}),
       };
-      onSaved(
-        await api<Trip>(trip ? '/trips/' + trip.id : '/trips', trip ? 'PATCH' : 'POST', data),
-      );
+      if (trip) {
+        onSaved(await api<Trip>('/trips/' + trip.id, 'PATCH', data));
+        return;
+      }
+
+      const body = JSON.stringify(data);
+      if (createAttempt.current?.body !== body) {
+        if (
+          createAttempt.current?.uncertain &&
+          !window.confirm('上一筆旅程可能已建立。要用變更後的內容另外建立旅程嗎？')
+        ) {
+          setError(uncertainCreate);
+          return;
+        }
+        createAttempt.current = { body, key: crypto.randomUUID(), uncertain: false };
+      }
+      const created = await api<Trip>('/trips', 'POST', data, createAttempt.current.key);
+      if (!created?.id) throw new ApiError('建立旅程的回應不完整。', 0, 'INCOMPLETE_RESPONSE');
+      onSaved(created);
     } catch (err) {
-      setError(errorText(err));
+      if (
+        createAttempt.current &&
+        (!(err instanceof ApiError) || err.status === 0 || err.status === 408 || err.status >= 500)
+      ) {
+        createAttempt.current.uncertain = true;
+        setError(uncertainCreate);
+      } else {
+        setError(errorText(err));
+      }
     } finally {
       setBusy(false);
     }

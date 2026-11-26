@@ -148,6 +148,16 @@ def current_user(request: Request, db: DB) -> User:
 Actor = Annotated[User, Depends(current_user)]
 
 
+def begin_sqlite_write(db: Session) -> None:
+    """Serialize read-then-write decisions where SQLite ignores SELECT FOR UPDATE."""
+    if db.get_bind().dialect.name == "sqlite":
+        db.connection().exec_driver_sql("BEGIN IMMEDIATE")
+
+
+def trip_recovery_cutoff():
+    return utcnow() - timedelta(days=30)
+
+
 def require_member(
     db: Session, trip_id: str, user_id: str, *, lock=False, allow_deleted=False
 ) -> Trip:
@@ -170,7 +180,7 @@ def require_member(
         if (
             not allow_deleted
             or trip.owner_id != user_id
-            or as_utc(trip.deleted_at) < utcnow() - timedelta(days=30)
+            or as_utc(trip.deleted_at) <= trip_recovery_cutoff()
         ):
             fail(404, "TRIP_REMOVED", "這個旅程已移至回收區或已到期。")
     return trip

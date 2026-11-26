@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// The mocked itinerary must also intercept requests after the PWA registers its worker.
+test.use({ serviceWorkers: 'block' });
+
 test('列印指定行程日並排除私人資料', async ({ page, browserName }) => {
   const member = { id: 'print-user', nickname: '旅伴', account_type: 'local_test' };
   const trip = {

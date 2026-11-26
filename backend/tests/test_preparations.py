@@ -239,3 +239,73 @@ def test_owner_maintains_departed_creators_public_booking_only(owner, guest, inv
         ).is_success
         assert owner.put(url, json=edit | {"version": 2}).status_code == 403
         assert not any(r["can_edit_public"] for r in owner.get(base).json())
+
+
+def test_departed_flight_names_are_scoped_to_creator_and_booking(owner, guest, invitation, trip):
+    trip_path = f"/api/v1/trips/{trip['id']}"
+    bookings = trip_path + "/bookings"
+    admin = owner.get("/api/v1/auth/me").json()["id"]
+    creator = guest.get("/api/v1/auth/me").json()["id"]
+    leg = {
+        "number": "WT11",
+        "origin": "TPE",
+        "destination": "NRT",
+        "departure": "2027-04-11T09:00:00+08:00",
+        "arrival": "2027-04-11T13:00:00+09:00",
+    }
+    with browser() as first, browser() as second:
+        names = {}
+        for passenger, nickname in [(first, "小妤"), (second, "小安")]:
+            joined = passenger.post(
+                "/api/v1/auth/guest", json={"code": invitation["code"], "nickname": nickname}
+            )
+            assert joined.is_success, joined.text
+            names[passenger.get("/api/v1/auth/me").json()["id"]] = nickname
+        first_id, second_id = names
+        people = [{"user_id": uid, "seat": "", "baggage": "15kg"} for uid in names]
+        own_seat = {"user_id": admin, "seat": "2B", "baggage": ""}
+        payload = {
+            "kind": "flight",
+            "title": "去程",
+            "segments": [leg | {"passengers": people + [own_seat]}],
+        }
+        created = guest.post(bookings, json=payload)
+        assert created.status_code == 201, created.text
+        booking_id = created.json()["id"]
+        assert created.json()["departed_passenger_names"] == {}
+        other = guest.post(
+            bookings, json=payload | {"segments": [leg | {"passengers": people[:1]}]}
+        )
+        assert other.status_code == 201, other.text
+        for passenger, uid in [(first, first_id), (second, second_id)]:
+            assert passenger.delete(f"{trip_path}/members/{uid}").is_success
+            assert passenger.get(bookings).status_code == 403
+
+    rows = {r["id"]: r for r in guest.get(bookings).json()}
+    assert rows[booking_id]["departed_passenger_names"] == names
+    assert rows[other.json()["id"]]["departed_passenger_names"] == {first_id: names[first_id]}
+    people[1] = people[1] | {"seat": "21C", "baggage": "23kg"}
+    response = guest.put(
+        bookings + "/" + booking_id,
+        json=payload | {"version": 1, "segments": [leg | {"passengers": people + [own_seat]}]},
+    )
+    assert response.is_success, response.text
+    assert response.json()["departed_passenger_names"] == names
+    assert response.json()["segments"][0]["passengers"] == people + [own_seat]
+    for creator_has_left in (False, True):
+        if creator_has_left:
+            assert guest.delete(f"{trip_path}/members/{creator}").is_success
+        visible = next(row for row in owner.get(bookings).json() if row["id"] == booking_id)
+        assert visible["can_edit_public"] == creator_has_left
+        assert "departed_passenger_names" not in visible
+        assert visible["segments"][0]["passengers"] == [
+            {"user_id": first_id},
+            {"user_id": second_id},
+            own_seat,
+        ]
+    public_edit = owner.put(
+        bookings + "/" + booking_id + "/public",
+        json={"version": 2, "kind": "flight", "title": "新標題", "segments": [leg]},
+    )
+    assert public_edit.is_success, public_edit.text
+    assert "departed_passenger_names" not in public_edit.json()

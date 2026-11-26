@@ -1,10 +1,13 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './keyboard-browser';
 
 test('鍵盤可跳至主要內容、操作登入對話框，關閉後回到原按鈕', async ({ page }) => {
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 820 });
     await page.goto('/');
     await expect(page.getByRole('heading', { name: '旅程總覽' })).toBeVisible();
+    const create = page.getByRole('button', { name: '建立旅程', exact: true });
+    await expect(create).toBeEnabled();
 
     await page.keyboard.press('Tab');
     const skip = page.getByRole('link', { name: '跳到主要內容' });
@@ -12,17 +15,23 @@ test('鍵盤可跳至主要內容、操作登入對話框，關閉後回到原�
     await expect(skip).toBeInViewport();
     await page.keyboard.press('Enter');
     await page.keyboard.press('Tab');
-    const create = page.getByRole('button', { name: '建立旅程', exact: true });
     await expect(create).toBeFocused();
     await expect(create).toBeInViewport();
+    const capability = page.waitForResponse('**/api/v1/auth/local-test');
     await page.keyboard.press('Enter');
 
     const dialog = page.getByRole('dialog');
     await expect(dialog).toHaveAccessibleName(/登入/);
+    const response = await capability;
+    const localEnabled = response.ok() && (await response.json()).enabled === true;
+    const last = dialog.getByRole('button', {
+      name: localEnabled ? '使用測試帳號登入' : '我有邀請碼',
+    });
+    await expect(last).toBeVisible();
     const close = dialog.getByRole('button', { name: '關閉' });
     await expect(close).toBeFocused();
     await page.keyboard.press('Shift+Tab');
-    expect(await dialog.locator(':focus').count()).toBe(1);
+    await expect(last).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(close).toBeFocused();
     await page.keyboard.press('Escape');

@@ -10,7 +10,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from .core import audit, current_user, digest, fail, get_db, require_member
+from .core import audit, begin_sqlite_write, current_user, digest, fail, get_db, require_member
 from .decisions_models import (
     Ballot,
     BallotChoice,
@@ -23,6 +23,7 @@ from .decisions_models import (
 from .file_access import bind_files, bound_files
 from .models import CreationKey, User, as_utc, uid, utcnow
 from .notices import deliver_mentions, queue_mentions
+from .planning_models import ItineraryItem
 from .realtime import hub
 
 router = APIRouter(tags=["投票與討論"])
@@ -456,19 +457,25 @@ async def reopen_poll(poll_id: str, body: Version, db: Db, actor: Actor):
 async def adopt_poll(poll_id: str, body: Adopt, db: Db, actor: Actor):
     from .planning import append_item
 
+    begin_sqlite_write(db)
     poll, round_ = poll_for_write(db, poll_id, actor, body)
     if not is_closed(round_):
         fail(409, "poll_open", "請先等待投票結束。")
     if round_view(db, round_, actor.id)["results"]["winners"] != [body.option_id]:
         fail(409, "winner_required", "僅有明確勝出選項時才能採用，平票可開啟新一輪。")
     option = db.get(PollOption, body.option_id)
-    adoption = db.scalar(
-        select(PollAdoption).where(
-            PollAdoption.option_id == option.id, PollAdoption.day_id == body.day_id
-        )
-    )
-    if adoption and adoption.item_id:
-        return {"item_id": adoption.item_id}
+    previous = db.execute(
+        select(ItineraryItem.id, ItineraryItem.deleted_at, ItineraryItem.day_id)
+        .select_from(PollAdoption)
+        .outerjoin(ItineraryItem, ItineraryItem.id == PollAdoption.item_id)
+        .where(PollAdoption.option_id == option.id, PollAdoption.day_id == body.day_id)
+    ).one_or_none()
+    if previous:
+        if previous.id is None or previous.deleted_at is not None:
+            fail(409, "adopted_item_removed", "先前採用的活動已刪除，請查看每日行程的變更紀錄。")
+        if previous.day_id != body.day_id:
+            fail(409, "adopted_item_moved", "先前採用的活動已移至其他日期，請查看每日行程。")
+        return {"item_id": previous.id}
     item = append_item(
         db,
         poll.trip_id,
@@ -479,10 +486,7 @@ async def adopt_poll(poll_id: str, body: Adopt, db: Db, actor: Actor):
         place_id=option.place_id,
     )
     db.flush()
-    if adoption:
-        adoption.item_id = item.id
-    else:
-        db.add(PollAdoption(option_id=option.id, day_id=body.day_id, item_id=item.id))
+    db.add(PollAdoption(option_id=option.id, day_id=body.day_id, item_id=item.id))
     await changed(db, poll, actor, "poll.adopted")
     return {"item_id": item.id}
 

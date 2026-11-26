@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import {
   ArrowDown,
   ArrowUp,
@@ -20,6 +20,7 @@ import {
 import { api } from '../lib/api';
 import type { Member } from '../lib/trips';
 import { uploadFiles, type FileInfo } from './Attachments';
+import type { Place } from './plannerTypes';
 import './decisions.css';
 
 type Option = { id: string; text: string; place_id: string | null };
@@ -80,7 +81,6 @@ type Comment = {
   deleted: boolean;
 };
 type Day = { id: string; day_number: number; title: string };
-type Place = { id: string; name: string; candidate: boolean };
 type Props = {
   tripId: string;
   members: Member[];
@@ -165,6 +165,71 @@ function Results({ round }: { round: Round }) {
   );
 }
 
+const optionLength = 150;
+
+function labelKey(label: string) {
+  // Fold each code point independently: Python casefold expands letters (ẞ/ß → ss)
+  // and treats sigma the same inside a word or at its end.
+  const folded = Array.from(label, (char) => char.toLowerCase().toUpperCase().toLowerCase()).join(
+    '',
+  );
+  return folded.replace(/^[\s\u0085]+|[\s\u0085]+$/gu, '').normalize('NFKC');
+}
+
+function repeatedLabels(labels: string[]) {
+  const seen = new Set<string>();
+  const repeated = new Set<string>();
+  for (const label of labels) {
+    const key = labelKey(label);
+    if (seen.has(key)) repeated.add(key);
+    seen.add(key);
+  }
+  return repeated;
+}
+
+function fitOption(text: string, suffix = '') {
+  // HTML maxlength counts UTF-16 units. Keep the entire suffix and any final emoji intact.
+  return (
+    text
+      .slice(0, optionLength - suffix.length)
+      .replace(/[\uD800-\uDBFF]$/u, '')
+      .trimEnd() + suffix
+  );
+}
+
+function pollCandidates(places: Place[]) {
+  const eligible = places.filter((place) => place.candidate);
+  const namesakes = repeatedLabels(eligible.map((place) => place.name));
+  const choices = eligible.map(({ id, name, address, city }) => {
+    const description = [name, address?.trim() || city?.trim()].filter(Boolean).join(' · ');
+    const label = fitOption(namesakes.has(labelKey(name)) ? description : name);
+    return { id, description, label };
+  });
+  const repeatedDescriptions = repeatedLabels(choices.map((place) => place.description));
+  const repeatedOptions = repeatedLabels(choices.map((place) => place.label));
+  const reserved = new Set(
+    choices.flatMap(({ description, label }) => [labelKey(description), labelKey(label)]),
+  );
+  return choices.map((choice) => {
+    if (
+      !repeatedDescriptions.has(labelKey(choice.description)) &&
+      !repeatedOptions.has(labelKey(choice.label))
+    )
+      return choice;
+    // This short place ID stays the same when the user changes selection order.
+    // Reserve ordinary labels too, so a place named like a generated label still works.
+    for (let attempt = 1; ; attempt++) {
+      const marker = '（#' + choice.id.slice(0, 8) + (attempt === 1 ? '' : '-' + attempt) + '）';
+      const description = choice.description + marker;
+      const label = fitOption(choice.label, marker);
+      if (reserved.has(labelKey(description)) || reserved.has(labelKey(label))) continue;
+      reserved.add(labelKey(description));
+      reserved.add(labelKey(label));
+      return { id: choice.id, description, label };
+    }
+  });
+}
+
 function CreatePoll({
   tripId,
   places,
@@ -177,11 +242,21 @@ function CreatePoll({
   cancel: () => void;
 }) {
   const [kind, setKind] = useState('place');
-  const [options, setOptions] = useState('');
+  const [customOptions, setCustomOptions] = useState('');
+  const [selectedPlaces, setSelectedPlaces] = useState<{ id: string; label: string }[]>([]);
+  const candidates = useMemo(() => pollCandidates(places), [places]);
+
+  function selectPlace(id: string) {
+    const place = candidates.find((p) => p.id === id);
+    if (place && !selectedPlaces.some((p) => p.id === id)) {
+      setSelectedPlaces([...selectedPlaces, { id, label: place.label }]);
+    }
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     const data = formData(event);
     const deadline = String(data.get('deadline') || '');
-    const entries = options
+    const entries = customOptions
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter(Boolean);
@@ -193,10 +268,13 @@ function CreatePoll({
         kind,
         mode: data.get('mode'),
         deadline: deadline ? new Date(deadline).toISOString() : null,
-        options: entries.map((text) => ({
-          text,
-          place_id: kind === 'place' ? places.find((p) => p.name === text)?.id : undefined,
-        })),
+        options: [
+          ...selectedPlaces.map((place) => ({
+            text: String(data.get('place-' + place.id)).trim(),
+            place_id: place.id,
+          })),
+          ...entries.map((text) => ({ text })),
+        ],
       },
       '已發起投票',
     );
@@ -222,7 +300,8 @@ function CreatePoll({
             value={kind}
             onChange={(e) => {
               setKind(e.target.value);
-              setOptions('');
+              setCustomOptions('');
+              setSelectedPlaces([]);
             }}
           >
             <option value="place">景點投票</option>
@@ -234,46 +313,57 @@ function CreatePoll({
           <select name="mode">{modeOptions}</select>
         </label>
       </div>
+      {kind === 'place' && candidates.length > 0 && (
+        <label>
+          從景點清單加入
+          <select value="" onChange={(event) => selectPlace(event.target.value)}>
+            <option value="">選擇景點</option>
+            {candidates.map((place) => (
+              <option
+                key={place.id}
+                value={place.id}
+                disabled={selectedPlaces.some((selected) => selected.id === place.id)}
+              >
+                {place.description}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {selectedPlaces.map((place) => (
+        <div className="dc-inline" key={place.id}>
+          <label className="dc-grow">
+            {place.label} 的選項名稱
+            <input
+              name={'place-' + place.id}
+              defaultValue={place.label}
+              maxLength={optionLength}
+              required
+            />
+          </label>
+          <button
+            type="button"
+            aria-label={'移除選項 ' + place.label}
+            onClick={() => setSelectedPlaces(selectedPlaces.filter((p) => p.id !== place.id))}
+          >
+            移除
+          </button>
+        </div>
+      ))}
       <label>
-        候選選項（每行一個，至少兩個）
+        {kind === 'place'
+          ? '手動輸入選項（每行一個，合計至少兩個選項）'
+          : '候選選項（每行一個，至少兩個）'}
         <textarea
           rows={3}
-          required
-          value={options}
-          onChange={(e) => setOptions(e.target.value)}
+          required={selectedPlaces.length === 0}
+          value={customOptions}
+          onChange={(e) => setCustomOptions(e.target.value)}
           placeholder={
             kind === 'date' ? '2027-04-03 ~ 2027-04-05\n2027-04-10 ~ 2027-04-12' : '輸入景點名稱'
           }
         />
       </label>
-      {kind === 'place' && places.length > 0 && (
-        <label>
-          從景點清單加入
-          <select
-            value=""
-            onChange={(e) => {
-              const text = places.find((p) => p.id === e.target.value)?.name;
-              if (
-                text &&
-                !options
-                  .split('\n')
-                  .map((s) => s.trim())
-                  .includes(text)
-              )
-                setOptions(options.trimEnd() + (options.trim() ? '\n' : '') + text);
-            }}
-          >
-            <option value="">選擇景點</option>
-            {places
-              .filter((p) => p.candidate)
-              .map((p) => (
-                <option value={p.id} key={p.id}>
-                  {p.name}
-                </option>
-              ))}
-          </select>
-        </label>
-      )}
       <label>
         截止時間（選填）
         <input type="datetime-local" name="deadline" />

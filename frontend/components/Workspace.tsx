@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import * as Drawer from '@radix-ui/react-dialog';
 import {
   Archive,
   BookOpen,
@@ -55,6 +56,7 @@ import { Modal } from './ui/dialog';
 type Area = 'home' | 'archive' | 'trash' | 'examples';
 type Route = { area: Area; trip: string; sample: boolean; section?: 'comments'; comment?: string };
 type Dialog = 'login' | 'login-create' | 'join' | 'create' | 'settings' | 'help' | 'account' | null;
+const mobileSidebarQuery = '(max-width: 880px)';
 const initialRoute: Route = { area: 'home', trip: '', sample: false };
 const areas = { home: '旅程總覽', archive: '已封存', trash: '回收區', examples: '示範旅程' };
 const readRoute = (): Route => {
@@ -146,12 +148,13 @@ function TripCard({
   );
 }
 export default function Workspace() {
-  const [user, setUser] = useState<User | null>(null),
+  const [user, setUser] = useState<User | null>(),
     [trips, setTrips] = useState<Trip[]>([]),
     [route, setRoute] = useState<Route>(initialRoute),
     [dialog, setDialog] = useState<Dialog>(null),
     [invite, setInvite] = useState('');
   const [loading, setLoading] = useState(true),
+    [loadError, setLoadError] = useState(''),
     [error, setError] = useState(''),
     [notice, setNotice] = useState(''),
     [sidebar, setSidebar] = useState(false),
@@ -161,34 +164,61 @@ export default function Workspace() {
     [searchOpen, setSearchOpen] = useState(false);
   const [date, setDate] = useState('');
   const reloadId = useRef(0);
-  const reload = useCallback(async () => {
+  const tripsOwner = useRef<string | null>(null);
+  const menuTrigger = useRef<HTMLButtonElement>(null);
+  const desktopSidebar = useRef<HTMLElement>(null);
+  const dialogFromSidebar = useRef<Dialog>(null);
+  const focusNavigation = useCallback(() => {
+    const target = window.matchMedia(mobileSidebarQuery).matches
+      ? menuTrigger.current
+      : desktopSidebar.current?.querySelector('button');
+    target?.focus();
+  }, []);
+  const reload = useCallback(async (onAccount?: (account: User) => void) => {
     const request = ++reloadId.current;
+    let me: User | null = null;
+    setLoadError('');
+    setLoading(true);
     try {
-      const me = await api<User>('/auth/me');
+      const account = await api<User>('/auth/me');
+      me = account;
       if (request !== reloadId.current) return null;
-      syncOfflineAccount(me.id);
+      syncOfflineAccount(account.id);
+      if (tripsOwner.current !== account.id) {
+        setTrips([]);
+        tripsOwner.current = account.id;
+      }
+      setUser((previous) =>
+        previous?.id === account.id &&
+        previous.account_type === account.account_type &&
+        previous.nickname === account.nickname &&
+        previous.version === account.version &&
+        previous.email === account.email
+          ? previous
+          : account,
+      );
+      onAccount?.(account);
       const all = await api<Trip[]>('/trips');
       if (request !== reloadId.current) return null;
-      syncOfflineAccount(me.id, all);
-      setUser((previous) =>
-        previous?.id === me.id &&
-        previous.account_type === me.account_type &&
-        previous.nickname === me.nickname &&
-        previous.version === me.version &&
-        previous.email === me.email
-          ? previous
-          : me,
-      );
+      syncOfflineAccount(account.id, all);
       setTrips(all);
       return me;
     } catch (e) {
       if (request !== reloadId.current) return null;
       if (e instanceof ApiError && e.status === 401) {
         syncOfflineAccount(null);
+        tripsOwner.current = null;
         setUser(null);
         setTrips([]);
-      } else setError(errorText(e));
-      return null;
+        return null;
+      }
+      if (!me) {
+        tripsOwner.current = null;
+        setUser(undefined);
+        setTrips([]);
+      }
+      setLoadError((me ? '無法載入旅程清單。' : '無法確認登入狀態。') + errorText(e));
+      return me;
     } finally {
       if (request === reloadId.current) setLoading(false);
     }
@@ -242,22 +272,49 @@ export default function Workspace() {
       setSidebar(false);
     };
     window.addEventListener('popstate', pop);
-    void reload().then((account) => {
-      if (account && canCreateTrip(account) && !code && params.get('action') === 'create') {
-        params.delete('action');
-        history.replaceState(null, '', location.pathname + (params.size ? '?' + params : ''));
-        setDialog('create');
-      }
-    });
+    void reload();
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator)
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     return () => window.removeEventListener('popstate', pop);
   }, [reload]);
   useEffect(() => {
+    if (!canCreateTrip(user ?? null)) return;
+    const params = new URLSearchParams(location.search);
+    if (params.has('invite') || params.get('action') !== 'create') return;
+    params.delete('action');
+    history.replaceState(null, '', location.pathname + (params.size ? '?' + params : ''));
+    setDialog('create');
+  }, [user]);
+  useEffect(() => {
     if (!notice) return;
     const timer = setTimeout(() => setNotice(''), 3500);
     return () => clearTimeout(timer);
   }, [notice]);
+  useEffect(() => {
+    if (!sidebar) return;
+    const mobile = window.matchMedia(mobileSidebarQuery);
+    const closeOnDesktop = () => {
+      if (!mobile.matches) setSidebar(false);
+    };
+    closeOnDesktop();
+    mobile.addEventListener('change', closeOnDesktop);
+    return () => mobile.removeEventListener('change', closeOnDesktop);
+  }, [sidebar]);
+  useEffect(() => {
+    if (!dialog && dialogFromSidebar.current) {
+      dialogFromSidebar.current = null;
+      focusNavigation();
+    }
+  }, [dialog, focusNavigation]);
+  function openFromSidebar(next: Dialog) {
+    if (sidebar) {
+      // Restore focus to the mobile trigger before the next dialog records its opener.
+      dialogFromSidebar.current = next;
+      setSidebar(false);
+    } else {
+      setDialog(next);
+    }
+  }
   const showSamples = route.area === 'examples' || (!user && route.area === 'home');
   const records = showSamples ? exampleTrips : trips;
   const trip = (route.sample ? exampleTrips : trips).find((t) => t.id === route.trip);
@@ -270,13 +327,22 @@ export default function Workspace() {
   const featuredSample = exampleTrips.includes(featured);
   const shape = matchingTrips(records, route.area, filter, query);
   const total = matchingTrips(records, route.area, 'all', '').length;
-  const create = () => setDialog(canCreateTrip(user) ? 'create' : 'login-create');
-  const joined = async (t: Trip) => {
+  const create = () => setDialog(canCreateTrip(user ?? null) ? 'create' : 'login-create');
+  const openSavedTrip = (t: Trip) => {
+    update(t);
+    // A list request started before this save can still return its old snapshot.
+    if (loading) void reload();
+    navigate({ area: 'home', trip: t.id, sample: false });
+  };
+  const joined = (trip: Trip, joinedUserId: string) => {
     setDialog(null);
     setInvite('');
-    await reload();
-    navigate({ area: 'home', trip: t.id, sample: false });
-    setNotice('已加入旅程。');
+    void reload((account) => {
+      if (account.id !== joinedUserId) return;
+      update(trip);
+      navigate({ area: 'home', trip: trip.id, sample: false });
+      setNotice('已加入旅程。');
+    });
   };
   const closeDialog = () => {
     setDialog(null);
@@ -295,106 +361,133 @@ export default function Workspace() {
       setError(errorText(e));
     }
   }
+  const navigation = (
+    <>
+      <button className="brand" onClick={home}>
+        <img src="/compass.svg" width="42" height="42" alt="" />
+        <span>
+          <strong>
+            WayToGo<span className="brand-dot">.</span>
+          </strong>
+          <small>旅伴手札</small>
+        </span>
+      </button>
+      <nav aria-label="工作空間" className="side-nav">
+        <div className="nav-heading">工作空間</div>
+        {(
+          [
+            ['home', '旅程總覽', Map],
+            ['archive', '已封存', Archive],
+            ['trash', '回收區', Trash2],
+          ] as const
+        ).map(([id, label, Icon]) => (
+          <button
+            key={id}
+            aria-current={route.area === id && !route.trip ? 'page' : undefined}
+            onClick={() => switchArea(id)}
+          >
+            <Icon />
+            {label}
+          </button>
+        ))}
+        <div className="side-divider" />
+        <div className="nav-heading">
+          {user ? '快速前往' : '示範旅程'}
+          <Compass size={13} />
+        </div>
+        {quickTrips.map((t, i) => (
+          <button
+            key={t.id}
+            className={'quick-trip' + (route.trip === t.id ? ' selected' : '')}
+            onClick={() => goTrip(t, !user)}
+          >
+            <span className={'destination-dot d' + i} />
+            {t.title}
+          </button>
+        ))}
+        {user && (
+          <button onClick={() => switchArea('examples')}>
+            <BookOpen />
+            瀏覽示範
+          </button>
+        )}
+      </nav>
+      <div className="side-bottom">
+        <div className="invite-slip">
+          <Ticket className="slip-icon" size={26} />
+          <b>收到旅伴邀請？</b>
+          <button disabled={user === undefined} onClick={() => openFromSidebar('join')}>
+            <Link2 size={15} />
+            輸入邀請碼
+          </button>
+        </div>
+        <button
+          className="profile"
+          disabled={user === undefined}
+          onClick={() => openFromSidebar(user ? 'account' : 'login')}
+        >
+          <span className="profile-icon">
+            <UserRound size={19} />
+          </span>
+          <span>
+            <b>
+              {user === undefined
+                ? loading
+                  ? '讀取帳號中…'
+                  : '無法確認帳號'
+                : (user?.nickname ?? '訪客模式')}
+            </b>
+            {user !== undefined && (
+              <small>{user ? accountLabels[user.account_type] : '登入你的帳號'}</small>
+            )}
+          </span>
+          <ChevronRight size={15} />
+        </button>
+      </div>
+    </>
+  );
   return (
     <div className="shell">
       <a className="skip-link" href="#main" tabIndex={0}>
         跳到主要內容
       </a>
-      {sidebar && (
-        <button className="mobile-shade" aria-label="收合選單" onClick={() => setSidebar(false)} />
+      {!sidebar && (
+        <aside ref={desktopSidebar} id="workspace-navigation" className="sidebar">
+          {navigation}
+        </aside>
       )}
-      <aside className={'sidebar' + (sidebar ? ' opened' : '')}>
-        <button className="brand" onClick={home}>
-          <img src="/compass.svg" width="42" height="42" alt="" />
-          <span>
-            <strong>
-              WayToGo<span className="brand-dot">.</span>
-            </strong>
-            <small>旅伴手札</small>
-          </span>
-        </button>
-        <nav aria-label="工作空間" className="side-nav">
-          <div className="nav-heading">工作空間</div>
-          {(
-            [
-              ['home', '旅程總覽', Map],
-              ['archive', '已封存', Archive],
-              ['trash', '回收區', Trash2],
-            ] as const
-          ).map(([id, label, Icon]) => (
-            <button
-              key={id}
-              aria-current={route.area === id && !route.trip ? 'page' : undefined}
-              onClick={() => switchArea(id)}
-            >
-              <Icon />
-              {label}
-            </button>
-          ))}
-          <div className="side-divider" />
-          <div className="nav-heading">
-            {user ? '快速前往' : '示範旅程'}
-            <Compass size={13} />
-          </div>
-          {quickTrips.map((t, i) => (
-            <button
-              key={t.id}
-              className={'quick-trip' + (route.trip === t.id ? ' selected' : '')}
-              onClick={() => goTrip(t, !user)}
-            >
-              <span className={'destination-dot d' + i} />
-              {t.title}
-            </button>
-          ))}
-          {user && (
-            <button onClick={() => switchArea('examples')}>
-              <BookOpen />
-              瀏覽示範
-            </button>
-          )}
-        </nav>
-        <div className="side-bottom">
-          <div className="invite-slip">
-            <Ticket className="slip-icon" size={26} />
-            <b>收到旅伴邀請？</b>
-            <button
-              onClick={() => {
-                setSidebar(false);
-                setDialog('join');
-              }}
-            >
-              <Link2 size={15} />
-              輸入邀請碼
-            </button>
-          </div>
-          <button
-            className="profile"
-            onClick={() => {
-              setSidebar(false);
-              setDialog(user ? 'account' : 'login');
-            }}
-          >
-            <span className="profile-icon">
-              <UserRound size={19} />
-            </span>
-            <span>
-              <b>{user?.nickname ?? '訪客模式'}</b>
-              <small>{user ? accountLabels[user.account_type] : '登入你的帳號'}</small>
-            </span>
-            <ChevronRight size={15} />
-          </button>
-        </div>
-      </aside>
       <div className="main-column">
         <header className="top-bar">
           <div className="breadcrumbs">
-            <button
-              className="icon-button mobile-menu"
-              onClick={() => setSidebar(true)}
-              aria-label="開啟選單"
-            >
-              <Menu />
-            </button>
+            <Drawer.Root open={sidebar} onOpenChange={setSidebar}>
+              <Drawer.Trigger
+                ref={menuTrigger}
+                className="icon-button mobile-menu"
+                aria-label="開啟選單"
+                aria-controls="workspace-navigation"
+              >
+                <Menu />
+              </Drawer.Trigger>
+              <Drawer.Portal>
+                <Drawer.Overlay className="mobile-shade" />
+                <Drawer.Content
+                  id="workspace-navigation"
+                  className="sidebar opened"
+                  aria-describedby={undefined}
+                  onCloseAutoFocus={(event) => {
+                    event.preventDefault();
+                    focusNavigation();
+                    if (dialogFromSidebar.current) setDialog(dialogFromSidebar.current);
+                  }}
+                >
+                  <Drawer.Title className="sr-only">工作空間選單</Drawer.Title>
+                  <Drawer.Close className="icon-button sidebar-close" aria-label="收合選單">
+                    <X size={18} />
+                  </Drawer.Close>
+                  {navigation}
+                </Drawer.Content>
+              </Drawer.Portal>
+            </Drawer.Root>
             <House size={16} />
             <span>工作空間</span>
             <ChevronRight size={13} />
@@ -419,6 +512,12 @@ export default function Workspace() {
           </div>
         </header>
         <main id="main" className="main-content">
+          {loadError && (
+            <div className="error-banner" role="alert">
+              <span>{loadError}</span>
+              <button onClick={() => void reload()}>重新載入</button>
+            </div>
+          )}
           {error && (
             <div className="error-banner" role="alert">
               <span>{error}</span>
@@ -432,12 +531,11 @@ export default function Workspace() {
               key={trip.id + (route.section ?? '') + (route.comment ?? '')}
               initialSection={route.section}
               onCopy={(t) => {
-                update(t);
-                navigate({ area: 'home', trip: t.id, sample: false });
+                openSavedTrip(t);
                 setNotice('已複製旅程與每日行程。');
               }}
               trip={trip}
-              user={user}
+              user={user ?? null}
               sample={route.sample}
               back={home}
               onExit={exitTrip}
@@ -471,7 +569,7 @@ export default function Workspace() {
                           : '和旅伴一起，規劃每一趟值得期待的旅行。'}
                   </p>
                 </div>
-                <Button onClick={create}>
+                <Button disabled={user === undefined} onClick={create}>
                   <Plus size={18} />
                   建立旅程
                 </Button>
@@ -591,7 +689,11 @@ export default function Workspace() {
                           : '這裡還沒有旅程'}
                     </h3>
                     {route.area === 'home' && !query && filter === 'all' && (
-                      <Button variant="outline" onClick={() => setDialog('join')}>
+                      <Button
+                        variant="outline"
+                        disabled={user === undefined}
+                        onClick={() => setDialog('join')}
+                      >
                         用邀請碼加入
                       </Button>
                     )}
@@ -629,37 +731,37 @@ export default function Workspace() {
           {notice}
         </div>
       )}
-      {(dialog === 'login' || dialog === 'login-create' || dialog === 'join') && (
-        <AccessDialog
-          key={dialog}
-          mode={dialog === 'join' ? 'join' : 'login'}
-          user={user}
-          invite={invite}
-          onClose={closeDialog}
-          onJoined={joined}
-          onJoin={() => setDialog('join')}
-          createAfterLogin={dialog === 'login-create'}
-          onSignedIn={async (account) => {
-            setUser(account);
-            setTrips([]);
-            setError('');
-            setDialog(null);
-            home();
-            if (await reload()) {
-              setNotice('已登入測試帳號。');
-              if (dialog === 'login-create') setDialog('create');
-            }
-          }}
-        />
-      )}
+      {user !== undefined &&
+        (dialog === 'login' || dialog === 'login-create' || dialog === 'join') && (
+          <AccessDialog
+            key={dialog}
+            mode={dialog === 'join' ? 'join' : 'login'}
+            user={user}
+            invite={invite}
+            onClose={closeDialog}
+            onJoined={joined}
+            onJoin={() => setDialog('join')}
+            createAfterLogin={dialog === 'login-create'}
+            onSignedIn={async (account) => {
+              setUser(account);
+              setTrips([]);
+              setError('');
+              setDialog(null);
+              home();
+              if (await reload()) {
+                setNotice('已登入測試帳號。');
+                if (dialog === 'login-create') setDialog('create');
+              }
+            }}
+          />
+        )}
       {(dialog === 'create' || dialog === 'settings') && (
         <TripForm
           trip={dialog === 'settings' ? trip : undefined}
           onClose={closeDialog}
           onSaved={(t) => {
-            update(t);
+            openSavedTrip(t);
             setDialog(null);
-            navigate({ area: 'home', trip: t.id, sample: false });
             setNotice('旅程已儲存。');
           }}
         />
@@ -703,6 +805,9 @@ export default function Workspace() {
                   await api('/auth/logout', 'POST', {});
                   syncOfflineAccount(null);
                   ++reloadId.current;
+                  tripsOwner.current = null;
+                  setLoading(false);
+                  setLoadError('');
                   setTrips([]);
                   setUser(null);
                   setDialog(null);

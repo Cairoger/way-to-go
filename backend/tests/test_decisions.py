@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 
 
@@ -80,6 +81,59 @@ def test_manual_adoption_keeps_item_after_revote(owner, guest, trip):
     saved = next(d for d in guest.get(days).json() if d["id"] == day["id"])["items"]
     assert [i["id"] for i in saved] == [adopted.json()["item_id"]]
     assert saved[0]["title"] == "公園"
+
+
+def test_adoption_retries_follow_item_lifecycle(owner, guest, trip):
+    poll = create_poll(owner, trip)
+    assert ballot(owner, poll, 0).is_success
+    path = f"/api/v1/polls/{poll['id']}"
+    closed = owner.post(path + "/close", json={"version": poll["version"]}).json()
+    days = f"/api/v1/trips/{trip['id']}/days"
+    first = owner.get(days).json()[0]
+    second = owner.post(days, json={}).json()
+    payload = {
+        "version": closed["version"],
+        "option_id": closed["rounds"][0]["results"]["winners"][0],
+        "day_id": first["id"],
+    }
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        calls = [
+            pool.submit(client.post, path + "/adopt", json=payload) for client in (owner, guest)
+        ]
+        responses = [call.result() for call in calls]
+    assert all(r.status_code == 200 for r in responses)
+    assert responses[0].json() == responses[1].json()
+    item_id = responses[0].json()["item_id"]
+    [item] = owner.get(days).json()[0]["items"]
+    assert item["id"] == item_id
+    editor = owner if owner.get("/api/v1/auth/me").json()["id"] == item["editable_by"] else guest
+    item_path = "/api/v1/itinerary-items/" + item_id
+
+    def lease():
+        granted = editor.post(
+            "/api/v1/edit-leases", json={"resource_id": item_id, "resource_type": "item"}
+        )
+        assert granted.is_success, granted.text
+        return {"lease_id": granted.json()["id"], "version": granted.json()["version"]}
+
+    assert editor.post(
+        item_path + "/move", json={**lease(), "day_id": second["id"], "position": 0}
+    ).is_success
+    moved = owner.post(path + "/adopt", json=payload)
+    assert moved.status_code == 409 and moved.json()["code"] == "adopted_item_moved"
+    assert editor.request("DELETE", item_path, json=lease()).is_success
+    removed = owner.post(path + "/adopt", json=payload)
+    assert removed.status_code == 409 and removed.json()["code"] == "adopted_item_removed"
+    assert all(not day["items"] for day in guest.get(days).json())
+
+    restored = editor.post(
+        "/api/v1/planner-history/item/" + item_id + "/restore",
+        json={**lease(), "restore_version": 1},
+    )
+    assert restored.is_success, restored.text
+    retried = guest.post(path + "/adopt", json=payload)
+    assert retried.status_code == 200 and retried.json()["item_id"] == item_id
+    assert [i["id"] for i in guest.get(days).json()[0]["items"]] == [item_id]
 
 
 def test_expired_date_poll_zero_result(owner, guest, trip, monkeypatch):

@@ -1,6 +1,7 @@
 'use client';
 
 import { AttachmentButton } from './Attachments';
+import { useItineraryTouchDrag } from './itineraryTouchDrag';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -236,6 +237,7 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
   const [busy, setBusy] = useState(false);
   const [filter, setFilter] = useState('');
   const [dragged, setDragged] = useState<PlanItem | null>(null);
+  const startTouchDrag = useItineraryTouchDrag();
   const activeLease = useRef<string | null>(null);
   const mounted = useRef(true);
   const activeDay = days.find((d) => d.id === dayId) || days[0];
@@ -349,13 +351,13 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
       setBusy(false);
     }
   }
-  async function drop(day: TripDay, before?: PlanItem) {
-    const item = dragged;
+  async function drop(day: TripDay, before?: PlanItem, item = dragged) {
     setDragged(null);
     if (!item || item.id === before?.id || busy) return;
-    setBusy(true);
     const ordered = day.items.filter((i) => i.id !== item.id);
     const position = before ? ordered.findIndex((i) => i.id === before.id) : ordered.length;
+    if (position < 0 || (item.day_id === day.id && item.position === position)) return;
+    setBusy(true);
     try {
       const lock = await acquire(item, 'item');
       await api(`/itinerary-items/${item.id}/move`, 'POST', {
@@ -577,6 +579,7 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
               <button
                 key={day.id}
                 className={`wp-day-tab ${day.id === activeDay?.id ? 'wp-active' : ''}`}
+                data-drop-day={day.id}
                 aria-pressed={day.id === activeDay?.id}
                 onClick={() => setDayId(day.id)}
                 onDragOver={(e) => {
@@ -595,6 +598,7 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
           {activeDay && (
             <div
               className="wp-day-card"
+              data-drop-day={activeDay.id}
               onDragOver={(e) => {
                 if (dragged) e.preventDefault();
               }}
@@ -632,8 +636,21 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
                   return (
                     <li
                       key={i.id}
+                      data-drop-day={activeDay.id}
+                      data-before-item={i.id}
                       draggable={own && !i.editing_by && !busy}
+                      onTouchStart={(e) =>
+                        startTouchDrag(e, (targetDayId, beforeId) => {
+                          const day = days.find((d) => d.id === targetDayId);
+                          const before = day?.items.find((entry) => entry.id === beforeId);
+                          if (day && (!beforeId || before)) void drop(day, before, i);
+                        })
+                      }
                       onDragStart={(e) => {
+                        if (e.defaultPrevented || !e.currentTarget.draggable) {
+                          e.preventDefault();
+                          return;
+                        }
                         e.dataTransfer.setData('text/plain', i.id);
                         e.dataTransfer.effectAllowed = 'move';
                         setDragged(i);
@@ -709,7 +726,14 @@ function Workspace({ tripId, userId, section, refresh, onChange, currency, setEr
                       </div>
                       {own && (
                         <div className="wp-item-actions">
-                          <GripVertical size={16} className="wp-grip" aria-label="可拖曳排序" />
+                          <span
+                            className="wp-grip"
+                            role="img"
+                            aria-label={`拖曳排序：${i.title}`}
+                            title="拖曳至日期或其他活動前"
+                          >
+                            <GripVertical size={16} aria-hidden="true" />
+                          </span>
                           <button
                             className="wp-icon"
                             disabled={busy || !!i.editing_by}

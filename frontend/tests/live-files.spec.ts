@@ -139,24 +139,27 @@ test('真實檔案入口、私人授權、每期任務、留言圖片與兩種 P
     expect(await (await page.request.get('/api/v1/trips/' + copied.id + '/files')).json()).toEqual(
       [],
     );
-    if (browserName === 'chromium') {
-      await button(page, '每日行程').click();
-      await button(page, '匯出行程 PDF').click();
-      await page.evaluate(() => {
-        const open = window.open.bind(window);
-        window.open = (...args) => {
-          const tab = open(...args);
-          if (tab) tab.print = () => {};
-          return tab;
-        };
-      });
-      for (const mode of ['brief', 'details']) {
-        await page.getByLabel('詳細程度').selectOption(mode);
-        const [tab] = await Promise.all([
-          page.waitForEvent('popup'),
-          button(page, '列印或儲存 PDF').click(),
-        ]);
-        await expect(tab.getByText(/Public museum/)).toBeVisible();
+    await button(page, '每日行程').click();
+    await button(page, '匯出行程 PDF').click();
+    await page.evaluate(() => {
+      const open = window.open.bind(window);
+      window.open = (...args) => {
+        const tab = open(...args);
+        if (tab) tab.print = () => {};
+        return tab;
+      };
+    });
+    for (const mode of ['brief', 'details']) {
+      await page.getByLabel('詳細程度').selectOption(mode);
+      const [tab] = await Promise.all([
+        page.waitForEvent('popup'),
+        button(page, '列印或儲存 PDF').click(),
+      ]);
+      await expect(tab.getByText(/Public museum/)).toBeVisible();
+      const privateMarkers = ['PRIVATEFILE771', 'BOOKMARK771', 'EXPENSEMARK771'];
+      for (const marker of privateMarkers)
+        await expect(tab.locator('body')).not.toContainText(marker);
+      if (browserName === 'chromium') {
         const pdf = await tab.pdf({ format: 'A4' });
         const python =
           process.env.E2E_PYTHON ||
@@ -176,10 +179,9 @@ test('真實檔案入口、私人授權、每期任務、留言圖片與兩種 P
           { input: pdf, encoding: 'utf8' },
         );
         expect(extracted).toContain('Public museum');
-        for (const marker of ['PRIVATEFILE771', 'BOOKMARK771', 'EXPENSEMARK771'])
-          expect(extracted).not.toContain(marker);
-        await tab.close();
+        for (const marker of privateMarkers) expect(extracted).not.toContain(marker);
       }
+      await tab.close();
     }
   } finally {
     await extra.close();

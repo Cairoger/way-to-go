@@ -19,7 +19,7 @@ export default function AccessDialog({
   user: User | null;
   invite: string;
   onClose: () => void;
-  onJoined: (t: Trip) => void;
+  onJoined: (trip: Trip, joinedUserId: string) => void;
   onJoin: () => void;
   onSignedIn: (account: User) => void;
   createAfterLogin: boolean;
@@ -80,11 +80,12 @@ export default function AccessDialog({
     setPending('join');
     setError('');
     try {
-      const t = await api<Trip>(user ? '/invitations/accept' : '/auth/guest', 'POST', {
-        code,
-        ...(user ? {} : { nickname: String(f.get('nickname')).trim() }),
-      });
-      onJoined(t);
+      const { joined_user_id, ...trip } = await api<Trip & { joined_user_id: string }>(
+        user ? '/invitations/accept' : '/auth/guest',
+        'POST',
+        { code, ...(user ? {} : { nickname: String(f.get('nickname')).trim() }) },
+      );
+      onJoined(trip, joined_user_id);
     } catch (e) {
       setError(errorText(e));
     } finally {

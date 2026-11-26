@@ -3,6 +3,7 @@ import hashlib
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack
 from datetime import timedelta
+from threading import Barrier
 from urllib.parse import parse_qs, urlsplit
 
 import pytest
@@ -42,6 +43,23 @@ def test_guest_invite_lifecycle(owner, guest, client, trip, invitation):
     assert guest.get(members).status_code == 200
 
 
+def test_overlapping_trip_retries_return_the_same_trip(owner):
+    ready = Barrier(2)
+    path = "/api/v1/trips"
+
+    def create():
+        ready.wait(timeout=5)
+        return owner.post(path, json={"title": "同一個草稿"}, headers={"Idempotency-Key": "once"})
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        attempts = [pool.submit(create) for _ in range(2)]
+        responses = [attempt.result() for attempt in attempts]
+    assert [response.status_code for response in responses] == [201, 201]
+    saved = owner.get(path).json()
+    assert len(saved) == 1
+    assert all(response.json()["id"] == saved[0]["id"] for response in responses)
+
+
 def test_trip_versions_archives_and_idempotency(owner, guest, trip):
     endpoint = "/api/v1/trips"
     body = {"title": "週末旅程"}
@@ -60,6 +78,24 @@ def test_trip_versions_archives_and_idempotency(owner, guest, trip):
     assert guest.get(path).status_code == 404
     assert owner.post(path + "/restore", json={"version": removed["version"]}).status_code == 200
     assert guest.get(path).json()["status"] == "completed"
+
+
+@pytest.mark.parametrize(("offset", "restorable"), [(-1, True), (0, False), (1, False)])
+def test_trip_recovery_cutoff_matches_listing(owner, trip, monkeypatch, offset, restorable):
+    from app import core, trips
+
+    now = core.utcnow()
+    deleted_at = now - timedelta(days=30)
+    monkeypatch.setattr(trips, "utcnow", lambda: deleted_at)
+    path = "/api/v1/trips/" + trip["id"]
+    removed = owner.delete(path, params={"version": trip["version"]})
+    assert removed.is_success
+    monkeypatch.setattr(core, "utcnow", lambda: now + timedelta(microseconds=offset))
+    listed = owner.get("/api/v1/trips").json()
+    assert any(row["id"] == trip["id"] for row in listed) == restorable
+    response = owner.post(path + "/restore", json={"version": removed.json()["version"]})
+    assert response.status_code == (200 if restorable else 404)
+    assert owner.get(path).status_code == (200 if restorable else 404)
 
 
 def test_member_removal_transfers_poll_control_and_transfer_owner(owner, guest, trip):

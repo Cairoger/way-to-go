@@ -18,12 +18,14 @@ from .core import (
     DB,
     Actor,
     audit,
+    begin_sqlite_write,
     check_version,
     digest,
     fail,
     public_origin,
     require_member,
     require_owner,
+    trip_recovery_cutoff,
     valid_session,
 )
 from .invite_codes import reusable_code
@@ -175,7 +177,7 @@ def extend_days(db: Session, trip: Trip, requested: int | None):
 
 @router.get("/trips")
 def list_trips(db: DB, user: Actor):
-    cutoff = utcnow() - timedelta(days=30)
+    cutoff = trip_recovery_cutoff()
     rows = db.scalars(
         select(Trip)
         .join(Membership)
@@ -203,6 +205,7 @@ def create_trip(
         fail(403, "GOOGLE_REQUIRED", "請先使用 Google 登入，再建立自己的旅程。")
     fingerprint = digest(payload.model_dump_json())
     if idempotency_key:
+        begin_sqlite_write(db)
         db.scalar(select(User.id).where(User.id == user.id).with_for_update())
         key = db.scalar(
             select(CreationKey).where(
@@ -519,7 +522,7 @@ async def guest(payload: Guest, request: Request, response: Response, db: DB):
     join(db, trip, user)
     db.commit()
     await hub.publish(trip.id, {"type": "members"})
-    return summary(db, trip)
+    return {**summary(db, trip), "joined_user_id": user.id}
 
 
 @router.post("/invitations/accept")
@@ -529,7 +532,7 @@ async def accept(payload: Accept, request: Request, db: DB, user: Actor):
     join(db, trip, user)
     db.commit()
     await hub.publish(trip.id, {"type": "members"})
-    return summary(db, trip)
+    return {**summary(db, trip), "joined_user_id": user.id}
 
 
 def locked_joiner(db: Session, user_id: str, request: Request):
