@@ -6,14 +6,14 @@
 
 | 操作 | 預期結果 | 本輪實際結果 | 程式位置 |
 | --- | --- | --- | --- |
-| 在 Chrome 建立旅程，讓伺服器完成寫入後中斷回應。出現連線錯誤時，在同一表單再按一次建立 | 同一份草稿只建立一筆旅程 | 兩次請求使用不同的重送識別碼。重新讀取旅程清單，得到同名、不同 ID 的兩筆旅程 | [旅程表單](../frontend/components/TripForm.tsx)、[API 請求](../frontend/lib/api.ts) |
-| 建立同名但地址不同的兩個景點，發起投票，從清單選第二個景點並送出 | 投票選項連到第二個景點 | 建立投票成功，但回傳的選項指向第一個景點 ID | [建立投票](../frontend/components/Decisions.tsx) |
-| 將勝出的投票選項採用到某日行程，刪除該活動，再對同一天按採用 | 成功時應可在行程中看到活動，或得到說明如何處理已刪除活動的提示 | API 回傳 HTTP 200 與已刪除的活動 ID，重讀當日行程仍為 0 筆 | [採用投票結果](../backend/app/decisions.py) |
-| 替旅伴登記航班座位與行李，讓他離團，再以原預訂建立者開啟「編輯航班」 | 後端允許仍在團內的原建立者讀取既有乘客欄位。編輯畫面如何處理離團旅客，規格未明訂 | API 仍保有座位 18B 與行李 20kg，編輯表單兩者皆未顯示。另用原建立者透過正常 API 改為 21C／23kg 後，重新讀取得到新值 | [航段旅客欄位](../frontend/components/Reservations.tsx) |
-| 在 390 × 844 的 Chrome 視窗聚焦「開啟選單」，依序按 Enter、Tab、Escape | 焦點能進入選單，關閉後可回到開啟按鈕 | 展開後焦點留在遮罩後的「開啟選單」。下一個 Tab 落在同樣被遮住的「使用說明」，Escape 後側欄仍開啟。開啟按鈕也未標示展開狀態 | [手機側欄](../frontend/components/Workspace.tsx) |
-| 合成旅程刪除後，以固定時鐘在剛滿 30 天時，用原建立者帳號查看回收區並呼叫還原 | 回收區顯示與後端可還原期限應一致 | 滿 30 天的精確瞬間，旅程已從列表消失，但以該 ID 還原仍回 HTTP 200。截止前 1 秒可見且可還原，後 1 秒不可見且還原回 404 | [回收區清單](../backend/app/trips.py)、[還原時限](../backend/app/core.py) |
+| 在 Chrome 建立旅程，讓伺服器完成寫入後中斷回應。出現連線錯誤時，在同一表單再按一次建立 | 同一份草稿只建立一筆旅程 | 兩次請求使用不同的重送識別碼。重新讀取旅程清單，得到同名、不同 ID 的兩筆旅程 | [旅程表單](../../frontend/components/TripForm.tsx)、[API 請求](../../frontend/lib/api.ts) |
+| 建立同名但地址不同的兩個景點，發起投票，從清單選第二個景點並送出 | 投票選項連到第二個景點 | 建立投票成功，但回傳的選項指向第一個景點 ID | [建立投票](../../frontend/components/Decisions.tsx) |
+| 將勝出的投票選項採用到某日行程，刪除該活動，再對同一天按採用 | 成功時應可在行程中看到活動，或得到說明如何處理已刪除活動的提示 | API 回傳 HTTP 200 與已刪除的活動 ID，重讀當日行程仍為 0 筆 | [採用投票結果](../../backend/app/decisions.py) |
+| 替旅伴登記航班座位與行李，讓他離團，再以原預訂建立者開啟「編輯航班」 | 後端允許仍在團內的原建立者讀取既有乘客欄位。編輯畫面如何處理離團旅客，規格未明訂 | API 仍保有座位 18B 與行李 20kg，編輯表單兩者皆未顯示。另用原建立者透過正常 API 改為 21C／23kg 後，重新讀取得到新值 | [航段旅客欄位](../../frontend/components/Reservations.tsx) |
+| 在 390 × 844 的 Chrome 視窗聚焦「開啟選單」，依序按 Enter、Tab、Escape | 焦點能進入選單，關閉後可回到開啟按鈕 | 展開後焦點留在遮罩後的「開啟選單」。下一個 Tab 落在同樣被遮住的「使用說明」，Escape 後側欄仍開啟。開啟按鈕也未標示展開狀態 | [手機側欄](../../frontend/components/Workspace.tsx) |
+| 合成旅程刪除後，以固定時鐘在剛滿 30 天時，用原建立者帳號查看回收區並呼叫還原 | 回收區顯示與後端可還原期限應一致 | 滿 30 天的精確瞬間，旅程已從列表消失，但以該 ID 還原仍回 HTTP 200。截止前 1 秒可見且可還原，後 1 秒不可見且還原回 404 | [回收區清單](../../backend/app/trips.py)、[還原時限](../../backend/app/core.py) |
 
-航班案例中，離團的是旅客，原預訂建立者仍在團內。預訂卡片會顯示 API 回傳的座位與行李，開啟編輯表單後無法選取該旅客。FR-BOOK-02、FR-BOOK-06 要求記錄座位、行李與手動更新。資料模型要求檢查新指派的旅客身分，既有預訂的讀取及寫入規則均容許原建立者維護這些欄位。產品規格未指定離團旅客在表單中應可編輯或僅供檢視。[交通與住宿規格](spec.md#312-交通與住宿資訊) · [資料模型](data-model.md) · [後端預訂讀寫規則](../backend/app/preparations.py)
+航班案例中，離團的是旅客，原預訂建立者仍在團內。預訂卡片會顯示 API 回傳的座位與行李，開啟編輯表單後無法選取該旅客。FR-BOOK-02、FR-BOOK-06 要求記錄座位、行李與手動更新。資料模型要求檢查新指派的旅客身分，既有預訂的讀取及寫入規則均容許原建立者維護這些欄位。產品規格未指定離團旅客在表單中應可編輯或僅供檢視。[交通與住宿規格](../spec.md#312-交通與住宿資訊) · [資料模型](../data-model.md) · [後端預訂讀寫規則](../../backend/app/preparations.py)
 
 前四個流程在 nginx、Next.js、FastAPI 與 PostgreSQL 的 Compose 部署上操作。投票再採用直接呼叫同一部署的 API，另外三個透過 Chrome 操作表單並比對 API 資料。手機選單使用同一部署與獨立的瀏覽器工作階段。
 
@@ -59,23 +59,23 @@ offset=-1s visible_in_list=True restore=200 reread=200
 
 | 功能 | 實際核對的行為與結果 | 可查核案例或證據 |
 | --- | --- | --- |
-| 首頁、示範與手機導覽 | 桌機篩選、卡片與清單切換、指定行程日、手機點按選單與加入表單通過。390 像素寬的鍵盤選單出現上述焦點錯誤。 | [首頁與手機](../frontend/tests/workspace.spec.ts)、[鍵盤](../frontend/tests/accessibility-keyboard.spec.ts)、本輪手機選單步驟 |
-| 帳號與工作階段 | 本機登入後可建立旅程，重載保留身分。測試供應商的 Google 登入、訪客合併、工作階段到期與撤銷均通過。 | [本機登入](../backend/tests/test_local_login.py)、[工作階段及 OIDC](../backend/tests/test_core.py)、[帳號合併](../backend/tests/test_guest_merge.py) |
-| 個人資料、成員與邀請 | 雙分頁更新暱稱可偵測版本衝突。訪客加入、撤銷邀請、移除成員與移轉擁有權通過。另核對 QR 解碼及 Email 草稿。 | [個人資料與邀請](../backend/tests/test_review_account_invitations.py)、[雙分頁](../frontend/tests/review-acceptance.spec.ts)、[成員](../backend/tests/test_core.py) |
-| 旅程管理與複製 | 建立、更新、封存、刪除與復原通過。複製規劃資料時有新 ID 並清除私人訂位資料。瀏覽器在回應中斷後重送會建立重複旅程，回收區另有剛滿 30 天的精確邊界差異。 | [旅程版本及生命週期](../backend/tests/test_core.py)、[旅程複製](../backend/tests/test_trip_copy.py)、本輪旅程重送步驟 |
-| 候選景點、地圖與天氣 | 已安排的景點在移出候選後保留引用。地點搜尋、圖磚、標記、兩點連線及導航座標通過。天氣實際查詢與供應商失敗時的提示分別驗證。 | [景點保留與搜尋](../backend/tests/test_planning.py)、[天氣](../backend/tests/test_planning_extensions.py)、[地圖介面](../frontend/tests/offline-planner.spec.ts)、本輪實際供應商查詢 |
-| 每日行程與異動復原 | 跨日移動、順序與時間重疊、時區切換、刪除活動後從歷史復原通過。Chrome 用滑鼠拖至另一日並調整順序，重新整理後日期與順序皆正確。 | [每日行程](../backend/tests/test_planning.py)、[時區與復原](../backend/tests/test_planning_extensions.py) |
-| 即時共編 | 五位旅伴留言編輯產生 80 筆跨頁觀測，Chrome、Linux Firefox 與 WebKit 均為零逾時。斷線重新連線後補讀、編輯鎖續期及版本衝突均有獨立案例通過。 | [多人協作](../frontend/tests/live-collaboration.spec.ts)、[鎖與版本](../backend/tests/test_planning.py) |
-| 投票 | 投票中保密、截止結算、平票重投、評分與排序通過。遇到同名景點或重新採用已刪除活動時，產生上述兩個錯誤。 | [選票規則與結果](../backend/tests/test_decisions.py)、[評分與排序介面](../frontend/tests/coordination.spec.ts)、本輪兩個投票重現步驟 |
-| 旅遊日期協調 | 單日、區間、共同可用日期，以及套用日期後保留既有活動均通過。 | [日期與既有行程](../backend/tests/test_availability.py)、[日期協調介面](../frontend/tests/coordination.spec.ts) |
-| 討論與通知 | 留言、回覆、提及、通知已讀與偏好通過。Chrome 暫存設定檔關閉頁面後，瀏覽器仍收到背景通知。 | [留言與提及](../backend/tests/test_decisions.py)、[通知](../backend/tests/test_notices.py)、[背景推播](../frontend/tests/live-push.spec.ts) |
-| 任務清單 | 共用／個人任務、分開更新進度、週期完成紀錄與附件保留通過。 | [行前清單](../frontend/tests/live-preparations.spec.ts)、[重複任務](../backend/tests/test_files_recurrence.py) |
-| 預算與分帳 | 支付與分攤、外幣記帳、超額提醒、分次還款與離團後的財務歷史通過。 | [財務計算](../backend/tests/test_finance.py)、[雙人分帳還款](../frontend/tests/live-finance.spec.ts) |
-| 交通與住宿 | 多段航班、住宿、不同角色可見欄位、與每日行程連結通過。原作者仍在團內而既有旅客退出時，發現上述編輯表單差異。 | [預訂及角色權限](../backend/tests/test_preparations.py)、[航段與住宿介面](../frontend/tests/live-preparations.spec.ts) |
-| 旅程檔案與留言圖片 | 批次上傳、預覽、下載、關聯、私人授權、回收還原及配額通過。另從實際備份核對私人附件雜湊與關聯。 | [附件與配額](../backend/tests/test_files_recurrence.py)、[附件介面](../frontend/tests/live-files.spec.ts)、[還原斷言](../deploy/verify-restore-browser.sql) |
-| 離線閱讀 | 儲存後斷線、關閉舊頁並由新頁唯讀開啟行程通過。登出與換帳的既有清理案例通過。 | [真實旅程離線讀取](../frontend/tests/live-offline-planner.spec.ts)、[離線與換帳](../frontend/tests/offline-planner.spec.ts) |
-| 列印與 PDF | Chrome 匯出與文字檢查通過。macOS WebKit 在真實旅程可選日期並產生正確的簡要與詳細預覽。模擬列印案例在該平台整套執行時有失敗，詳見下節。 | [列印日期與隱私](../frontend/tests/planner-print.spec.ts)、[實際 PDF 文字](../frontend/tests/live-files.spec.ts)、本輪兩日行程測試 |
-| 部署、遷移與還原 | 初始化保留既有設定，Compose 對外首頁與健康檢查可用。兩種資料庫遷移、含應用資料的備份還原及附件核對通過。 | [部署配置](../compose.yaml)、[還原演練](../deploy/restore-drill.sh)、[CI 比對](../.github/workflows/ci.yml) |
+| 首頁、示範與手機導覽 | 桌機篩選、卡片與清單切換、指定行程日、手機點按選單與加入表單通過。390 像素寬的鍵盤選單出現上述焦點錯誤。 | [首頁與手機](../../frontend/tests/workspace.spec.ts)、[鍵盤](../../frontend/tests/accessibility-keyboard.spec.ts)、本輪手機選單步驟 |
+| 帳號與工作階段 | 本機登入後可建立旅程，重載保留身分。測試供應商的 Google 登入、訪客合併、工作階段到期與撤銷均通過。 | [本機登入](../../backend/tests/test_local_login.py)、[工作階段及 OIDC](../../backend/tests/test_core.py)、[帳號合併](../../backend/tests/test_guest_merge.py) |
+| 個人資料、成員與邀請 | 雙分頁更新暱稱可偵測版本衝突。訪客加入、撤銷邀請、移除成員與移轉擁有權通過。另核對 QR 解碼及 Email 草稿。 | [個人資料與邀請](../../backend/tests/test_review_account_invitations.py)、[雙分頁](../../frontend/tests/review-acceptance.spec.ts)、[成員](../../backend/tests/test_core.py) |
+| 旅程管理與複製 | 建立、更新、封存、刪除與復原通過。複製規劃資料時有新 ID 並清除私人訂位資料。瀏覽器在回應中斷後重送會建立重複旅程，回收區另有剛滿 30 天的精確邊界差異。 | [旅程版本及生命週期](../../backend/tests/test_core.py)、[旅程複製](../../backend/tests/test_trip_copy.py)、本輪旅程重送步驟 |
+| 候選景點、地圖與天氣 | 已安排的景點在移出候選後保留引用。地點搜尋、圖磚、標記、兩點連線及導航座標通過。天氣實際查詢與供應商失敗時的提示分別驗證。 | [景點保留與搜尋](../../backend/tests/test_planning.py)、[天氣](../../backend/tests/test_planning_extensions.py)、[地圖介面](../../frontend/tests/offline-planner.spec.ts)、本輪實際供應商查詢 |
+| 每日行程與異動復原 | 跨日移動、順序與時間重疊、時區切換、刪除活動後從歷史復原通過。Chrome 用滑鼠拖至另一日並調整順序，重新整理後日期與順序皆正確。 | [每日行程](../../backend/tests/test_planning.py)、[時區與復原](../../backend/tests/test_planning_extensions.py) |
+| 即時共編 | 五位旅伴留言編輯產生 80 筆跨頁觀測，Chrome、Linux Firefox 與 WebKit 均為零逾時。斷線重新連線後補讀、編輯鎖續期及版本衝突均有獨立案例通過。 | [多人協作](../../frontend/tests/live-collaboration.spec.ts)、[鎖與版本](../../backend/tests/test_planning.py) |
+| 投票 | 投票中保密、截止結算、平票重投、評分與排序通過。遇到同名景點或重新採用已刪除活動時，產生上述兩個錯誤。 | [選票規則與結果](../../backend/tests/test_decisions.py)、[評分與排序介面](../../frontend/tests/coordination.spec.ts)、本輪兩個投票重現步驟 |
+| 旅遊日期協調 | 單日、區間、共同可用日期，以及套用日期後保留既有活動均通過。 | [日期與既有行程](../../backend/tests/test_availability.py)、[日期協調介面](../../frontend/tests/coordination.spec.ts) |
+| 討論與通知 | 留言、回覆、提及、通知已讀與偏好通過。Chrome 暫存設定檔關閉頁面後，瀏覽器仍收到背景通知。 | [留言與提及](../../backend/tests/test_decisions.py)、[通知](../../backend/tests/test_notices.py)、[背景推播](../../frontend/tests/live-push.spec.ts) |
+| 任務清單 | 共用／個人任務、分開更新進度、週期完成紀錄與附件保留通過。 | [行前清單](../../frontend/tests/live-preparations.spec.ts)、[重複任務](../../backend/tests/test_files_recurrence.py) |
+| 預算與分帳 | 支付與分攤、外幣記帳、超額提醒、分次還款與離團後的財務歷史通過。 | [財務計算](../../backend/tests/test_finance.py)、[雙人分帳還款](../../frontend/tests/live-finance.spec.ts) |
+| 交通與住宿 | 多段航班、住宿、不同角色可見欄位、與每日行程連結通過。原作者仍在團內而既有旅客退出時，發現上述編輯表單差異。 | [預訂及角色權限](../../backend/tests/test_preparations.py)、[航段與住宿介面](../../frontend/tests/live-preparations.spec.ts) |
+| 旅程檔案與留言圖片 | 批次上傳、預覽、下載、關聯、私人授權、回收還原及配額通過。另從實際備份核對私人附件雜湊與關聯。 | [附件與配額](../../backend/tests/test_files_recurrence.py)、[附件介面](../../frontend/tests/live-files.spec.ts)、[還原斷言](../../deploy/verify-restore-browser.sql) |
+| 離線閱讀 | 儲存後斷線、關閉舊頁並由新頁唯讀開啟行程通過。登出與換帳的既有清理案例通過。 | [真實旅程離線讀取](../../frontend/tests/live-offline-planner.spec.ts)、[離線與換帳](../../frontend/tests/offline-planner.spec.ts) |
+| 列印與 PDF | Chrome 匯出與文字檢查通過。macOS WebKit 在真實旅程可選日期並產生正確的簡要與詳細預覽。模擬列印案例在該平台整套執行時有失敗，詳見下節。 | [列印日期與隱私](../../frontend/tests/planner-print.spec.ts)、[實際 PDF 文字](../../frontend/tests/live-files.spec.ts)、本輪兩日行程測試 |
+| 部署、遷移與還原 | 初始化保留既有設定，Compose 對外首頁與健康檢查可用。兩種資料庫遷移、含應用資料的備份還原及附件核對通過。 | [部署配置](../../compose.yaml)、[還原演練](../../deploy/restore-drill.sh)、[CI 比對](../../.github/workflows/ci.yml) |
 
 ## 需要分開判讀的測試
 
@@ -90,7 +90,7 @@ Email 邀請只查核草稿內容，未實際寄送。附件測試驗證設定�
 
 Google OIDC 登入、回呼與訪客合併已使用替身供應商測試。真實 Google 帳號同意與公開 HTTPS 站台登入未在本輪操作。推播確認到瀏覽器收到通知，也測過模擬點擊。實體手機作業系統的通知橫幅點擊未驗證。
 
-[專案驗證流程](../.github/workflows/ci.yml) · [瀏覽器測試](../frontend/tests) · [後端測試](../backend/tests)
+[專案驗證流程](../../.github/workflows/ci.yml) · [瀏覽器測試](../../frontend/tests) · [後端測試](../../backend/tests)
 
 ## HTTP 操作逐項結果
 

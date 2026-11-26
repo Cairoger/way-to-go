@@ -949,7 +949,7 @@ python backend/run_live_acceptance.py --production
 
 ### 12.1 交付與判讀方式
 
-2026-11-26（Asia/Taipei），工作區 `main` 的完整 HEAD 為 `aac83bda1d580e8000f62d953a829ab9f65dcd7a`，開始核對時工作樹乾淨。本次依使用者確認只交付這一份文件。產品要求取自現行 PRD／SRS，實體儲存沿用擁有者核定的 v1.1 對照。附件提供審查問題與驗收方法。第 10.3 節保留的是歷史 Prompt 範例，其中的檔名指原審查；本次工作區交付檔名是 `WayToGo_Feedback.md`。[需求規格](docs/spec.md) · [八項資料模型對照](docs/data-model.md)
+2026-11-26（Asia/Taipei），工作區 `main` 的完整 HEAD 為 `aac83bda1d580e8000f62d953a829ab9f65dcd7a`，開始核對時工作樹乾淨。本次依使用者確認只交付這一份文件。產品要求取自現行 PRD／SRS，實體儲存沿用擁有者核定的 v1.1 對照。附件提供審查問題與驗收方法。第 10.3 節保留的是歷史 Prompt 範例，其中的檔名指原審查；本次工作區交付檔名是 `WayToGo_Feedback.md`。[需求規格](../spec.md) · [八項資料模型對照](../data-model.md)
 
 | 處理結果 | 本次適用範圍 |
 | --- | --- |
@@ -970,57 +970,57 @@ python backend/run_live_acceptance.py --production
 
 | 項目 | 原規格 | 優先度與證據 | 本次判讀 | 現況與查核位置 | 日後驗收條件 |
 | --- | --- | --- | --- | --- | --- |
-| WTG-01 | §8、FR-TRIP-08、FR-FILE-02 | P1 · E/S | 確認缺陷 | 一般 POST 每次新建 UUID。複製旅程的後端已有 receipt，前端未沿用鍵。附件兩端均缺批次識別。財務與邀請已有各自的穩定鍵。[API](frontend/lib/api.ts#L21) · [複製](backend/app/trip_copy.py#L76) · [附件](frontend/components/Attachments.tsx#L44) | 逐一模擬旅程、景點、活動、投票、留言、任務、預訂、複製及三檔上傳提交後回應遺失。同鍵同內容僅一筆、異內容拒絕，明確新意圖可新增。核對原始 ID、配額、交易與 ACL。 |
-| WTG-02 | FR-FILE-01/02、§8 | P2，公開不可信上傳前 P1* · E/S | 確認缺陷；部署門檻有條件 | PDF 首頁擷取後才截短文字，應用的預期例外清單未涵蓋函式庫的限制例外。解析使用共用執行緒池。[格式檢查](backend/app/file_formats.py#L104) · [解析入口](backend/app/files.py#L128) | 以普通檔案及例外注入檢查狀態、錯誤碼、Request ID 與整批回滾；部署另驗一般讀取仍前進、逾時工作可回收。無預覽時是否保留原件待定。 |
-| WTG-03 | FR-AUTH-06、FR-OFFLINE-01 | P2 · S | 確認前端缺口 | 首頁有同分頁請求序號，通知在重獲焦點時更新，但錯誤時可保留舊內容。旅程 WS 會重新授權。跨首頁分頁缺統一身分切換處理。[首頁](frontend/components/Workspace.tsx#L165) · [通知](frontend/components/NoticeCenter.tsx#L55) | 兩分頁登出或換帳，再驗自然到期、返回快取頁與舊回應晚到。先前的旅程、通知與離線私有資料均須按身分失效；單純斷網仍能使用允許的離線資料。 |
-| WTG-04 | §5.1、§6.2–6.3、FR-COLLAB-07 | P1*（公開多人使用／慢 DB）· S/C | 條件性風險 | 單 worker、同步 Session；部分 async 路由同步等待資料庫。WS 身分重查已使用 threadpool。部署中的阻塞幅度待測。[引擎](backend/app/core.py#L80) · [財務修改](backend/app/finance.py#L322) · [WS](backend/app/realtime.py#L64) | 在專用 PG 讓同旅程交易等待鎖，另測其他旅程 HTTP、WS 心跳及逾時；同時核對 rollback、版本、金額及 commit 後廣播。 |
-| WTG-05 | §5.2 限流 | P1*（前置 TLS 代理公開部署）· S/C | 條件性風險 | nginx 由直接對端重寫客戶端地址，API 按 client.host 計數；前置 TLS proxy 拓撲會影響辨識。[nginx](deploy/nginx.conf#L16) · [限流](backend/app/main.py#L118) | 在實際信任邊界，以兩個來源分別驗限額、非信任來源標頭不改身分、HTTPS cookie、WS 與 OAuth callback。須有部署方確認的代理拓撲。 |
-| WTG-06 | §5.1、§9 里程碑 1 | P1*（仰賴容器反覆部署更新）· S/C | 條件性風險 | nginx 指向固定名稱的 upstream；README 有只重建 API 的流程。容器替換是否改 IP 取決於部署。[代理路由](deploy/nginx.conf#L19) · [部署說明](README.md#L35) | 記下更新前後不同的 IP 與映像，在選定的解析或 reload 流程下驗首頁、health、授權 API、WS 重連、中斷時間及回復。 |
-| WTG-07 | §5.4 | P1* · S | 確認維運缺口；保存真實資料時為門檻 | 成功備份才輪替，失敗的暫存檔及備份／還原新鮮度缺完整處理；已有獨立還原演練。[備份](deploy/backup.sh#L5) · [還原](deploy/restore-drill.sh#L73) | 以專用儲存驗寫入失敗、空間不足、損壞或過期備份，以及恢復後的新成功紀錄。保留最後可用備份。允許的備份年齡及告警責任待定。 |
-| WTG-08 | FR-VOTE-01/03/10 | P2 · E | 確認缺陷 | 選第二個同名景點後只保存名稱，送出時依名稱取第一筆；重開投票的後端已保留選項 ID。[建立選項](frontend/components/Decisions.tsx#L179) · [重開](backend/app/decisions.py#L442) | 兩個同名異址地點經新增、補選項、改顯示文字、重投及採用，沿用各自 ID、地址；手打同名文字仍可沒有景點關聯。 |
-| WTG-09 | FR-VOTE-10/11、BR-008、AC-013 | P2 · E | 確認缺陷；再採用方式待決策 | 已採用紀錄直接回原活動 ID；移除活動採軟刪除，可能回傳目前看不到的活動。[採用](backend/app/decisions.py#L455) · [移除](backend/app/planning.py#L698) · [既有測試](backend/tests/test_decisions.py#L62) | 一般重送維持唯一；採用→移除→再採用需有明確結果。另驗移日、景點回收、原建立者離團、併發及 ACL。由產品選擇提示衝突、授權復原或重建。 |
-| WTG-10 | FR-BOOK-01/02/05、AC-015 | P2 · E | 確認缺陷 | 航段表單只列現役成員。後端讀取依旅客身分過濾，可保留既有退出旅客；公開編輯有獨立入口。[航段欄位](frontend/components/Reservations.tsx#L162) · [私密欄位](backend/app/preparations.py#L419) · [公開編輯](backend/app/preparations.py#L545) | 建立者可辨識、保留或明確移除原退出旅客；單改標題保留座位行李。驗陌生人、新增旅客限制及兼任旅客／非旅客的 owner 各自可見欄位。 |
+| WTG-01 | §8、FR-TRIP-08、FR-FILE-02 | P1 · E/S | 確認缺陷 | 一般 POST 每次新建 UUID。複製旅程的後端已有 receipt，前端未沿用鍵。附件兩端均缺批次識別。財務與邀請已有各自的穩定鍵。[API](../../frontend/lib/api.ts#L21) · [複製](../../backend/app/trip_copy.py#L76) · [附件](../../frontend/components/Attachments.tsx#L44) | 逐一模擬旅程、景點、活動、投票、留言、任務、預訂、複製及三檔上傳提交後回應遺失。同鍵同內容僅一筆、異內容拒絕，明確新意圖可新增。核對原始 ID、配額、交易與 ACL。 |
+| WTG-02 | FR-FILE-01/02、§8 | P2，公開不可信上傳前 P1* · E/S | 確認缺陷；部署門檻有條件 | PDF 首頁擷取後才截短文字，應用的預期例外清單未涵蓋函式庫的限制例外。解析使用共用執行緒池。[格式檢查](../../backend/app/file_formats.py#L104) · [解析入口](../../backend/app/files.py#L128) | 以普通檔案及例外注入檢查狀態、錯誤碼、Request ID 與整批回滾；部署另驗一般讀取仍前進、逾時工作可回收。無預覽時是否保留原件待定。 |
+| WTG-03 | FR-AUTH-06、FR-OFFLINE-01 | P2 · S | 確認前端缺口 | 首頁有同分頁請求序號，通知在重獲焦點時更新，但錯誤時可保留舊內容。旅程 WS 會重新授權。跨首頁分頁缺統一身分切換處理。[首頁](../../frontend/components/Workspace.tsx#L165) · [通知](../../frontend/components/NoticeCenter.tsx#L55) | 兩分頁登出或換帳，再驗自然到期、返回快取頁與舊回應晚到。先前的旅程、通知與離線私有資料均須按身分失效；單純斷網仍能使用允許的離線資料。 |
+| WTG-04 | §5.1、§6.2–6.3、FR-COLLAB-07 | P1*（公開多人使用／慢 DB）· S/C | 條件性風險 | 單 worker、同步 Session；部分 async 路由同步等待資料庫。WS 身分重查已使用 threadpool。部署中的阻塞幅度待測。[引擎](../../backend/app/core.py#L80) · [財務修改](../../backend/app/finance.py#L322) · [WS](../../backend/app/realtime.py#L64) | 在專用 PG 讓同旅程交易等待鎖，另測其他旅程 HTTP、WS 心跳及逾時；同時核對 rollback、版本、金額及 commit 後廣播。 |
+| WTG-05 | §5.2 限流 | P1*（前置 TLS 代理公開部署）· S/C | 條件性風險 | nginx 由直接對端重寫客戶端地址，API 按 client.host 計數；前置 TLS proxy 拓撲會影響辨識。[nginx](../../deploy/nginx.conf#L16) · [限流](../../backend/app/main.py#L118) | 在實際信任邊界，以兩個來源分別驗限額、非信任來源標頭不改身分、HTTPS cookie、WS 與 OAuth callback。須有部署方確認的代理拓撲。 |
+| WTG-06 | §5.1、§9 里程碑 1 | P1*（仰賴容器反覆部署更新）· S/C | 條件性風險 | nginx 指向固定名稱的 upstream；README 有只重建 API 的流程。容器替換是否改 IP 取決於部署。[代理路由](../../deploy/nginx.conf#L19) · [部署說明](../../README.md#L35) | 記下更新前後不同的 IP 與映像，在選定的解析或 reload 流程下驗首頁、health、授權 API、WS 重連、中斷時間及回復。 |
+| WTG-07 | §5.4 | P1* · S | 確認維運缺口；保存真實資料時為門檻 | 成功備份才輪替，失敗的暫存檔及備份／還原新鮮度缺完整處理；已有獨立還原演練。[備份](../../deploy/backup.sh#L5) · [還原](../../deploy/restore-drill.sh#L73) | 以專用儲存驗寫入失敗、空間不足、損壞或過期備份，以及恢復後的新成功紀錄。保留最後可用備份。允許的備份年齡及告警責任待定。 |
+| WTG-08 | FR-VOTE-01/03/10 | P2 · E | 確認缺陷 | 選第二個同名景點後只保存名稱，送出時依名稱取第一筆；重開投票的後端已保留選項 ID。[建立選項](../../frontend/components/Decisions.tsx#L179) · [重開](../../backend/app/decisions.py#L442) | 兩個同名異址地點經新增、補選項、改顯示文字、重投及採用，沿用各自 ID、地址；手打同名文字仍可沒有景點關聯。 |
+| WTG-09 | FR-VOTE-10/11、BR-008、AC-013 | P2 · E | 確認缺陷；再採用方式待決策 | 已採用紀錄直接回原活動 ID；移除活動採軟刪除，可能回傳目前看不到的活動。[採用](../../backend/app/decisions.py#L455) · [移除](../../backend/app/planning.py#L698) · [既有測試](../../backend/tests/test_decisions.py#L62) | 一般重送維持唯一；採用→移除→再採用需有明確結果。另驗移日、景點回收、原建立者離團、併發及 ACL。由產品選擇提示衝突、授權復原或重建。 |
+| WTG-10 | FR-BOOK-01/02/05、AC-015 | P2 · E | 確認缺陷 | 航段表單只列現役成員。後端讀取依旅客身分過濾，可保留既有退出旅客；公開編輯有獨立入口。[航段欄位](../../frontend/components/Reservations.tsx#L162) · [私密欄位](../../backend/app/preparations.py#L419) · [公開編輯](../../backend/app/preparations.py#L545) | 建立者可辨識、保留或明確移除原退出旅客；單改標題保留座位行李。驗陌生人、新增旅客限制及兼任旅客／非旅客的 owner 各自可見欄位。 |
 
 #### 11–20　資料邊界、表單與 API
 
 | 項目 | 原規格 | 優先度與證據 | 本次判讀 | 現況與查核位置 | 日後驗收條件 |
 | --- | --- | --- | --- | --- | --- |
-| WTG-11 | FR-FILE-04/05/06、BR-013 | P2 · S | 確認容量缺口；永久清理待決策 | 回收資料仍計入旅程配額，只有回收／還原入口。30 日規定適用旅程。[配額](backend/app/files.py#L187) · [回收與還原](backend/app/files.py#L265) | 政策確定後核對使用中、回收、總用量與實際可再上傳容量；含關聯附件、併發、重試、還原及上傳者權限。資料庫檔案縮小另行量測。 |
-| WTG-12 | FR-TRIP-02/03、FR-PLAN-01/02、FR-DATE-05、FR-TASK-06 | P2 · E/S | 確認缺陷；部分輸入語意待決策 | 建立／延長日數有 3660 天限制；每日日期以加法求值，單獨增日未沿用整體限制，週期計算也有年份邊界。[旅程](backend/app/trips.py#L161) · [每日日期](backend/app/planning.py#L524) · [任務週期](backend/app/preparations.py#L286) | 以最大日期加一天、最大日數再增日、閏日、月底／年底及既有異常資料驗讀寫。拒絕時整筆不變；保留無日期及僅開始日，僅結束日的契約待定。 |
-| WTG-13 | FR-COLLAB-03–06、AC-007–009、§5.3 | P2 · S/A | 確認部分缺口；恢復介面屬提案 | 旅程表單固定初始版本；個人暱稱已有保留輸入並重讀的流程。後端已有版本及鎖保護。[旅程表單](frontend/components/TripForm.tsx#L18) · [暱稱](frontend/components/ProfileForm.tsx#L34) | 兩頁互改旅程、費用、預訂，分別驗舊版 409 與租約失效。應能辨識草稿與最新值、明確重套或放棄，背景更新不可覆蓋輸入。 |
-| WTG-14 | §9 里程碑 3、§8、FR-PLAN-09、FR-DATE-05 | P2 · S/A | 規格歧義；待決策 | 里程碑寫「每日行程 CRUD」，API 表只列取得／新增日；現有活動可以修改、移除。修改旅程日期應保留行程。[日層級路由](backend/app/planning.py#L530) · [規格](docs/spec.md#L616) | 先釐清日與活動的 CRUD、權限與版本；才驗改標題、刪空日、非空日關聯及重編。DST、無日期時，須明定保留當地鐘面或同一瞬間。 |
-| WTG-15 | §5.3、§9 里程碑 5 | P2 · S | 確認無障礙缺口 | 手機側欄按鈕未揭露展開狀態；部分業務切換只改樣式。既有對話框與收起側欄的焦點保護有各自範圍。[側欄](frontend/components/Workspace.tsx#L393) · [切換](frontend/components/Reservations.tsx#L490) · [舊複驗](docs/accessibility-checks.md) | 依 modal 或 disclosure 的選擇，在手機／桌面用鍵盤與讀屏驗展開、選取、Escape、焦點返回；於有資料的表單補查 busy 與錯誤。 |
-| WTG-16 | FR-FILE-02/06、FR-COMMENT-05、§5.3 | P2 · S/A | 確認狀態缺口；草稿清理待決策 | multipart 上傳期間可關閉視窗；介面對非 JSON 413 已有可讀訊息，尚缺確認結果與安全重試。留言草稿檔之後才綁定。[上傳](frontend/components/Attachments.tsx#L44) · [檔案關聯](backend/app/file_access.py) | 先驗 01 的批次冪等，再驗慢速、關閉後重開、取消、提交後回應晚到、額度超限。中止等待仍需確認伺服器結果；草稿清理不得波及已關聯內容。 |
-| WTG-17 | §5.1、FR-COLLAB-07 | P2 · E/S | 確認查詢放大；實際效能影響待測 | 列表逐旅程／任務補查，部分事件仍廣泛刷新；即時層已有事件合併與分流。檔案原始內容採延遲載入。[旅程摘要](backend/app/trips.py#L102) · [任務](backend/app/preparations.py#L107) · [刷新](frontend/components/TripDetail.tsx#L131) | 同一合成資料分別取 20、100 筆，比查詢數、payload、耗時；另驗分頁期間增刪、私人任務 ACL、事件集中到達及斷線後收斂。 |
-| WTG-18 | §8、FR-BOOK-05、BR-013 | P2 · E/S | 確認契約缺口 | 多數 JSON 回應形狀未明訂；前端 api<T> 以型別斷言傳回資料。本次靜態計數見 §12.5。[前端 client](frontend/lib/api.ts) · [訂位序列化](backend/app/preparations.py#L419) | 驗主要回應與錯誤的具體型別、欄位可空與版本相容；以建立者、列名旅客、非旅客 owner、一般成員分別核對欄位。是否產生 client 是實作選擇。 |
-| WTG-19 | §8、§5.2 | P2 · E/S | 確認缺陷 | 已知錯誤有結構化處理；未預期例外可跳過加上 Request ID 的 middleware 返回路徑。代理與 API 關閉一般 access log。[錯誤處理](backend/app/main.py#L50) · [middleware](backend/app/main.py#L128) · [nginx](deploy/nginx.conf#L9) | 隔離環境注入一般例外，核對各類 4xx 與 500 的錯誤碼、ID、去識別記錄；代理提前拒絕的 413 另驗。健康檢查與備份狀態各自判讀。 |
-| WTG-20 | §5.2、AC-020 | P2，共享主機存正式憑證時 P1* · E | 確認初始化權限缺口 | 以獨占建立防覆寫，新檔模式受 umask 影響。附件在 POSIX umask 022 觀測為 0644。可讀範圍也取決於父目錄權限。[初始化](deploy/init_env.py#L8) · [測試帳號](deploy/create_test_login.py#L32) | 以隔離假設定測新檔 0600、既有檔案內容與權限不變、失敗不殘留；Windows 部署另驗 ACL。 |
+| WTG-11 | FR-FILE-04/05/06、BR-013 | P2 · S | 確認容量缺口；永久清理待決策 | 回收資料仍計入旅程配額，只有回收／還原入口。30 日規定適用旅程。[配額](../../backend/app/files.py#L187) · [回收與還原](../../backend/app/files.py#L265) | 政策確定後核對使用中、回收、總用量與實際可再上傳容量；含關聯附件、併發、重試、還原及上傳者權限。資料庫檔案縮小另行量測。 |
+| WTG-12 | FR-TRIP-02/03、FR-PLAN-01/02、FR-DATE-05、FR-TASK-06 | P2 · E/S | 確認缺陷；部分輸入語意待決策 | 建立／延長日數有 3660 天限制；每日日期以加法求值，單獨增日未沿用整體限制，週期計算也有年份邊界。[旅程](../../backend/app/trips.py#L161) · [每日日期](../../backend/app/planning.py#L524) · [任務週期](../../backend/app/preparations.py#L286) | 以最大日期加一天、最大日數再增日、閏日、月底／年底及既有異常資料驗讀寫。拒絕時整筆不變；保留無日期及僅開始日，僅結束日的契約待定。 |
+| WTG-13 | FR-COLLAB-03–06、AC-007–009、§5.3 | P2 · S/A | 確認部分缺口；恢復介面屬提案 | 旅程表單固定初始版本；個人暱稱已有保留輸入並重讀的流程。後端已有版本及鎖保護。[旅程表單](../../frontend/components/TripForm.tsx#L18) · [暱稱](../../frontend/components/ProfileForm.tsx#L34) | 兩頁互改旅程、費用、預訂，分別驗舊版 409 與租約失效。應能辨識草稿與最新值、明確重套或放棄，背景更新不可覆蓋輸入。 |
+| WTG-14 | §9 里程碑 3、§8、FR-PLAN-09、FR-DATE-05 | P2 · S/A | 規格歧義；待決策 | 里程碑寫「每日行程 CRUD」，API 表只列取得／新增日；現有活動可以修改、移除。修改旅程日期應保留行程。[日層級路由](../../backend/app/planning.py#L530) · [規格](../spec.md#L616) | 先釐清日與活動的 CRUD、權限與版本；才驗改標題、刪空日、非空日關聯及重編。DST、無日期時，須明定保留當地鐘面或同一瞬間。 |
+| WTG-15 | §5.3、§9 里程碑 5 | P2 · S | 確認無障礙缺口 | 手機側欄按鈕未揭露展開狀態；部分業務切換只改樣式。既有對話框與收起側欄的焦點保護有各自範圍。[側欄](../../frontend/components/Workspace.tsx#L393) · [切換](../../frontend/components/Reservations.tsx#L490) · [舊複驗](accessibility-checks.md) | 依 modal 或 disclosure 的選擇，在手機／桌面用鍵盤與讀屏驗展開、選取、Escape、焦點返回；於有資料的表單補查 busy 與錯誤。 |
+| WTG-16 | FR-FILE-02/06、FR-COMMENT-05、§5.3 | P2 · S/A | 確認狀態缺口；草稿清理待決策 | multipart 上傳期間可關閉視窗；介面對非 JSON 413 已有可讀訊息，尚缺確認結果與安全重試。留言草稿檔之後才綁定。[上傳](../../frontend/components/Attachments.tsx#L44) · [檔案關聯](../../backend/app/file_access.py) | 先驗 01 的批次冪等，再驗慢速、關閉後重開、取消、提交後回應晚到、額度超限。中止等待仍需確認伺服器結果；草稿清理不得波及已關聯內容。 |
+| WTG-17 | §5.1、FR-COLLAB-07 | P2 · E/S | 確認查詢放大；實際效能影響待測 | 列表逐旅程／任務補查，部分事件仍廣泛刷新；即時層已有事件合併與分流。檔案原始內容採延遲載入。[旅程摘要](../../backend/app/trips.py#L102) · [任務](../../backend/app/preparations.py#L107) · [刷新](../../frontend/components/TripDetail.tsx#L131) | 同一合成資料分別取 20、100 筆，比查詢數、payload、耗時；另驗分頁期間增刪、私人任務 ACL、事件集中到達及斷線後收斂。 |
+| WTG-18 | §8、FR-BOOK-05、BR-013 | P2 · E/S | 確認契約缺口 | 多數 JSON 回應形狀未明訂；前端 api<T> 以型別斷言傳回資料。本次靜態計數見 §12.5。[前端 client](../../frontend/lib/api.ts) · [訂位序列化](../../backend/app/preparations.py#L419) | 驗主要回應與錯誤的具體型別、欄位可空與版本相容；以建立者、列名旅客、非旅客 owner、一般成員分別核對欄位。是否產生 client 是實作選擇。 |
+| WTG-19 | §8、§5.2 | P2 · E/S | 確認缺陷 | 已知錯誤有結構化處理；未預期例外可跳過加上 Request ID 的 middleware 返回路徑。代理與 API 關閉一般 access log。[錯誤處理](../../backend/app/main.py#L50) · [middleware](../../backend/app/main.py#L128) · [nginx](../../deploy/nginx.conf#L9) | 隔離環境注入一般例外，核對各類 4xx 與 500 的錯誤碼、ID、去識別記錄；代理提前拒絕的 413 另驗。健康檢查與備份狀態各自判讀。 |
+| WTG-20 | §5.2、AC-020 | P2，共享主機存正式憑證時 P1* · E | 確認初始化權限缺口 | 以獨占建立防覆寫，新檔模式受 umask 影響。附件在 POSIX umask 022 觀測為 0644。可讀範圍也取決於父目錄權限。[初始化](../../deploy/init_env.py#L8) · [測試帳號](../../deploy/create_test_login.py#L32) | 以隔離假設定測新檔 0600、既有檔案內容與權限不變、失敗不殘留；Windows 部署另驗 ACL。 |
 
 #### 21–30　維運、資料保存與通知
 
 | 項目 | 原規格 | 優先度與證據 | 本次判讀 | 現況與查核位置 | 日後驗收條件 |
 | --- | --- | --- | --- | --- | --- |
-| WTG-21 | §5.2/5.4、§6.2、§9 里程碑 1 | P2 · S | 確認部署權限共用；拆分屬改善 | Compose 初始化、API 與備份使用同一資料庫使用者；API 啟動時也執行 migration。既有 volume 的角色權限須實查。[服務身分](compose.yaml#L7) · [API 啟動](backend/Dockerfile#L11) | 若拆分角色，從空庫及舊 volume 驗升級、runtime 業務讀寫、拒絕 DDL、備份與還原；連同 26 的復原路徑驗新表權限。 |
-| WTG-22 | §7、§9 里程碑 1、§5.4 | P2 · S | 確認持續驗證缺口 | 測試 fixture 直接建立最終 schema，例行 CI 從空庫升級。先前曾在 SQLite、PG 驗 0009→0010 的既有帳戶。[fixture](backend/tests/conftest.py#L43) · [CI](.github/workflows/ci.yml) · [歷史 R01](docs/round2-review.md#L7) | 從已支援的前版植入代表資料再升級，在兩種資料庫比對暱稱版本、私人檔案 hash／ACL／關聯、財務及歷史身分；記明可支援的降版或還原方式。 |
-| WTG-23 | FR-NOTIFY-01/02、§9 里程碑 5 | P2 · S | 確認測試缺口 | 模擬通知點擊與真實供應商案例共用 opt-in 開關。已有歷史裝置接收紀錄，原生橫幅點擊有獨立驗收需求。[測試開關](frontend/tests/live-push.spec.ts#L8) · [執行器](backend/run_live_acceptance.py#L269) | 例行 CI 應能證明模擬事件、定位與已讀有執行；換帳後不得顯示舊內容。另列真實供應商、背景裝置及原生點擊各自的執行狀態。 |
-| WTG-24 | §5.2、§9 里程碑 1/5 | P2 · S | 確認 CI 證據缺口 | Playwright 設定 retain-on-failure，隔離 runner 額外指定 --trace=off；CI 清除容器前缺持久化、去識別的失敗證據，Safari job 已有限時。[設定](frontend/playwright.config.ts#L10) · [runner](backend/run_live_acceptance.py#L269) · [CI](.github/workflows/ci.yml) | 在獨立測試 run 驗失敗時先保存可用證據、檢查憑證與隱私資料已排除，再清理；同分支取消與各 job 時限須可觀測。 |
-| WTG-25 | §9 里程碑 1/5 | P2 · S | 確認發布輸入缺口 | Python 直接依賴精確釘版，前端有 frozen lock；Python 間接依賴、容器與 workflow 的可變標籤仍影響重現性。[後端依賴](backend/requirements.txt) · [前端建置](frontend/Dockerfile) · [CI](.github/workflows/ci.yml) | 同版兩次乾淨安裝比對依賴圖，發布紀錄串起 SHA、鎖檔、映像 digest、migration head 與稽核日期。分開應用、工具及 OS 稽核結果。 |
-| WTG-26 | §5.4、FR-INV-04/05、§9 里程碑 1 | P2 · S/A | 確認手冊缺口；維運目標待決策 | 目前有隔離 restore drill，正式切換、反向切換、異機接管仍缺演練。邀請簽章預設沿用 DB 密碼，影響既有邀請重送。[設定](compose.yaml#L28) · [邀請重送](backend/app/trips.py#L431) · [還原說明](README.md#L99) | 以受保護設定和備份在全新 volume／主機驗登入、金額、檔案 bytes 與 ACL；另演練兩種金鑰輪替及回復。記實測資料年齡、耗時，RPO/RTO 由維護者定。 |
-| WTG-27 | FR-TRIP-07、FR-FILE-05、FR-FIN-09、§5.4 | P2 · S/A | 待決策 | 旅程有 30 日可復原窗口；備份預設每日、成功後輪替超過七日的舊檔。資料庫內各類資料的永久清除條件仍待定。[旅程回收](backend/app/trips.py#L281) · [可見性](backend/app/core.py#L167) · [備份](deploy/backup.sh) | 決策表分列使用中、回收、歷史及備份；政策核定後驗批次重跑、恢復與清理競爭、檔案關聯、財務署名及 receipt 可重試窗口。 |
-| WTG-28 | §5.1/5.2、FR-COLLAB-07、BR-003 | P2，公開擴大使用前提高 · S/C | 條件性風險 | WS 有輸出佇列 32、合併、傳送逾時與持續授權；身分連線數及輸入預算缺上限。[連線與佇列](backend/app/realtime.py#L16) · [收送](backend/app/realtime.py#L64) | 隔離環境量正常多分頁與可接受上限。核對撤銷、離團、回收、正常 heartbeat、超限關閉與重連；封存維持既有權限。 |
-| WTG-29 | FR-AUTH-03/04/06、BR-001/002、AC-015 | P2 · S/A | 待決策 | 已有本裝置登出、訪客合併及風險提示。接收 owner 的條件是有效成員，訪客可能成為唯一 owner。[登出](backend/app/auth.py#L157) · [所有權轉移](backend/app/trips.py#L317) · [登入提示](frontend/components/AccessDialog.tsx#L162) | 決定其他裝置撤銷與訪客復原／轉交規則後，驗 HTTP/WS 撤權、不可撤他人 session、合併後歷史與附件，以及旅程始終只有一位有效 owner。 |
-| WTG-30 | FR-NOTIFY-01/02、FR-COMMENT-04 | P3，承諾可靠通知時 P2 · S/A | 待決策 | 站內通知隨留言提交，推播在 commit 後背景寄送，發送前會篩選資格與偏好。現行交付機制屬 best-effort。[留言](backend/app/decisions.py#L537) · [發送](backend/app/notices.py#L137) | 先驗推播失敗時留言與站內通知可用。僅在承諾可靠送達時追加 outbox 驗收，含重啟接續、去重、有限重試及發送前撤權／偏好重查。 |
+| WTG-21 | §5.2/5.4、§6.2、§9 里程碑 1 | P2 · S | 確認部署權限共用；拆分屬改善 | Compose 初始化、API 與備份使用同一資料庫使用者；API 啟動時也執行 migration。既有 volume 的角色權限須實查。[服務身分](../../compose.yaml#L7) · [API 啟動](../../backend/Dockerfile#L11) | 若拆分角色，從空庫及舊 volume 驗升級、runtime 業務讀寫、拒絕 DDL、備份與還原；連同 26 的復原路徑驗新表權限。 |
+| WTG-22 | §7、§9 里程碑 1、§5.4 | P2 · S | 確認持續驗證缺口 | 測試 fixture 直接建立最終 schema，例行 CI 從空庫升級。先前曾在 SQLite、PG 驗 0009→0010 的既有帳戶。[fixture](../../backend/tests/conftest.py#L43) · [CI](../../.github/workflows/ci.yml) · [歷史 R01](round2-review.md#L7) | 從已支援的前版植入代表資料再升級，在兩種資料庫比對暱稱版本、私人檔案 hash／ACL／關聯、財務及歷史身分；記明可支援的降版或還原方式。 |
+| WTG-23 | FR-NOTIFY-01/02、§9 里程碑 5 | P2 · S | 確認測試缺口 | 模擬通知點擊與真實供應商案例共用 opt-in 開關。已有歷史裝置接收紀錄，原生橫幅點擊有獨立驗收需求。[測試開關](../../frontend/tests/live-push.spec.ts#L8) · [執行器](../../backend/run_live_acceptance.py#L269) | 例行 CI 應能證明模擬事件、定位與已讀有執行；換帳後不得顯示舊內容。另列真實供應商、背景裝置及原生點擊各自的執行狀態。 |
+| WTG-24 | §5.2、§9 里程碑 1/5 | P2 · S | 確認 CI 證據缺口 | Playwright 設定 retain-on-failure，隔離 runner 額外指定 --trace=off；CI 清除容器前缺持久化、去識別的失敗證據，Safari job 已有限時。[設定](../../frontend/playwright.config.ts#L10) · [runner](../../backend/run_live_acceptance.py#L269) · [CI](../../.github/workflows/ci.yml) | 在獨立測試 run 驗失敗時先保存可用證據、檢查憑證與隱私資料已排除，再清理；同分支取消與各 job 時限須可觀測。 |
+| WTG-25 | §9 里程碑 1/5 | P2 · S | 確認發布輸入缺口 | Python 直接依賴精確釘版，前端有 frozen lock；Python 間接依賴、容器與 workflow 的可變標籤仍影響重現性。[後端依賴](../../backend/requirements.txt) · [前端建置](../../frontend/Dockerfile) · [CI](../../.github/workflows/ci.yml) | 同版兩次乾淨安裝比對依賴圖，發布紀錄串起 SHA、鎖檔、映像 digest、migration head 與稽核日期。分開應用、工具及 OS 稽核結果。 |
+| WTG-26 | §5.4、FR-INV-04/05、§9 里程碑 1 | P2 · S/A | 確認手冊缺口；維運目標待決策 | 目前有隔離 restore drill，正式切換、反向切換、異機接管仍缺演練。邀請簽章預設沿用 DB 密碼，影響既有邀請重送。[設定](../../compose.yaml#L28) · [邀請重送](../../backend/app/trips.py#L431) · [還原說明](../../README.md#L99) | 以受保護設定和備份在全新 volume／主機驗登入、金額、檔案 bytes 與 ACL；另演練兩種金鑰輪替及回復。記實測資料年齡、耗時，RPO/RTO 由維護者定。 |
+| WTG-27 | FR-TRIP-07、FR-FILE-05、FR-FIN-09、§5.4 | P2 · S/A | 待決策 | 旅程有 30 日可復原窗口；備份預設每日、成功後輪替超過七日的舊檔。資料庫內各類資料的永久清除條件仍待定。[旅程回收](../../backend/app/trips.py#L281) · [可見性](../../backend/app/core.py#L167) · [備份](../../deploy/backup.sh) | 決策表分列使用中、回收、歷史及備份；政策核定後驗批次重跑、恢復與清理競爭、檔案關聯、財務署名及 receipt 可重試窗口。 |
+| WTG-28 | §5.1/5.2、FR-COLLAB-07、BR-003 | P2，公開擴大使用前提高 · S/C | 條件性風險 | WS 有輸出佇列 32、合併、傳送逾時與持續授權；身分連線數及輸入預算缺上限。[連線與佇列](../../backend/app/realtime.py#L16) · [收送](../../backend/app/realtime.py#L64) | 隔離環境量正常多分頁與可接受上限。核對撤銷、離團、回收、正常 heartbeat、超限關閉與重連；封存維持既有權限。 |
+| WTG-29 | FR-AUTH-03/04/06、BR-001/002、AC-015 | P2 · S/A | 待決策 | 已有本裝置登出、訪客合併及風險提示。接收 owner 的條件是有效成員，訪客可能成為唯一 owner。[登出](../../backend/app/auth.py#L157) · [所有權轉移](../../backend/app/trips.py#L317) · [登入提示](../../frontend/components/AccessDialog.tsx#L162) | 決定其他裝置撤銷與訪客復原／轉交規則後，驗 HTTP/WS 撤權、不可撤他人 session、合併後歷史與附件，以及旅程始終只有一位有效 owner。 |
+| WTG-30 | FR-NOTIFY-01/02、FR-COMMENT-04 | P3，承諾可靠通知時 P2 · S/A | 待決策 | 站內通知隨留言提交，推播在 commit 後背景寄送，發送前會篩選資格與偏好。現行交付機制屬 best-effort。[留言](../../backend/app/decisions.py#L537) · [發送](../../backend/app/notices.py#L137) | 先驗推播失敗時留言與站內通知可用。僅在承諾可靠送達時追加 outbox 驗收，含重啟接續、去重、有限重試及發送前撤權／偏好重查。 |
 
 #### 31–36　財務歷程、發布與攜出
 
 | 項目 | 原規格 | 優先度與證據 | 本次判讀 | 現況與查核位置 | 日後驗收條件 |
 | --- | --- | --- | --- | --- | --- |
-| WTG-31 | FR-HISTORY-01、FR-FIN-05/06/09 | P2 · S/A | 確認稽核粒度；更正政策待決策 | 費用有操作紀錄，修改會替換分攤與付款人，刪除不留完整前後快照；既有帳本幣別及退出成員歸屬有測試。[費用](backend/app/finance.py#L282) · [刪除](backend/app/finance.py#L332) · [財務回歸](backend/tests/test_finance.py) | 核定結清後可否更正及保留範圍後，驗多付款人、尾差、幣別、刪除前後餘額與私人欄位；舊版重送不得增加修訂。 |
-| WTG-32 | §5.1/5.4、FR-FILE-06 | P2 · S/A | 容量與營運指標待決策 | 單檔及單旅程配額已設；歷史五人延遲有數據，最低主機與上傳、備份及還原同時發生的高峰待量測。[部署](compose.yaml) · [歷史五人量測](README.md#L153) | 代表性主機量 CPU、峰值 RSS、磁碟、日誌及恢復時間，包含回收檔案；依數據決定預算、保留期及告警。 |
-| WTG-33 | §5.2/5.5、BR-014 | P2 · S/A | 已知設定；部署強化屬提案 | 還原服務無網路；主要服務共用 Compose 網路。nginx 已送部分安全 headers。公開頁面 CSP 及網路隔離仍有改善空間。[網路](compose.yaml#L78) · [headers](deploy/nginx.conf#L11) | 依部署方案驗資料庫可達範圍與必要服務連線，在實際 HTTPS 入口驗 OAuth、WS、地圖、離線、列印，再決定 CSP 與網域政策。 |
-| WTG-34 | FR-FILE-06、FR-MAP-01、§6.1 | P2 · S/C | 確認設定缺口；超額影響有條件 | 圖磚 URL 為公開 build ARG，Compose 未轉入；預設上傳上限相容，調高單檔後批次可能先超過 nginx 110 MiB。正式 Compose 的 API 路徑直達 FastAPI。[建置](frontend/Dockerfile#L8) · [Compose](compose.yaml#L43) · [入口](deploy/nginx.conf#L27) | 實際重建前端看圖磚來源，預設與調高兩種值都經入口傳多檔；分清開發代理與正式路徑，核對 413 文案及安全重試。 |
-| WTG-35 | §9 里程碑 1/5 | P2，歷史附件整理 P3 · S/A | 本次完成證據索引；其餘待決策或另案 | README 已有驗證與協作入口；兩輪歷史另有報告。這份文件新增版本與結案範圍索引。授權、貢獻政策、遠端分支保護須分別由擁有者選擇或查證。[開發入口](README.md#L112) · [歷史複驗](docs/round2-review.md) | 能從此表找到需求、歷史 revision、來源與待驗流程。乾淨啟動及發布治理應另留實際紀錄，索引交付不代表整個 WTG-35 完成。 |
-| WTG-36 | FR-PDF-01/02、FR-OFFLINE-01/02、BR-001/013 | P2 · S/A | 待決策 | 已有行程 PDF 及選用的欄位白名單離線快照；可攜式匯出格式、帳號刪除、共同帳務與所有權處置均需選擇。[列印](frontend/components/PlannerTools.tsx) · [離線欄位](frontend/lib/offlineTrips.ts#L77) · [原規格](docs/spec.md#L363) | 決定格式與資料範圍後，以相同帳號對照 API 與匯出可見欄位，驗金額、時區、取消與檔案關聯。刪除帳號不得使旅程無主或破壞共同帳務。 |
+| WTG-31 | FR-HISTORY-01、FR-FIN-05/06/09 | P2 · S/A | 確認稽核粒度；更正政策待決策 | 費用有操作紀錄，修改會替換分攤與付款人，刪除不留完整前後快照；既有帳本幣別及退出成員歸屬有測試。[費用](../../backend/app/finance.py#L282) · [刪除](../../backend/app/finance.py#L332) · [財務回歸](../../backend/tests/test_finance.py) | 核定結清後可否更正及保留範圍後，驗多付款人、尾差、幣別、刪除前後餘額與私人欄位；舊版重送不得增加修訂。 |
+| WTG-32 | §5.1/5.4、FR-FILE-06 | P2 · S/A | 容量與營運指標待決策 | 單檔及單旅程配額已設；歷史五人延遲有數據，最低主機與上傳、備份及還原同時發生的高峰待量測。[部署](../../compose.yaml) · [歷史五人量測](../../README.md#L153) | 代表性主機量 CPU、峰值 RSS、磁碟、日誌及恢復時間，包含回收檔案；依數據決定預算、保留期及告警。 |
+| WTG-33 | §5.2/5.5、BR-014 | P2 · S/A | 已知設定；部署強化屬提案 | 還原服務無網路；主要服務共用 Compose 網路。nginx 已送部分安全 headers。公開頁面 CSP 及網路隔離仍有改善空間。[網路](../../compose.yaml#L78) · [headers](../../deploy/nginx.conf#L11) | 依部署方案驗資料庫可達範圍與必要服務連線，在實際 HTTPS 入口驗 OAuth、WS、地圖、離線、列印，再決定 CSP 與網域政策。 |
+| WTG-34 | FR-FILE-06、FR-MAP-01、§6.1 | P2 · S/C | 確認設定缺口；超額影響有條件 | 圖磚 URL 為公開 build ARG，Compose 未轉入；預設上傳上限相容，調高單檔後批次可能先超過 nginx 110 MiB。正式 Compose 的 API 路徑直達 FastAPI。[建置](../../frontend/Dockerfile#L8) · [Compose](../../compose.yaml#L43) · [入口](../../deploy/nginx.conf#L27) | 實際重建前端看圖磚來源，預設與調高兩種值都經入口傳多檔；分清開發代理與正式路徑，核對 413 文案及安全重試。 |
+| WTG-35 | §9 里程碑 1/5 | P2，歷史附件整理 P3 · S/A | 本次完成證據索引；其餘待決策或另案 | README 已有驗證與協作入口；兩輪歷史另有報告。這份文件新增版本與結案範圍索引。授權、貢獻政策、遠端分支保護須分別由擁有者選擇或查證。[開發入口](../../README.md#L112) · [歷史複驗](round2-review.md) | 能從此表找到需求、歷史 revision、來源與待驗流程。乾淨啟動及發布治理應另留實際紀錄，索引交付不代表整個 WTG-35 完成。 |
+| WTG-36 | FR-PDF-01/02、FR-OFFLINE-01/02、BR-001/013 | P2 · S/A | 待決策 | 已有行程 PDF 及選用的欄位白名單離線快照；可攜式匯出格式、帳號刪除、共同帳務與所有權處置均需選擇。[列印](../../frontend/components/PlannerTools.tsx) · [離線欄位](../../frontend/lib/offlineTrips.ts#L77) · [原規格](../spec.md#L363) | 決定格式與資料範圍後，以相同帳號對照 API 與匯出可見欄位，驗金額、時區、取消與檔案關聯。刪除帳號不得使旅程無主或破壞共同帳務。 |
 
 <a id="x-scope"></a>
 
@@ -1030,14 +1030,14 @@ python backend/run_live_acceptance.py --production
 
 | 項目 | 現行依據 | 提案新增範圍 |
 | --- | --- | --- |
-| X-01 | 已有建立、邀請、安排行程與記帳入口。[體驗流程](README.md) | 新手引導清單；五分鐘是待量測的構想。 |
-| X-02 | 首頁有唯讀旅程及每日行程展示。[示範旅程](frontend/lib/samples.ts) | 將投票、任務、分帳情境加入無須登入的展示。 |
-| X-03 | 已有旅程與景點篩選。[旅程列表](frontend/components/Workspace.tsx) · [景點](frontend/components/Planner.tsx) | 費用、任務、附件的跨條件篩選與分頁相容性。 |
-| X-04 | 留言通知已有定向入口，其他頁籤狀態多由元件管理。[網址讀取](frontend/components/Workspace.tsx#L57) · [頁籤](frontend/components/TripDetail.tsx#L335) | 可分享頁籤與前進／後退支援；網址仍須經相同授權。 |
-| X-05 | 已有 opt-in、儲存時間、白名單與清除。[本機副本](frontend/lib/offlineTrips.ts) · [離線閱讀](frontend/public/offline-reader.js) | 新鮮度提示、格式版本、損壞資料復原與可選期限。 |
-| X-06 | FR-PLAN-09 及既有航班欄位支援目的地時區／offset。[行程時間](backend/app/planning_time.py) · [航班](frontend/components/Reservations.tsx) | 城市選擇器與旅行當日 offset 輔助；連同 14 驗 DST 及跨日。 |
-| X-07 | 任務、預訂、重疊與分帳分別已有頁面。[旅程頁籤](frontend/components/TripDetail.tsx) | 可直接前往處理的行前總覽；提示須按讀取者的 ACL 產生。 |
-| X-08 | FR-TRIP-08 的安全複製已實作，有排除私人資料的案例。[複製](backend/app/trip_copy.py#L23) · [已有案例](backend/tests/test_trip_copy.py) | 可選範圍的旅程起始範本、標示來源與獨立編輯。 |
+| X-01 | 已有建立、邀請、安排行程與記帳入口。[體驗流程](../../README.md) | 新手引導清單；五分鐘是待量測的構想。 |
+| X-02 | 首頁有唯讀旅程及每日行程展示。[示範旅程](../../frontend/lib/samples.ts) | 將投票、任務、分帳情境加入無須登入的展示。 |
+| X-03 | 已有旅程與景點篩選。[旅程列表](../../frontend/components/Workspace.tsx) · [景點](../../frontend/components/Planner.tsx) | 費用、任務、附件的跨條件篩選與分頁相容性。 |
+| X-04 | 留言通知已有定向入口，其他頁籤狀態多由元件管理。[網址讀取](../../frontend/components/Workspace.tsx#L57) · [頁籤](../../frontend/components/TripDetail.tsx#L335) | 可分享頁籤與前進／後退支援；網址仍須經相同授權。 |
+| X-05 | 已有 opt-in、儲存時間、白名單與清除。[本機副本](../../frontend/lib/offlineTrips.ts) · [離線閱讀](../../frontend/public/offline-reader.js) | 新鮮度提示、格式版本、損壞資料復原與可選期限。 |
+| X-06 | FR-PLAN-09 及既有航班欄位支援目的地時區／offset。[行程時間](../../backend/app/planning_time.py) · [航班](../../frontend/components/Reservations.tsx) | 城市選擇器與旅行當日 offset 輔助；連同 14 驗 DST 及跨日。 |
+| X-07 | 任務、預訂、重疊與分帳分別已有頁面。[旅程頁籤](../../frontend/components/TripDetail.tsx) | 可直接前往處理的行前總覽；提示須按讀取者的 ACL 產生。 |
+| X-08 | FR-TRIP-08 的安全複製已實作，有排除私人資料的案例。[複製](../../backend/app/trip_copy.py#L23) · [已有案例](../../backend/tests/test_trip_copy.py) | 可選範圍的旅程起始範本、標示來源與獨立編輯。 |
 
 <a id="decision-history"></a>
 
@@ -1055,10 +1055,10 @@ python backend/run_live_acceptance.py --production
 
 | 日期與 revision | 此時能支持的結論 | 如何用於本次交付 |
 | --- | --- | --- |
-| 2026-11-25，`f398d98` 加當時工作樹 | 第一輪驗收的主要對象含未提交變更，乾淨 HEAD 另行測試。[第一輪交接與環境](acceptance-20261125/開發修正交接.md) | 保留原有失敗與未驗項作沿革。 |
-| 2026-11-25，`cada651` | 第二輪規格矩陣 436 列，當時 407 passed、14 failed、15 blocked。已核定的八項實體儲存對照另載於 v1.1。[第二輪原報告](acceptance-retest-cada651/第二輪功能驗收報告.md) · [資料模型](docs/data-model.md) | 功能規格與 WTG 分別統計，結案時核對較新的修正紀錄。 |
-| 2026-11-25 至 11-26，`d5a9786`、`87e5635`；`29a4b14` 補記 | 暱稱拒絕舊版、保留輸入與重讀；離線 fresh-tab、對話框返回焦點、鍵盤操作各有修正與複驗；正式 Safari 有指定版本的歷史紀錄。[第二輪複驗](docs/round2-review.md) · [鍵盤複驗](docs/accessibility-checks.md) · [暱稱測試](backend/tests/test_review_account_invitations.py#L54) | **先前已修復且本次以來源確認**限於這些子行為。它們可作 03、13、15 的參照，各列新增的場景仍應測試。 |
-| 2026-11-25 實測；`29a4b14` 可查複驗彙整 | 六份 11-20 至 11-25 備份在 11-25 做了隔離還原。另有 PG 私人檔案 bytes、ACL 及回收狀態的歷史演練。[還原紀錄](docs/round2-review.md#L30) · [第一輪還原](docs/review-fixes.md) | 支持當時的還原情境；07 的新鮮度與 26 的異機切換仍待驗。 |
+| 2026-11-25，`f398d98` 加當時工作樹 | 第一輪驗收的主要對象含未提交變更，乾淨 HEAD 另行測試。[第一輪交接與環境](../acceptance/2026-11-25-round-1/開發修正交接.md) | 保留原有失敗與未驗項作沿革。 |
+| 2026-11-25，`cada651` | 第二輪規格矩陣 436 列，當時 407 passed、14 failed、15 blocked。已核定的八項實體儲存對照另載於 v1.1。[第二輪原報告](../acceptance/2026-11-25-round-2/第二輪功能驗收報告.md) · [資料模型](../data-model.md) | 功能規格與 WTG 分別統計，結案時核對較新的修正紀錄。 |
+| 2026-11-25 至 11-26，`d5a9786`、`87e5635`；`29a4b14` 補記 | 暱稱拒絕舊版、保留輸入與重讀；離線 fresh-tab、對話框返回焦點、鍵盤操作各有修正與複驗；正式 Safari 有指定版本的歷史紀錄。[第二輪複驗](round2-review.md) · [鍵盤複驗](accessibility-checks.md) · [暱稱測試](../../backend/tests/test_review_account_invitations.py#L54) | **先前已修復且本次以來源確認**限於這些子行為。它們可作 03、13、15 的參照，各列新增的場景仍應測試。 |
+| 2026-11-25 實測；`29a4b14` 可查複驗彙整 | 六份 11-20 至 11-25 備份在 11-25 做了隔離還原。另有 PG 私人檔案 bytes、ACL 及回收狀態的歷史演練。[還原紀錄](round2-review.md#L30) · [第一輪還原](review-fixes.md) | 支持當時的還原情境；07 的新鮮度與 26 的異機切換仍待驗。 |
 | 2026-11-26，`aac83bd` 附件原審查 | §2.2 記 SQLite 後端 63 passed、1 warning；Vitest 2 檔共 5 passed；選取的 12 個瀏覽器案例均在啟動受阻，0 個走到產品斷言。§9.3 的 SQL 次數、RSS、狀態碼亦出自該次。 | 行號對應這個版本。附件未列完整 12 個測試標題或 selector，日後若需逐一比對同一批，須補原命令或清單。 |
 
 <a id="verification-record"></a>
@@ -1078,7 +1078,7 @@ python backend/run_live_acceptance.py --production
 | skipped | pytest、Vitest、正式前端建置、Playwright、native Safari、Google 真實登入、裝置推播、正式 HTTPS 及跨主機演練均未於本次執行。 | 本次是文件交付；產品案例沒有新增 passed／failed。附件過去的 Chromium 啟動障礙只屬當時環境。 |
 | blocked | `docker info --format '{{.ServerVersion}}'` 回傳 exit 1，無法連線至本機 Docker daemon。 | 只查環境可用性。本次沒有在 Compose 上執行 PostgreSQL、容器換 IP、備份或還原，文件交付可獨立完成。 |
 
-從儲存庫根目錄可重跑以下文件驗證。第一個參數指向未編輯的原附件；若在另一台機器重跑，請換成原件的實際路徑。
+**2026-11-26 的歷史指令**　以下 Git 比對與來源定位指令記錄 `aac83bd` 當時的工作樹狀態。
 
 ```sh
 git rev-parse HEAD
@@ -1088,15 +1088,24 @@ git status --short --untracked-files=all
 rg -n 'Idempotency-Key|randomUUID' frontend/lib/api.ts
 rg -n 'creation_id|def copy_trip' backend/app/trip_copy.py
 rg -n -- '--trace=off|args.tests or' backend/run_live_acceptance.py
-python3 - ~/Desktop/WayToGo_Feedback.md <<'PY'
+```
+
+**在目前目錄重跑文件驗證**　從儲存庫根目錄執行以下指令。它會從本檔還原原附件正文，以當時記錄的 SHA-256 核對。若另有原附件，也可在 `python3 -` 後加上它的路徑進行比對。通過時第一行會顯示 82,134 bytes、36 項 WTG、8 項提案、16 個情境及 121 處引用。第二行列出目前程式的路由統計。
+
+```sh
+python3 - <<'PY'
 from pathlib import Path
 import ast, hashlib, re, sys
 
-original = Path(sys.argv[1]).read_bytes()
+feedback = Path("docs/reviews/WayToGo_Feedback.md")
+history, supplement = feedback.read_bytes().split("\n---\n\n## 12. ".encode(), 1)
+title = history.split(b"\n", 1)[0]
+body_start = history.index("\n\n> WayToGo 已具備".encode())
+original = title + history[body_start:]
 assert hashlib.sha256(original).hexdigest() == "cafaa8dbf996534c6807a5ed2870beecbf9e6c547b2ef76f86a73daa1d5fd4a7"
-title, rest = original.split(b"\n", 1)
-document = Path("WayToGo_Feedback.md").read_bytes()
-history, supplement = document.split("\n---\n\n## 12. ".encode(), 1)
+if len(sys.argv) > 1:
+    assert Path(sys.argv[1]).read_bytes() == original, "原附件與保存的正文不同"
+_, rest = original.split(b"\n", 1)
 assert history.startswith(title + b"\n") and history.endswith(rest)
 guide = history[len(title):-len(rest)].decode()
 current = supplement.decode()
@@ -1126,7 +1135,7 @@ for link in links:
     if not filename:
         assert prose.count(f'id="{anchor}"') == 1, link
     else:
-        path = Path(filename)
+        path = feedback.parent / filename
         assert path.resolve().is_relative_to(Path.cwd()) and path.is_file(), link
         if anchor:
             assert re.fullmatch(r"L\d+", anchor) and 0 < int(anchor[1:]) <= len(path.read_bytes().splitlines()), link
@@ -1153,7 +1162,7 @@ print(f"route declarations={len(routes)}; explicit response_model={sum(m for m, 
 PY
 ```
 
-本次摘要輸出如下。兩個 `git diff --exit-code` 皆為 exit 0，沒有差異輸出。`rg` 命中預設鍵在 `api.ts:22`、複製路由的 `creation_id`，以及 runner 選取預設測試與關閉 trace 的程式行。
+**2026-11-26 的原始輸出**　當時兩個 `git diff --exit-code` 都回傳 0。`rg` 命中預設鍵在 `api.ts:22`、複製路由的 `creation_id`，以及 runner 選取預設測試與關閉 trace 的程式行。
 
 ```text
 aac83bda1d580e8000f62d953a829ab9f65dcd7a
@@ -1181,8 +1190,8 @@ route declarations=93; explicit response_model=0; return annotations=0
 | 條件 | 重跑路徑與應留證據 |
 | --- | --- |
 | SQLite、單元與前端檢查 | 依 §9.2 在拋棄式 DB 執行 Ruff、pytest、Alembic，再於前端執行 typecheck、lint、format、Vitest 與 build。驗收具體 WTG 時列出其負例、預期錯誤、最終資料與修正後斷言。 |
-| Chromium／Firefox／WebKit | 先裝相應引擎，以 `python backend/run_live_acceptance.py --production tests/review-acceptance.spec.ts tests/live-files.spec.ts` 選套件；用 `--browser firefox` 或 `--browser webkit` 選對應引擎。裸 `--production` 預設只跑行前與財務兩個測試檔。要比對歷史 12 例，須核對實際 selector 及執行數。[執行器](backend/run_live_acceptance.py#L269) |
-| 正式 Safari、Google、背景推播、讀屏 | macOS 啟用 Safari WebDriver 後跑 `python backend/run_live_acceptance.py --production --browser safari`。有測試裝置與供應商連線時跑 `python backend/run_live_acceptance.py --production --push tests/live-push.spec.ts`，把模擬點擊、實際接收、原生點擊分開登記。Google 需部署者測試帳號與已登記回呼的 HTTPS 站；適用 WCAG 流程另用實際讀屏與鍵盤。[相容性紀錄](docs/round2-review.md) |
-| PostgreSQL、升級、代理、備份及災難復原 | 單元測試使用專用 `TEST_DATABASE_URL`，隔離瀏覽器 runner 使用 loopback `E2E_POSTGRES_TEST_URL`。另在拋棄式 Compose／測試主機，比對前版與升級後真實測試資料、權限、金額、檔案雜湊，在獨立 volume 做還原。代理拓撲、備份失敗與異機切換依 §8.1、§9.1 各留獨立紀錄。[fixture](backend/tests/conftest.py) · [CI 步驟](.github/workflows/ci.yml) · [還原程式](deploy/restore-drill.sh) |
+| Chromium／Firefox／WebKit | 先裝相應引擎，以 `python backend/run_live_acceptance.py --production tests/review-acceptance.spec.ts tests/live-files.spec.ts` 選套件；用 `--browser firefox` 或 `--browser webkit` 選對應引擎。裸 `--production` 預設只跑行前與財務兩個測試檔。要比對歷史 12 例，須核對實際 selector 及執行數。[執行器](../../backend/run_live_acceptance.py#L269) |
+| 正式 Safari、Google、背景推播、讀屏 | macOS 啟用 Safari WebDriver 後跑 `python backend/run_live_acceptance.py --production --browser safari`。有測試裝置與供應商連線時跑 `python backend/run_live_acceptance.py --production --push tests/live-push.spec.ts`，把模擬點擊、實際接收、原生點擊分開登記。Google 需部署者測試帳號與已登記回呼的 HTTPS 站；適用 WCAG 流程另用實際讀屏與鍵盤。[相容性紀錄](round2-review.md) |
+| PostgreSQL、升級、代理、備份及災難復原 | 單元測試使用專用 `TEST_DATABASE_URL`，隔離瀏覽器 runner 使用 loopback `E2E_POSTGRES_TEST_URL`。另在拋棄式 Compose／測試主機，比對前版與升級後真實測試資料、權限、金額、檔案雜湊，在獨立 volume 做還原。代理拓撲、備份失敗與異機切換依 §8.1、§9.1 各留獨立紀錄。[fixture](../../backend/tests/conftest.py) · [CI 步驟](../../.github/workflows/ci.yml) · [還原程式](../../deploy/restore-drill.sh) |
 
 **交付判定**　文件對照與來源核對完成。工作區仍以 `aac83bd` 的產品行為為準；實作修正、政策簽定與相應環境的通過證據，是日後個別 WTG 結案的條件。

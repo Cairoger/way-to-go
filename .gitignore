@@ -22,4 +22,4 @@ backups/
 frontend/next-env.d.ts
 
 # Local verification exports contain a source snapshot and raw test logs.
-/docs/functional-fix-verification-*.zip
+/docs/**/functional-fix-verification-*.zip

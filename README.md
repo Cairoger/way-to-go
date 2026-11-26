@@ -2,9 +2,9 @@
 
 供小團體共同規劃旅程的繁體中文 Web / PWA。使用 Google 登入建立旅程，旅伴可用邀請連結、邀請碼或 QR Code 加入。首頁提供三本可直接翻閱的唯讀示範手札。
 
-可共同編排行程、投票、分帳、管理訂位及私人附件，也可將選定旅程儲存到裝置離線閱讀。[需求規格](docs/spec.md) · [第二輪修正與複驗](docs/round2-review.md) · [第一輪 17 項驗收與重跑方式](docs/review-fixes.md) · [8 項資料模型對照](docs/data-model.md)
+可共同編排行程、投票、分帳、管理訂位及私人附件，也可將選定旅程儲存到裝置離線閱讀。[文件索引](docs/README.md) · [需求規格](docs/spec.md) · [第二輪修正與複驗](docs/reviews/round2-review.md) · [第一輪 17 項驗收與重跑方式](docs/reviews/review-fixes.md) · [8 項資料模型對照](docs/data-model.md)
 
-![旅程總覽桌面畫面](docs/workspace.webp)
+![旅程總覽桌面畫面](docs/assets/workspace.webp)
 
 ## 在本機啟動
 
@@ -132,7 +132,7 @@ pnpm dev
 | --- | --- |
 | 後端授權、遷移、協作 | 在 backend 執行 `python -m pytest -q`、`alembic check` 及 `ruff check .`。可設定 `TEST_DATABASE_URL` 指向專用 PostgreSQL 測試資料庫，每個案例有獨立 schema。 |
 | 前端 | 在 frontend 執行 `pnpm typecheck`、`pnpm lint`、`pnpm format:check`、`pnpm test` 與 `pnpm build`。 |
-| 瀏覽器 | 在專用測試站執行 `pnpm exec playwright install chromium` 與 `pnpm e2e`。以 `E2E_DISPOSABLE=1` 及該站測試帳密啟用寫入流程，`E2E_INVITE` 啟用示範旅程的雙瀏覽器協作測試。隔離測試工具與用法見[本版驗收紀錄](docs/review-fixes.md)。 |
+| 瀏覽器 | 在專用測試站執行 `pnpm exec playwright install chromium` 與 `pnpm e2e`。以 `E2E_DISPOSABLE=1` 及該站測試帳密啟用寫入流程，`E2E_INVITE` 啟用示範旅程的雙瀏覽器協作測試。隔離測試工具與用法見[本版驗收紀錄](docs/reviews/review-fixes.md)。 |
 | 自動化 | GitHub Actions 對 push 與 PR 執行 PostgreSQL 測試、Docker Compose 建置、瀏覽器驗收與資料庫還原演練。 |
 
 協作開發以功能分支提交 PR，通過 CI 並由另一位成員審查後再合併。前端只向授權 API 讀寫資料，對外提供的 OpenAPI JSON 可在 `/openapi.json` 取得。

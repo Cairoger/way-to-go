@@ -5,7 +5,7 @@
 ## 具名群組與鍵盤
 
 - 首頁的「篩選旅程」與行程頁的「選擇行程日」現在使用具名群組。選取狀態會透過按鈕的 `aria-pressed` 提供給輔助技術。用空白鍵篩選「已確認」後，清單剩下一本符合條件的手札。在示範手札中以 Tab 和空白鍵切換到第 2 天，按鈕的選取狀態也隨之更新。
-- 在 1280 與 390 像素寬的瀏覽器中，首次 Tab 會顯示「跳到主要內容」。按 Enter，再按 Tab，焦點落在畫面上的「建立旅程」。開啟登入視窗後，焦點在「關閉」；反向及正向 Tab 都停留在視窗內。原本按 Escape 會將焦點移回文件開頭，現已驗證會回到原來的「建立旅程」按鈕。兩種寬度均可在切換日期後閱讀行程，頁面寬度沒有超出視窗。[鍵盤回歸](../frontend/tests/accessibility-keyboard.spec.ts) · [WAI 對話框鍵盤互動說明](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
+- 在 1280 與 390 像素寬的瀏覽器中，首次 Tab 會顯示「跳到主要內容」。按 Enter，再按 Tab，焦點落在畫面上的「建立旅程」。開啟登入視窗後，焦點在「關閉」；反向及正向 Tab 都停留在視窗內。原本按 Escape 會將焦點移回文件開頭，現已驗證會回到原來的「建立旅程」按鈕。兩種寬度均可在切換日期後閱讀行程，頁面寬度沒有超出視窗。[鍵盤回歸](../../frontend/tests/accessibility-keyboard.spec.ts) · [WAI 對話框鍵盤互動說明](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
 - 在獨立的 Windows Chrome 視窗，另用 Windows UI Automation 讀取文件中的具名「篩選旅程」群組（Group）與「建立旅程」按鈕（Button）。使用平台的 Invoke 操作開啟登入視窗，確認「測試帳號」是 Edit 控制項，密碼 Edit 的 IsPassword 為 true，再用具名「關閉」按鈕的 Invoke 關閉。這一項直接測得作業系統交付輔助技術的名稱、角色、受保護狀態與操作。
 
 ## 文字覆蓋圖片與漸層

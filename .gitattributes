@@ -5,6 +5,9 @@ Dockerfile text eol=lf
 *.webp binary
 *.png binary
 
+# Keep the embedded original feedback in LF for its SHA-256 check.
+docs/reviews/WayToGo_Feedback.md text eol=lf
+
 # Preserve the bytes covered by the acceptance evidence SHA-256 manifests.
-acceptance-20261125/** -text
-acceptance-retest-cada651/** -text
+docs/acceptance/2026-11-25-round-1/** -text
+docs/acceptance/2026-11-25-round-2/** -text
